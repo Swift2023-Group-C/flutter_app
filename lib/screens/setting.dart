@@ -4,7 +4,7 @@ class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
 
   @override
-  _SettingScreenState createState() => _SettingScreenState();
+  State<SettingScreen> createState() => _SettingScreenState();
 }
 
 class _SettingScreenState extends State<SettingScreen> {
@@ -52,7 +52,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                         color: index == _currentPageIndex
-                            ? Color.fromARGB(255, 125, 29, 29)
+                            ? const Color.fromARGB(255, 125, 29, 29)
                             : Colors.black,
                       ),
                     ),
@@ -69,19 +69,19 @@ class _SettingScreenState extends State<SettingScreen> {
                   _currentPageIndex = index;
                 });
               },
-              children: [
-                Container(
-                  child: const Center(
+              children: const [
+                SizedBox(
+                  child: Center(
                     child: Text('項目1の内容', style: TextStyle(fontSize: 24.0)),
                   ),
                 ),
-                Container(
-                  child: const Center(
+                SizedBox(
+                  child: Center(
                     child: Text('項目2の内容', style: TextStyle(fontSize: 24.0)),
                   ),
                 ),
-                Container(
-                  child: const Center(
+                SizedBox(
+                  child: Center(
                     child: Text('項目3の内容', style: TextStyle(fontSize: 24.0)),
                   ),
                 ),

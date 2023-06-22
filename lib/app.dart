@@ -43,20 +43,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Flutter練習'),
           actions: [
             IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               onPressed: () {
                 Navigator.of(context).push(
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) {
-                      return SettingScreen();
+                      return const SettingScreen();
                     },
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
-                      final Offset begin = Offset(0.0, 1.0);
-                      final Offset end = Offset.zero;
+                      const Offset begin = Offset(0.0, 1.0);
+                      const Offset end = Offset.zero;
                       final Animatable<Offset> tween =
                           Tween(begin: begin, end: end)
                               .chain(CurveTween(curve: Curves.easeInOut));

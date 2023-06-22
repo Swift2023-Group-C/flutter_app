@@ -23,9 +23,9 @@ class KakomonScreen extends StatelessWidget {
                       },
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
-                        final Offset begin = Offset(1.0, 0.0); // 右から左
+                        const Offset begin = Offset(1.0, 0.0); // 右から左
                         // final Offset begin = Offset(-1.0, 0.0); // 左から右
-                        final Offset end = Offset.zero;
+                        const Offset end = Offset.zero;
                         final Animatable<Offset> tween =
                             Tween(begin: begin, end: end)
                                 .chain(CurveTween(curve: Curves.easeInOut));
