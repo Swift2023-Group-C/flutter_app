@@ -32,6 +32,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static const _screens = [HomeScreen(), MapScreen(), KakomonScreen()];
 
   int _selectedIndex = 0;
+  String appBarTitle = '';
 
   void _onItemTapped(int index) {
     setState(() {
@@ -43,6 +44,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          title: Center(child: Text(appBarTitle)),
           actions: [
             IconButton(
               icon: const Icon(Icons.settings),
@@ -82,7 +84,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.map_outlined), label: 'マップ'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.folder_copy_outlined), label: '過去問')
+                icon: Icon(Icons.folder_copy_outlined), label: '過去問'),
           ],
           type: BottomNavigationBarType.fixed,
         ));

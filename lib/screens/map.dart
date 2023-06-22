@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'map_grid.dart';
+import 'package:flutter_app/app.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -23,48 +25,48 @@ class _MapScreenState extends State<MapScreen> {
     var floorBarTextStyle = const TextStyle(fontSize: 18.0);
     List<String> floorBarString = ['5', '4', '3', '2', '1', 'R2', 'R1'];
     return Scaffold(
-        appBar: AppBar(
-          title: const Center(child: Text('マップ')),
-        ),
         body: Stack(
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: double.infinity,
-              child: InteractiveViewer(maxScale: 10.0, child: setMapImage()),
-            ),
-            Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    color: Colors.grey.withOpacity(0.8),
-                    height: 350,
-                    width: floorWidth,
-                    child: Column(
-                      children: [
-                        for (int i = 0; i < 7; i++) ...{
-                          SizedBox(
-                            width: floorWidth,
-                            height: 50,
-                            child: Center(
-                              child: TextButton(
-                                  onPressed: () {
-                                    onFloorBarTapped(i);
-                                  },
-                                  child: Text(
-                                    floorBarString[i],
-                                    style: floorBarTextStyle,
-                                  )),
-                            ),
-                          ),
-                        }
-                      ],
-                    ),
-                  ),
-                ))
-          ],
-        ));
+      children: [
+        Center(
+            child: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: InteractiveViewer(
+                  maxScale: 10.0,
+                  child: const MapGridScreen(),
+                ))),
+        Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                color: Colors.grey.withOpacity(0.8),
+                height: 350,
+                width: floorWidth,
+                child: Column(
+                  children: [
+                    for (int i = 0; i < 7; i++) ...{
+                      SizedBox(
+                        width: floorWidth,
+                        height: 50,
+                        child: Center(
+                          child: TextButton(
+                              onPressed: () {
+                                onFloorBarTapped(i);
+                              },
+                              child: Text(
+                                floorBarString[i],
+                                style: floorBarTextStyle,
+                              )),
+                        ),
+                      ),
+                    }
+                  ],
+                ),
+              ),
+            ))
+      ],
+    ));
   }
 
   SvgPicture setMapImage() {
