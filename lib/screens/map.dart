@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'map_grid.dart';
-import 'package:flutter_app/app.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -27,14 +26,13 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
         body: Stack(
       children: [
-        Center(
-            child: SizedBox(
-                width: double.infinity,
-                height: double.infinity,
+        SizedBox(
+            width: double.infinity,
+            child: Center(
                 child: InteractiveViewer(
-                  maxScale: 10.0,
-                  child: const MapGridScreen(),
-                ))),
+              maxScale: 10.0,
+              child: const MapGridScreen(),
+            ))),
         Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Align(

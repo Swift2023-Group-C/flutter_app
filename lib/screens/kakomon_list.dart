@@ -10,7 +10,7 @@ class KakomonListScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Center(child: Text('過去問リスト')),
       ),
-      body: Center(child: Text(url, style: TextStyle(fontSize: 32.0))),
+      body: Center(child: Text(url, style: const TextStyle(fontSize: 32.0))),
     );
   }
 }
