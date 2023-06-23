@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'map_grid.dart';
 
 class MapScreen extends StatefulWidget {
@@ -10,11 +9,11 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  int mapImageCount = 4;
+  int mapGridCount = 4;
 
   void onFloorBarTapped(int findex) {
     setState(() {
-      mapImageCount = findex;
+      mapGridCount = findex;
     });
   }
 
@@ -31,7 +30,7 @@ class _MapScreenState extends State<MapScreen> {
             child: Center(
                 child: InteractiveViewer(
               maxScale: 10.0,
-              child: const MapGridScreen(),
+              child: MapGridScreen(mapIndex: mapGridCount),
             ))),
         Padding(
             padding: const EdgeInsets.only(right: 20),
@@ -65,22 +64,5 @@ class _MapScreenState extends State<MapScreen> {
             ))
       ],
     ));
-  }
-
-  SvgPicture setMapImage() {
-    List<String> mapImageName = [
-      'map05.svg',
-      'map04.svg',
-      'map03.svg',
-      'map02.svg',
-      'map01.svg',
-      'mapr2.svg',
-      'mapr1.svg'
-    ];
-    if (mapImageCount > 6 || mapImageCount < 0) {
-      return SvgPicture.asset('images/${mapImageName[4]}');
-    } else {
-      return SvgPicture.asset('images/${mapImageName[mapImageCount]}');
-    }
   }
 }
