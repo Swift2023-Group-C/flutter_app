@@ -215,7 +215,7 @@ abstract final class GridMaps {
     Tile(2, 2, TileColors.road),
     Tile(2, 2, TileColors.stair), // 階段321側上り
     Tile(36, 17, TileColors.empty, top: 1.5),
-    Tile(2, 12, TileColors.road),
+    Tile(2, 12, TileColors.road, left: 1.5, right: 1.5),
     Tile(4, 8, TileColors.empty),
     Tile(2, 2, TileColors.ev), // エレベーター
     Tile(2, 2, TileColors.empty),

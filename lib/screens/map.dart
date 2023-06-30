@@ -17,6 +17,17 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  final viewTransformationController = TransformationController();
+
+  @override
+  void initState() {
+    viewTransformationController.value =
+        Matrix4(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    viewTransformationController.value.setEntry(0, 3, -300);
+    viewTransformationController.value.setEntry(1, 3, -100);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     const double floorWidth = 40.0;
@@ -27,11 +38,14 @@ class _MapScreenState extends State<MapScreen> {
       children: [
         SizedBox(
             width: double.infinity,
-            child: Center(
-                child: InteractiveViewer(
-              maxScale: 10.0,
-              child: MapGridScreen(mapIndex: mapGridCount),
-            ))),
+            height: MediaQuery.of(context).size.height,
+            child: InteractiveViewer(
+                maxScale: 10.0,
+                transformationController: viewTransformationController,
+                child: Padding(
+                  padding: const EdgeInsets.all(30),
+                  child: MapGridScreen(mapIndex: mapGridCount),
+                ))),
         Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Align(

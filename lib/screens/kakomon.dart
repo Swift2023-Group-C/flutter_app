@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'kakomon_list.dart';
 
-class KakomonScreen extends StatelessWidget {
+class KakomonScreen extends StatefulWidget {
   const KakomonScreen({Key? key}) : super(key: key);
 
+  @override
+  State<KakomonScreen> createState() => _KakomonScreenState();
+}
+
+class _KakomonScreenState extends State<KakomonScreen> {
   @override
   Widget build(BuildContext context) {
     List<String> subject = ['ソフトウェア設計論Ⅱ', '技術者倫理', 'システム管理方法論'];

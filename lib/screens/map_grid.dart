@@ -19,6 +19,7 @@ class MapGridScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StaggeredGridView.countBuilder(
+      physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 48,
       itemCount: gridMapsList[mapIndex].length,
       itemBuilder: (BuildContext context, int index) {
