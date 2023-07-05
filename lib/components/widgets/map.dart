@@ -115,12 +115,110 @@ class TileWidget extends StatelessWidget {
 }
 
 abstract final class GridMaps {
-  static final List<Tile> map01TileList = [];
-  static final List<Tile> map02TileList = [];
   static final List<Tile> map04TileList = [];
   static final List<Tile> map05TileList = [];
   static final List<Tile> mapr1TileList = [];
   static final List<Tile> mapr2TileList = [];
+
+  static final List<Tile> map01TileList = [
+    Tile(40, 7, TileColors.empty,),
+    Tile(8, 7, TileColors.room2,),
+    Tile(40, 1, TileColors.road,),
+    Tile(2, 7, TileColors.stair,),
+    Tile(6, 4, TileColors.room2,),
+    Tile(1, 6, TileColors.road,),
+    Tile(1, 6, TileColors.room2,),
+    Tile(10, 2, TileColors.room2,),
+    Tile(1, 6, TileColors.road,),
+    Tile(3, 6, TileColors.toilet,), //toilet
+    Tile(2, 6, TileColors.stair,),
+    Tile(16, 2, TileColors.room2,),
+    Tile(2, 2, TileColors.room2,),
+    Tile(1, 6, TileColors.road,),
+    Tile(3, 2, TileColors.toilet,),
+    Tile(2, 4, TileColors.room,),//135
+    Tile(2, 4, TileColors.room,),//134
+    Tile(2, 4, TileColors.room,),//133
+    Tile(2, 4, TileColors.room,),//132
+    Tile(2, 4, TileColors.room,),//131
+    Tile(2, 4, TileColors.room,),//130
+    Tile(2, 4, TileColors.room,),//129
+    Tile(2, 4, TileColors.room,),//128
+    Tile(2, 4, TileColors.room,),//127
+    Tile(2, 4, TileColors.room,),//126
+    Tile(2, 4, TileColors.room,),//125
+    Tile(2, 4, TileColors.room,),//124
+    Tile(2, 4, TileColors.room,),//123
+    Tile(2, 4, TileColors.room,),//122
+    Tile(1, 4, TileColors.room2,),
+    Tile(2, 4, TileColors.room,),//121
+    Tile(4, 3, TileColors.room2,),
+    Tile(2, 3, TileColors.room2,),
+    Tile(42, 1, TileColors.road,),
+    Tile(6, 13, TileColors.room,),//食堂
+    Tile(12, 5, TileColors.room2,),
+    Tile(6, 12, TileColors.road,),
+    Tile(18, 5, TileColors.room2,),
+    Tile(6, 1, TileColors.road,),
+    Tile(2, 2, TileColors.road,),
+    Tile(2, 2, TileColors.ev,),//ev
+    Tile(2, 2, TileColors.road,),
+    Tile(6, 9, TileColors.road,),
+    Tile(12, 7, TileColors.room2,),//アトリエ
+    Tile(18, 7, TileColors.road,),
+  ];
+
+  static List<Tile> map02TileList = [
+    Tile(40, 1, TileColors.road,),
+    Tile(2, 3, TileColors.room2,),
+    Tile(6, 7, TileColors.room2,),
+    Tile(1, 6, TileColors.road,),
+    Tile(3, 2, TileColors.room2,),
+    Tile(2, 2, TileColors.room2,),
+    Tile(6, 2, TileColors.room2,),
+    Tile(1, 6, TileColors.road),
+    Tile(3, 6, TileColors.toilet,),
+    Tile(2, 2, TileColors.room2,),
+    Tile(6, 2, TileColors.room2,),
+    Tile(6, 2, TileColors.room2,),
+    Tile(4, 2, TileColors.room2,),
+    Tile(2, 2, TileColors.toilet,),
+    Tile(1, 6, TileColors.road),
+    Tile(3, 2, TileColors.toilet,),
+    Tile(1, 4, TileColors.room2,),
+    Tile(2, 4, TileColors.room,), //235
+    Tile(2, 4, TileColors.room,), //234
+    Tile(2, 4, TileColors.room,), //233
+    Tile(2, 4, TileColors.room,), //232
+    Tile(2, 4, TileColors.room,), //231
+    Tile(2, 4, TileColors.stair,), 
+    Tile(2, 4, TileColors.room,), //230
+    Tile(2, 4, TileColors.room,), //229
+    Tile(2, 4, TileColors.room,), //228
+    Tile(2, 4, TileColors.room,), //227
+    Tile(2, 4, TileColors.room,), //226
+    Tile(2, 4, TileColors.room,), //225
+    Tile(2, 4, TileColors.room,), //224
+    Tile(2, 4, TileColors.room,), //223
+    Tile(2, 4, TileColors.room,), //222
+    Tile(1, 4, TileColors.room2,),
+    Tile(2, 4, TileColors.room,), //221
+    Tile(2, 4, TileColors.stair,),
+    Tile(42, 1, TileColors.road,),
+    Tile(6, 6, TileColors.room,),//売店
+    Tile(12, 5, TileColors.room2,),
+    Tile(4, 5, TileColors.road,),
+    Tile(2, 5, TileColors.stair,),
+    Tile(18, 2, TileColors.room2,),
+    Tile(6, 1, TileColors.road,),
+    Tile(4, 4, TileColors.road,),
+    Tile(2, 4, TileColors.stair,),
+    Tile(18, 3, TileColors.road,),
+    Tile(36, 3, TileColors.empty,), //empty
+    Tile(2, 6, TileColors.road,),
+    Tile(2, 2, TileColors.ev,), //ev
+  ];
+
   static final List<Tile> map03TileList = [
     Tile(12, 18, TileColors.room, txt: 'Gym', top: 1.5, left: 1.5, bottom: 0),
     Tile(6, 6, TileColors.road, top: 1.5, left: 0, right: 0),
