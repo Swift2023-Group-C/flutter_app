@@ -8,9 +8,9 @@ class KakomonListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text('過去問リスト')),
+        title: Text(url),
       ),
-      body: Center(child: Text(url, style: const TextStyle(fontSize: 32.0))),
+      body: const Center(child: Text('過去問', style: TextStyle(fontSize: 32.0))),
     );
   }
 }

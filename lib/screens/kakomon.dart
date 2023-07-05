@@ -9,9 +9,26 @@ class KakomonScreen extends StatefulWidget {
 }
 
 class _KakomonScreenState extends State<KakomonScreen> {
+  final List<bool> _subjectCheckbox = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
+  List<String> weektime = ['月2', '月3', '火4', '水3', '水5', '木2'];
+  List<String> subject = [
+    '電気回路2-ABCDJKL',
+    'ハードウェア設計2-ABCD',
+    '人工知能基礎2-ABCD',
+    'オペレーションズリサーチ2-ABCD',
+    'システム工学2-ABCD',
+    'センサ工学2-ABCD'
+  ];
+  List<String> type = ['専門選択', '専門選択', '専門選択', '専門必修', '専門選択', '専門選択'];
   @override
   Widget build(BuildContext context) {
-    List<String> subject = ['ソフトウェア設計論Ⅱ', '技術者倫理', 'システム管理方法論'];
     return Scaffold(
         body: ListView(
       children: [
@@ -42,11 +59,18 @@ class _KakomonScreenState extends State<KakomonScreen> {
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: Center(
-                child: Text(
-                  subject[i],
-                  style: const TextStyle(color: Colors.black, fontSize: 25),
+              padding: const EdgeInsets.all(10),
+              child: ListTile(
+                leading: CircleAvatar(child: Text(weektime[i])),
+                title: Text(subject[i]),
+                subtitle: Text(type[i]),
+                trailing: Checkbox(
+                  value: _subjectCheckbox[i],
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _subjectCheckbox[i] = value!;
+                    });
+                  },
                 ),
               ),
             ),
