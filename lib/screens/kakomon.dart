@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../components/S3.dart';
 import 'kakomon_list.dart';
 
 class KakomonScreen extends StatefulWidget {
@@ -10,11 +9,6 @@ class KakomonScreen extends StatefulWidget {
 }
 
 class _KakomonScreenState extends State<KakomonScreen> {
-  final List<bool> _subjectCheckbox = [
-    false,
-    false,
-    false,
-  ];
   List<String> weektime = [
     '火1',
     '火3',
@@ -75,14 +69,6 @@ class _KakomonScreenState extends State<KakomonScreen> {
                 leading: CircleAvatar(child: Text(weektime[i])),
                 title: Text(subject[i]),
                 subtitle: Text(type[i]),
-                trailing: Checkbox(
-                  value: _subjectCheckbox[i],
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _subjectCheckbox[i] = value!;
-                    });
-                  },
-                ),
               ),
             ),
           ),
