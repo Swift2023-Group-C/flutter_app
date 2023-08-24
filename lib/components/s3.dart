@@ -17,6 +17,7 @@ class S3 {
   }
 
   Future<List<String>> getListObjectsKey({required String url}) async {
+    instance.getMinio();
     List<String> returnStr = [];
     await for (var value
         in _minio!.listObjectsV2('kakomon', prefix: url, recursive: true)) {
@@ -28,6 +29,7 @@ class S3 {
   }
 
   Future<MinioByteStream> getObject({required String url}) async {
+    instance.getMinio();
     return _minio!.getObject('kakomon', url);
   }
 }

@@ -37,7 +37,6 @@ class _KakomonScreenState extends State<KakomonScreen> {
   ];
   @override
   Widget build(BuildContext context) {
-    S3.instance.getMinio();
     return Scaffold(
         body: ListView(
       children: [
