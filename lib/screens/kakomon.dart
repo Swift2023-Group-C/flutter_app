@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../components/S3.dart';
 import 'kakomon_list.dart';
 
 class KakomonScreen extends StatefulWidget {
@@ -13,22 +14,30 @@ class _KakomonScreenState extends State<KakomonScreen> {
     false,
     false,
     false,
-    false,
-    false,
-    false
   ];
-  List<String> weektime = ['月2', '月3', '火4', '水3', '水5', '木2'];
+  List<String> weektime = [
+    '火1',
+    '火3',
+    '金3',
+  ];
   List<String> subject = [
-    '電気回路2-ABCDJKL',
-    'ハードウェア設計2-ABCD',
-    '人工知能基礎2-ABCD',
-    'オペレーションズリサーチ2-ABCD',
-    'システム工学2-ABCD',
-    'センサ工学2-ABCD'
+    '画像認識3-ABCDEF',
+    '情報ネットワーク3-ABCD',
+    'オペレーティングシステム3-ABCD',
   ];
-  List<String> type = ['専門選択', '専門選択', '専門選択', '専門必修', '専門選択', '専門選択'];
+  List<int> subjectUrl = [
+    108201,
+    108301,
+    108402,
+  ];
+  List<String> type = [
+    '専門選択',
+    '専門必修',
+    '専門必修',
+  ];
   @override
   Widget build(BuildContext context) {
+    S3.instance.getMinio();
     return Scaffold(
         body: ListView(
       children: [
@@ -38,7 +47,10 @@ class _KakomonScreenState extends State<KakomonScreen> {
               Navigator.of(context).push(
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) {
-                    return KakomonListScreen(url: subject[i]);
+                    return KakomonListScreen(
+                      url: subjectUrl[i].toString(),
+                      subject: subject[i],
+                    );
                   },
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {

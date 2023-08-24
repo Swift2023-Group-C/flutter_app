@@ -1,4 +1,5 @@
 .env
+.env.dev
 
 # Miscellaneous
 *.class
@@ -278,3 +279,4 @@ google-services.json
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+macos/Flutter/GeneratedPluginRegistrant.swift
