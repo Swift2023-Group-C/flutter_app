@@ -247,7 +247,109 @@ abstract final class GridMaps {
     Tile(30, 7, TileColors.empty),
     Tile(6, 7, TileColors.room2, txt: 'なんかある？'),
   ];
-  static final List<Tile> map05TileList = [];
+  static final List<Tile> map05TileList = [
+    Tile(13, 2, TileColors.room2), //サークル1
+    Tile(3, 2, TileColors.room2), //サークル2
+    Tile(2, 12, TileColors.toilet), //吹き抜け
+    Tile(30, 6, TileColors.empty), //empty
+    Tile(13, 1, TileColors.road),
+    Tile(3, 8, TileColors.room2), //サークル3
+    Tile(1, 14, TileColors.road),
+    Tile(11, 14, TileColors.empty), //empty gym
+    Tile(1, 9, TileColors.road),
+    Tile(6, 6, TileColors.room, txt: '595'),
+    Tile(6, 6, TileColors.room, txt: '594'),
+    Tile(6, 6, TileColors.room, txt: '593'),
+    Tile(6, 6, TileColors.empty), //吹き抜け
+    Tile(6, 12, TileColors.room2),
+    Tile(3, 2, TileColors.stair), // 階段体育館側
+    Tile(30, 1, TileColors.road),
+    Tile(1, 4, TileColors.road),
+    Tile(3, 5, TileColors.toilet), // 585トイレ
+    Tile(2, 5, TileColors.toilet), //吹き抜け
+    Tile(6, 5, TileColors.room, txt: '585'),
+    Tile(6, 5, TileColors.room, txt: '584'),
+    Tile(6, 5, TileColors.room, txt: '583'),
+    Tile(1, 5, TileColors.road),
+    Tile(3, 5, TileColors.room2), // 583側トイレ
+    Tile(2, 5, TileColors.empty), //吹き抜け
+    Tile(13, 1, TileColors.road),
+    Tile(12, 6, TileColors.empty), //empty left
+    Tile(1, 6, TileColors.road),
+    Tile(23, 2, TileColors.empty), //empty center1
+    Tile(1, 6, TileColors.road),
+    Tile(11, 2, TileColors.empty), //empty right1
+    Tile(2, 2, TileColors.stair), // 階段center側
+    Tile(19, 2, TileColors.empty), //empty center2
+    Tile(2, 2, TileColors.ev), // エレベーターcenter
+    Tile(2, 2, TileColors.stair), // 階段right側
+    Tile(9, 2, TileColors.empty), //empty right2
+    Tile(23, 2, TileColors.empty), //empty center3
+    Tile(11, 2, TileColors.empty), //empty right3
+    Tile(37, 1, TileColors.road),
+    Tile(3, 5, TileColors.room2),
+    Tile(2, 5, TileColors.empty), //吹き抜け
+    Tile(2, 5, TileColors.road),
+    Tile(4, 8, TileColors.room2),
+    Tile(2, 4, TileColors.room, txt: '536'),
+    Tile(2, 4, TileColors.room, txt: '535'),
+    Tile(2, 4, TileColors.room, txt: '534'),
+    Tile(2, 4, TileColors.room, txt: '533'),
+    Tile(2, 4, TileColors.room, txt: '532'),
+    Tile(2, 4, TileColors.room, txt: '531'),
+    Tile(1, 4, TileColors.toilet),
+    Tile(3, 4, TileColors.room2),
+    Tile(2, 4, TileColors.empty), //吹き抜け
+    Tile(1, 4, TileColors.room2),
+    Tile(1, 4, TileColors.road),
+    Tile(2, 4, TileColors.room, txt: '529'),
+    Tile(2, 4, TileColors.room, txt: '528'),
+    Tile(2, 4, TileColors.room, txt: '527'),
+    Tile(2, 4, TileColors.room, txt: '526'),
+    Tile(2, 4, TileColors.room, txt: '525'),
+    Tile(2, 4, TileColors.room, txt: '524'),
+    Tile(2, 4, TileColors.room, txt: '523'),
+    Tile(2, 4, TileColors.room, txt: '522'),
+    Tile(1, 4, TileColors.road),
+    Tile(44, 1, TileColors.road),
+    Tile(12, 2, TileColors.room2), //スタジオleft
+    Tile(2, 2, TileColors.road),
+    Tile(2, 2, TileColors.room2),
+    Tile(2, 2, TileColors.empty), //吹き抜け
+    Tile(18, 2, TileColors.room2), //スタジオcenter
+    Tile(2, 11, TileColors.road),
+    Tile(2, 2, TileColors.room2),
+    Tile(2, 2, TileColors.empty), //吹き抜け
+    Tile(2, 4, TileColors.road),
+    Tile(12, 12, TileColors.empty), //empty left
+    Tile(2, 12, TileColors.road),
+    Tile(22, 10, TileColors.empty), //empty center
+    Tile(4, 9, TileColors.empty), //empty right
+    Tile(4, 2, TileColors.room2),
+    Tile(6, 2, TileColors.road),
+    Tile(1, 5, TileColors.road),
+    Tile(4, 2, TileColors.room2),
+    Tile(1, 5, TileColors.road),
+    Tile(4, 3, TileColors.toilet), // 講堂側トイレ
+    Tile(12, 1, TileColors.road),
+    Tile(2, 2, TileColors.stair), // 階段center側
+    Tile(20, 2, TileColors.empty), //empty center
+    Tile(2, 2, TileColors.road),
+    Tile(2, 2, TileColors.stair), // 階段講堂側
+    Tile(2, 2, TileColors.empty), //empty 階段横
+    Tile(1, 2, TileColors.road),
+    Tile(4, 2, TileColors.room2), //調光室
+    Tile(1, 2, TileColors.road),
+    Tile(36, 12, TileColors.empty), //empty big1
+    Tile(2, 12, TileColors.road), //empty big1
+    Tile(4, 8, TileColors.empty), //empty 講堂１
+    Tile(6, 12, TileColors.room, txt: '講堂'),
+    Tile(2, 2, TileColors.ev), // エレベーター
+    Tile(2, 2, TileColors.empty), //empty ev横
+    Tile(4, 2, TileColors.empty), //empty ev下
+    Tile(42, 7, TileColors.empty), //empty ev横
+    Tile(6, 7, TileColors.empty), //empty
+  ];
   static final List<Tile> mapr1TileList = [];
   static final List<Tile> mapr2TileList = [
     Tile(4, 2, TileColors.room, txt: 'R711'),
