@@ -23,12 +23,6 @@ class KakomonObjectScreen extends StatefulWidget {
 class _KakomonObjectScreenState extends State<KakomonObjectScreen> {
   Uint8List? dataUint;
 
-  void _setData(Uint8List data) {
-    setState(() {
-      dataUint = data;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
