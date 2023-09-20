@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/kamoku.dart';
 
 import 'screens/home.dart';
 import 'screens/map.dart';
@@ -29,7 +30,12 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  static const _screens = [HomeScreen(), MapScreen(), KakomonScreen()];
+  static const _screens = [
+    HomeScreen(),
+    MapScreen(),
+    KakomonScreen(),
+    KamokuScreen()
+  ];
 
   int _selectedIndex = 0;
   String appBarTitle = '';
@@ -85,6 +91,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 icon: Icon(Icons.map_outlined), label: 'マップ'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.folder_copy_outlined), label: '過去問'),
+            BottomNavigationBarItem(icon: Icon(Icons.book), label: '授業'),
           ],
           type: BottomNavigationBarType.fixed,
         ));
