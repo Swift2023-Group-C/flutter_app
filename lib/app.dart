@@ -34,7 +34,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     HomeScreen(),
     MapScreen(),
     KakomonScreen(),
-    KamokuScreen()
+    //KamokuScreen(),
+    kamokusortScreen()
   ];
 
   int _selectedIndex = 0;
@@ -91,7 +92,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 icon: Icon(Icons.map_outlined), label: 'マップ'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.folder_copy_outlined), label: '過去問'),
-            BottomNavigationBarItem(icon: Icon(Icons.book), label: '授業'),
+            //BottomNavigationBarItem(icon: Icon(Icons.book), label: '授業'),
+            //以下を追加
+            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'ソート'),
           ],
           type: BottomNavigationBarType.fixed,
         ));
