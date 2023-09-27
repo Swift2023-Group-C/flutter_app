@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/repository/find_rooms_in_use.dart';
+import 'package:flutter_app/repository/read_schedule_file.dart';
 import 'package:flutter_app/screens/kamoku.dart';
 
 import 'screens/home.dart';
@@ -6,6 +8,8 @@ import 'screens/map.dart';
 import 'screens/kakomon.dart';
 import 'components/color_fun.dart';
 import 'screens/setting.dart';
+
+import 'repository/get_room_from_firebase.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -36,6 +40,34 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     KakomonScreen(),
     KamokuScreen()
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // アプリ起動時に一度だけ実行される
+    // initState内で非同期処理を行うための方法
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Firebaseからファイルをダウンロード
+      await downloadFileFromFirebase();
+
+      // ダウンロードしたファイルの中身を読み取る
+      try {
+        String fileContent = await readScheduleFile();
+        List<String> resourceIds = findRoomsInUse(fileContent);
+
+        if (resourceIds.isNotEmpty) {
+          for (String resourceId in resourceIds) {
+            print("ResourceId: $resourceId");
+            // ここで取得したresourceIdをつかえるとおもう
+          }
+        } else {
+          print("No ResourceId exists for the current time.");
+        }
+      } catch (e) {
+        print(e);
+      }
+    });
+  }
 
   int _selectedIndex = 0;
   String appBarTitle = '';
