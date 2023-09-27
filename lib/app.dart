@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/repository/find_rooms_in_use.dart';
 import 'package:flutter_app/repository/read_schedule_file.dart';
+import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
 
 import 'screens/home.dart';
@@ -39,7 +40,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     MapScreen(),
     KakomonScreen(),
     //KamokuScreen(),
-    kamokusortScreen()
+    kamokusortScreen(),
+    KadaiListScreen()
   ];
 
   @override
@@ -127,6 +129,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             //BottomNavigationBarItem(icon: Icon(Icons.book), label: '授業'),
             //以下を追加
             BottomNavigationBarItem(icon: Icon(Icons.search), label: 'ソート'),
+            BottomNavigationBarItem(icon: Icon(Icons.assignment), label: '課題'),
           ],
           type: BottomNavigationBarType.fixed,
         ));
