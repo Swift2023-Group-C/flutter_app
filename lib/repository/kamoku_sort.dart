@@ -220,6 +220,7 @@ Future<List<Map<String, dynamic>>> search(
   String sql_where3 = "";
   String sql_where4 = "";
   String sql_where5 = "";
+  String check3 = "";
 
   List<int> kyoyokubun = [];
 
@@ -265,8 +266,10 @@ Future<List<Map<String, dynamic>>> search(
       if (grade[i] == 2) {
         if (sql_where2 != "") {
           sql_where2 += " OR sort.三年次=1";
+          check3 += " OR sort.授業名=技術者倫理";
         } else {
           sql_where2 += "( sort.三年次=1";
+          check3 += " OR sort.授業名=技術者倫理";
         }
       }
       if (grade[i] == 3) {
@@ -399,7 +402,7 @@ Future<List<Map<String, dynamic>>> search(
   sql_where += sql_where5;
   if (sql_where != "") {
     List<Map<String, dynamic>> records = await database.rawQuery(
-        'SELECT detail.LessonId,detail.授業名 FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId WHERE $sql_where');
+        'SELECT detail.LessonId,detail.授業名 FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId WHERE $sql_where ');
     return records;
   } else {
     List<Map<String, dynamic>> records = await database.rawQuery(
