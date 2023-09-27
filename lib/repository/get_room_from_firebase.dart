@@ -33,27 +33,3 @@ downloadFileFromFirebase() async {
     }
   });
 }
-
-
-
-/*
-String toJson(Map<String, dynamic> data) {
-  return jsonEncode(data);
-}
-*/
-
-/*
-String getResourceId(String jsonString) {
-  Map<String, dynamic> decodedData = jsonDecode(jsonString);
-  DateTime startTime = DateTime.parse(decodedData['start']);
-  print(startTime);
-  DateTime endTime = DateTime.parse(decodedData['end']);
-  DateTime now = DateTime.now().toUtc();
-  print(now);
-
-  if (now.isAfter(startTime) && now.isBefore(endTime)) {
-    return decodedData['resourceId'];
-  } else {
-    return "not exist";
-  }
-  */

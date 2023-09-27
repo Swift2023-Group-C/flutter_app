@@ -44,7 +44,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    //アプリ起動時に一度だけ実行される
+    // アプリ起動時に一度だけ実行される
     // initState内で非同期処理を行うための方法
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Firebaseからファイルをダウンロード
@@ -52,8 +52,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
       // ダウンロードしたファイルの中身を読み取る
       try {
-        String fileContent = await readFileContent();
-        List<String> resourceIds = getResourceId(fileContent);
+        String fileContent = await readScheduleFile();
+        List<String> resourceIds = findRoomsInUse(fileContent);
 
         if (resourceIds.isNotEmpty) {
           for (String resourceId in resourceIds) {
