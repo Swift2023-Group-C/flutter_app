@@ -13,21 +13,20 @@ class _KakomonScreenState extends State<KakomonScreen> {
     '火1',
     '火3',
     '金3',
+    'a',
   ];
   List<String> subject = [
     '画像認識3-ABCDEF',
     '情報ネットワーク3-ABCD',
     'オペレーティングシステム3-ABCD',
+    'a',
   ];
-  List<int> subjectUrl = [
-    108201,
-    108301,
-    108402,
-  ];
+  List<int> subjectUrl = [108201, 108301, 108402, 100001];
   List<String> type = [
     '専門選択',
     '専門必修',
     '専門必修',
+    'a',
   ];
   @override
   Widget build(BuildContext context) {
@@ -41,8 +40,7 @@ class _KakomonScreenState extends State<KakomonScreen> {
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) {
                     return KakomonListScreen(
-                      url: subjectUrl[i].toString(),
-                      subject: subject[i],
+                      url: subjectUrl[i],
                     );
                   },
                   transitionsBuilder:
