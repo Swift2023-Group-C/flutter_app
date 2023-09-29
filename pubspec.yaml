@@ -48,11 +48,11 @@ dependencies:
   path_provider: ^2.1.0
   firebase_database: ^10.2.5
   shared_preferences: ^2.0.8
+  cloud_firestore: ^4.9.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  cloud_firestore: ^4.9.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

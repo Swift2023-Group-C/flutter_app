@@ -6,7 +6,6 @@ import 'package:flutter_app/screens/kamoku.dart';
 
 import 'screens/home.dart';
 import 'screens/map.dart';
-import 'screens/kakomon.dart';
 import 'components/color_fun.dart';
 import 'screens/setting.dart';
 
@@ -38,10 +37,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static const _screens = [
     HomeScreen(),
     MapScreen(),
-    KakomonScreen(),
-    //KamokuScreen(),
-    kamokusortScreen(),
+    KamokuSearchScreen(),
     KadaiListScreen()
+  ];
+
+  static const List<BottomNavigationBarItem> _bottomNavigationBarIcon = [
+    BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'ホーム'),
+    BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: 'マップ'),
+    BottomNavigationBarItem(icon: Icon(Icons.search), label: '科目検索'),
+    BottomNavigationBarItem(icon: Icon(Icons.assignment), label: '課題'),
   ];
 
   @override
@@ -119,18 +123,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined), label: 'ホーム'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.map_outlined), label: 'マップ'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.folder_copy_outlined), label: '過去問'),
-            //BottomNavigationBarItem(icon: Icon(Icons.book), label: '授業'),
-            //以下を追加
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'ソート'),
-            BottomNavigationBarItem(icon: Icon(Icons.assignment), label: '課題'),
-          ],
+          items: _bottomNavigationBarIcon,
           type: BottomNavigationBarType.fixed,
         ));
   }

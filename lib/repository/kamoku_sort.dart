@@ -88,9 +88,26 @@ class _SearchResultsState extends State<SearchResults> {
           title: Text(record['授業名'] ?? ''),
           onTap: () {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) =>
-                    KamokuDetailPageScreen(lessonId: record['LessonId']),
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) {
+                  return KamokuDetailPageScreen(
+                    lessonId: record['LessonId'],
+                    lessonName: record['授業名'],
+                  );
+                },
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  const Offset begin = Offset(1.0, 0.0); // 右から左
+                  const Offset end = Offset.zero;
+                  final Animatable<Offset> tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: Curves.easeInOut));
+                  final Animation<Offset> offsetAnimation =
+                      animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
               ),
             );
           },
@@ -121,11 +138,10 @@ Future<List<Map<String, dynamic>>> search(
   String sqlWhere3 = "";
   String sqlWhere4 = "";
   String sqlWhere5 = "";
-  String check3 = "";
 
   List<int> kyoyokubun = [];
 
-  if (term.length > 0) {
+  if (term.isNotEmpty) {
     for (int i = 0; i < term.length; i++) {
       if (term[i] == 0) {
         sqlWhere1 += "( sort.開講時期=10";
@@ -167,10 +183,8 @@ Future<List<Map<String, dynamic>>> search(
       if (grade[i] == 2) {
         if (sqlWhere2 != "") {
           sqlWhere2 += " OR sort.三年次=1";
-          check3 += " OR sort.授業名=技術者倫理";
         } else {
           sqlWhere2 += "( sort.三年次=1";
-          check3 += " OR sort.授業名=技術者倫理";
         }
       }
       if (grade[i] == 3) {
