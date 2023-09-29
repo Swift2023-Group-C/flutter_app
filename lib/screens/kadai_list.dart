@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_app/components/kadai.dart';
 import 'package:flutter_app/repository/firebase_get_kadai.dart';
 

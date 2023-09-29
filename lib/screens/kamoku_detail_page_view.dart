@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'kamoku_detail_syllabus.dart';
 import 'kakomon_list.dart';
+import '../components/color_fun.dart';
 
 class KamokuDetailPageScreen extends StatefulWidget {
-  const KamokuDetailPageScreen({Key? key, required this.lessonId})
+  const KamokuDetailPageScreen(
+      {Key? key, required this.lessonId, required this.lessonName})
       : super(key: key);
   final int lessonId;
+  final String lessonName;
 
   @override
   State<KamokuDetailPageScreen> createState() => _KamokuDetailPageScreenState();
@@ -19,7 +22,7 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.lessonId.toString()),
+        title: Text(widget.lessonName),
       ),
       body: Column(
         children: [
@@ -38,13 +41,13 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
                     );
                   },
                   child: Container(
-                    width: 100.0,
+                    width: 120.0,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
                           color: index == _currentPageIndex
-                              ? const Color.fromARGB(255, 125, 29, 29)
+                              ? customFunColor.shade400
                               : Colors.transparent, // 非選択時は透明
                           width: 2.0,
                         ),
@@ -56,7 +59,7 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                         color: index == _currentPageIndex
-                            ? const Color.fromARGB(255, 125, 29, 29)
+                            ? customFunColor.shade400
                             : Colors.black,
                       ),
                     ),

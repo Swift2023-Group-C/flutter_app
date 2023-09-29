@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_app/repository/kamoku_sort.dart';
 
-class kamokusortScreen extends StatefulWidget {
-  const kamokusortScreen({Key? key}) : super(key: key);
+class KamokuSearchScreen extends StatefulWidget {
+  const KamokuSearchScreen({Key? key}) : super(key: key);
 
   @override
-  _kamokusortScreenState createState() => _kamokusortScreenState();
+  State<KamokuSearchScreen> createState() => _KamokuSearchScreenState();
 }
 
-class _kamokusortScreenState extends State<kamokusortScreen> {
+class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   List<Map<String, dynamic>>? _searchResults;
 
   List<String> term = ['前期', '後期', '通年'];
@@ -18,11 +17,11 @@ class _kamokusortScreenState extends State<kamokusortScreen> {
   List<String> classification = ['選択', '必修'];
   List<String> education = ['社会', '人間', '科学', '健康', 'コミュ'];
 
-  List<bool> term_checkedList = List.generate(3, (index) => false);
-  List<bool> grade_checkedList = List.generate(6, (index) => false);
-  List<bool> courseStr_checkedList = List.generate(5, (index) => false);
-  List<bool> classification_checkedList = List.generate(2, (index) => false);
-  List<bool> education_checkedList = List.generate(5, (index) => false);
+  List<bool> termCheckedList = List.generate(3, (index) => false);
+  List<bool> gradeCheckedList = List.generate(6, (index) => false);
+  List<bool> courseStrCheckedList = List.generate(5, (index) => false);
+  List<bool> classificationCheckedList = List.generate(2, (index) => false);
+  List<bool> educationCheckedList = List.generate(5, (index) => false);
 
   List<int> termlist = [];
   List<int> gradelist = [];
@@ -48,48 +47,48 @@ class _kamokusortScreenState extends State<kamokusortScreen> {
     setState(() {
       allSelected = !allSelected; // 全選択ボタンの状態を切り替える
       // boolListのすべての要素をallSelectedの値に合わせて設定
-      term_checkedList =
-          List.generate(term_checkedList.length, (index) => allSelected);
-      grade_checkedList =
-          List.generate(grade_checkedList.length, (index) => allSelected);
-      courseStr_checkedList =
-          List.generate(courseStr_checkedList.length, (index) => allSelected);
-      classification_checkedList = List.generate(
-          classification_checkedList.length, (index) => allSelected);
-      education_checkedList =
-          List.generate(education_checkedList.length, (index) => allSelected);
+      termCheckedList =
+          List.generate(termCheckedList.length, (index) => allSelected);
+      gradeCheckedList =
+          List.generate(gradeCheckedList.length, (index) => allSelected);
+      courseStrCheckedList =
+          List.generate(courseStrCheckedList.length, (index) => allSelected);
+      classificationCheckedList = List.generate(
+          classificationCheckedList.length, (index) => allSelected);
+      educationCheckedList =
+          List.generate(educationCheckedList.length, (index) => allSelected);
     });
   }
 
   void trueAll() {
     setState(() {
       // boolListのすべての要素をallSelectedの値に合わせて設定
-      term_checkedList =
-          List.generate(term_checkedList.length, (index) => alltrue);
-      grade_checkedList =
-          List.generate(grade_checkedList.length, (index) => alltrue);
-      courseStr_checkedList =
-          List.generate(courseStr_checkedList.length, (index) => alltrue);
-      classification_checkedList =
-          List.generate(classification_checkedList.length, (index) => alltrue);
-      education_checkedList =
-          List.generate(education_checkedList.length, (index) => alltrue);
+      termCheckedList =
+          List.generate(termCheckedList.length, (index) => alltrue);
+      gradeCheckedList =
+          List.generate(gradeCheckedList.length, (index) => alltrue);
+      courseStrCheckedList =
+          List.generate(courseStrCheckedList.length, (index) => alltrue);
+      classificationCheckedList =
+          List.generate(classificationCheckedList.length, (index) => alltrue);
+      educationCheckedList =
+          List.generate(educationCheckedList.length, (index) => alltrue);
     });
   }
 
   void falseAll() {
     setState(() {
       // boolListのすべての要素をallSelectedの値に合わせて設定
-      term_checkedList =
-          List.generate(term_checkedList.length, (index) => allfalse);
-      grade_checkedList =
-          List.generate(grade_checkedList.length, (index) => allfalse);
-      courseStr_checkedList =
-          List.generate(courseStr_checkedList.length, (index) => allfalse);
-      classification_checkedList =
-          List.generate(classification_checkedList.length, (index) => allfalse);
-      education_checkedList =
-          List.generate(education_checkedList.length, (index) => allfalse);
+      termCheckedList =
+          List.generate(termCheckedList.length, (index) => allfalse);
+      gradeCheckedList =
+          List.generate(gradeCheckedList.length, (index) => allfalse);
+      courseStrCheckedList =
+          List.generate(courseStrCheckedList.length, (index) => allfalse);
+      classificationCheckedList =
+          List.generate(classificationCheckedList.length, (index) => allfalse);
+      educationCheckedList =
+          List.generate(educationCheckedList.length, (index) => allfalse);
     });
   }
 
@@ -98,203 +97,172 @@ class _kamokusortScreenState extends State<kamokusortScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Container(
-            child: SearchBox(
-              onSearch: searchClasses,
-            ),
+          SearchBox(
+            onSearch: searchClasses,
           ),
-          Container(
-            //前期とか
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                for (int i = 0; i < term.length; i++)
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: term_checkedList[i], // チェック状態を取得
-                        onChanged: (bool? value) {
-                          setState(() {
-                            term_checkedList[i] = value ?? false; // チェック状態を更新
-                          });
-                          print(term_checkedList[i]);
-                        },
-                      ),
-                      Text(term[i]),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-          Container(
-            //学年
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                for (int i = 0; i < grade.length; i++)
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: grade_checkedList[i], // チェック状態を取得
-                        onChanged: (bool? value) {
-                          setState(() {
-                            grade_checkedList[i] = value ?? false; // チェック状態を更新
-                          });
-                          print(grade_checkedList[i]);
-                        },
-                      ),
-                      Text(grade[i]),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-          Container(
-            //コース
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                for (int i = 0; i < courseStr.length; i++)
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: courseStr_checkedList[i], // チェック状態を取得
-                        onChanged: (bool? value) {
-                          setState(() {
-                            courseStr_checkedList[i] =
-                                value ?? false; // チェック状態を更新
-                          });
-                          print(courseStr_checkedList[i]);
-                        },
-                      ),
-                      Text(courseStr[i]),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-          Container(
-            //選択必修
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                for (int i = 0; i < classification.length; i++)
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: classification_checkedList[i], // チェック状態を取得
-                        onChanged: (bool? value) {
-                          setState(() {
-                            classification_checkedList[i] =
-                                value ?? false; // チェック状態を更新
-                          });
-                          print(classification_checkedList[i]);
-                        },
-                      ),
-                      Text(classification[i]),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-          Container(
-            //教養
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                for (int i = 0; i < education.length; i++)
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: education_checkedList[i], // チェック状態を取得
-                        onChanged: (bool? value) {
-                          setState(() {
-                            education_checkedList[i] =
-                                value ?? false; // チェック状態を更新
-                          });
-                          print(education_checkedList[i]);
-                        },
-                      ),
-                      Text(education[i]),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-          Text('とりまいろんなボタン作った'),
-          Container(
-            child: Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // ボタンをクリックしたら全選択状態を切り替える
-                    toggleAll();
-                  },
-                  child: Text(allSelected ? 'すべて解除' : 'すべて選択'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              for (int i = 0; i < term.length; i++)
+                Row(
+                  children: [
+                    Checkbox(
+                      value: termCheckedList[i], // チェック状態を取得
+                      onChanged: (bool? value) {
+                        setState(() {
+                          termCheckedList[i] = value ?? false; // チェック状態を更新
+                        });
+                      },
+                    ),
+                    Text(term[i]),
+                  ],
                 ),
-                TextButton(
-                    onPressed: () {
-                      trueAll();
-                    },
-                    child: Text('全選択')),
-                TextButton(
-                    onPressed: () {
-                      falseAll();
-                    },
-                    child: Text('リセット')),
-                TextButton(
-                    onPressed: () async {
-                      termlist.clear();
-                      gradelist.clear();
-                      courseStrlist.clear();
-                      classlist.clear();
-                      educationlist.clear();
-                      for (int i = 0; i < term.length; i++) {
-                        if (term_checkedList[i] == true) {
-                          termlist.add(i);
-                        }
-                      }
-                      for (int i = 0; i < grade.length; i++) {
-                        if (grade_checkedList[i] == true) {
-                          gradelist.add(i);
-                        }
-                      }
-                      for (int i = 0; i < courseStr.length; i++) {
-                        if (courseStr_checkedList[i] == true) {
-                          courseStrlist.add(i);
-                        }
-                      }
-                      for (int i = 0; i < classification.length; i++) {
-                        if (classification_checkedList[i] == true) {
-                          classlist.add(i);
-                        }
-                      }
-                      for (int i = 0; i < education.length; i++) {
-                        if (education_checkedList[i] == true) {
-                          educationlist.add(i);
-                        }
-                      }
-                      List<Map<String, dynamic>> records = await search(
-                          term: termlist,
-                          grade: gradelist,
-                          courseStr: courseStrlist,
-                          classification: classlist,
-                          education: educationlist);
-                      //print(records);
-                      setState(() {
-                        _searchResults = records;
-                      });
-                      print(termlist);
-                      print(gradelist);
-                      print(courseStrlist);
-                      print(classlist);
-                      print(educationlist);
-                    },
-                    child: Text('絞り込み')),
-              ],
-            ),
+            ],
           ),
-          Text('結果一覧'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              for (int i = 0; i < grade.length; i++)
+                Row(
+                  children: [
+                    Checkbox(
+                      value: gradeCheckedList[i], // チェック状態を取得
+                      onChanged: (bool? value) {
+                        setState(() {
+                          gradeCheckedList[i] = value ?? false; // チェック状態を更新
+                        });
+                      },
+                    ),
+                    Text(grade[i]),
+                  ],
+                ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              for (int i = 0; i < courseStr.length; i++)
+                Row(
+                  children: [
+                    Checkbox(
+                      value: courseStrCheckedList[i], // チェック状態を取得
+                      onChanged: (bool? value) {
+                        setState(() {
+                          courseStrCheckedList[i] = value ?? false; // チェック状態を更新
+                        });
+                      },
+                    ),
+                    Text(courseStr[i]),
+                  ],
+                ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              for (int i = 0; i < classification.length; i++)
+                Row(
+                  children: [
+                    Checkbox(
+                      value: classificationCheckedList[i], // チェック状態を取得
+                      onChanged: (bool? value) {
+                        setState(() {
+                          classificationCheckedList[i] =
+                              value ?? false; // チェック状態を更新
+                        });
+                      },
+                    ),
+                    Text(classification[i]),
+                  ],
+                ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              for (int i = 0; i < education.length; i++)
+                Row(
+                  children: [
+                    Checkbox(
+                      value: educationCheckedList[i], // チェック状態を取得
+                      onChanged: (bool? value) {
+                        setState(() {
+                          educationCheckedList[i] = value ?? false; // チェック状態を更新
+                        });
+                      },
+                    ),
+                    Text(education[i]),
+                  ],
+                ),
+            ],
+          ),
+          const Text('とりまいろんなボタン作った'),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // ボタンをクリックしたら全選択状態を切り替える
+                  toggleAll();
+                },
+                child: Text(allSelected ? 'すべて解除' : 'すべて選択'),
+              ),
+              TextButton(
+                  onPressed: () {
+                    trueAll();
+                  },
+                  child: const Text('全選択')),
+              TextButton(
+                  onPressed: () {
+                    falseAll();
+                  },
+                  child: const Text('リセット')),
+              TextButton(
+                  onPressed: () async {
+                    termlist.clear();
+                    gradelist.clear();
+                    courseStrlist.clear();
+                    classlist.clear();
+                    educationlist.clear();
+                    for (int i = 0; i < term.length; i++) {
+                      if (termCheckedList[i] == true) {
+                        termlist.add(i);
+                      }
+                    }
+                    for (int i = 0; i < grade.length; i++) {
+                      if (gradeCheckedList[i] == true) {
+                        gradelist.add(i);
+                      }
+                    }
+                    for (int i = 0; i < courseStr.length; i++) {
+                      if (courseStrCheckedList[i] == true) {
+                        courseStrlist.add(i);
+                      }
+                    }
+                    for (int i = 0; i < classification.length; i++) {
+                      if (classificationCheckedList[i] == true) {
+                        classlist.add(i);
+                      }
+                    }
+                    for (int i = 0; i < education.length; i++) {
+                      if (educationCheckedList[i] == true) {
+                        educationlist.add(i);
+                      }
+                    }
+                    List<Map<String, dynamic>> records = await search(
+                        term: termlist,
+                        grade: gradelist,
+                        courseStr: courseStrlist,
+                        classification: classlist,
+                        education: educationlist);
+                    //print(records);
+                    setState(() {
+                      _searchResults = records;
+                    });
+                  },
+                  child: const Text('絞り込み')),
+            ],
+          ),
+          const Text('結果一覧'),
           Expanded(
             //よくわからんけどこれがあると授業名検索結果が表示される
             child: _searchResults == null

@@ -26,6 +26,11 @@ class _KakomonListScreenState extends State<KakomonListScreen> {
               builder:
                   (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
                 if (snapshot.hasData) {
+                  if (snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text('過去問はありません'),
+                    );
+                  }
                   return ListView(
                     children: snapshot.data!
                         .map((e) => KakomonListObjects(
