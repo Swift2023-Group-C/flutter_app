@@ -1,104 +1,25 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:flutter/services.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import '../repository/kamoku_sort.dart';
 
-Future<List<Map<String, dynamic>>> fetchRecords() async {
-  String dbPath = await getDatabasesPath();
-  String assetDbPath = join('assets', 'syllabus.db');
-  String copiedDbPath = join(dbPath, 'コピーされたデータベース.db');
+class KamokuDetailSyllabusScreen extends StatelessWidget {
+  const KamokuDetailSyllabusScreen({Key? key, required this.lessonId})
+      : super(key: key);
 
-  ByteData data = await rootBundle.load(assetDbPath);
-  List<int> bytes = data.buffer.asUint8List();
-  await File(copiedDbPath).writeAsBytes(bytes);
-
-  Database database = await openDatabase(copiedDbPath);
-  List<Map<String, dynamic>> records =
-      await database.rawQuery('SELECT LessonId,授業名 FROM detail');
-  return records;
-}
-
-Future<Map<String, dynamic>> fetchDetails(String className) async {
-  String dbPath = await getDatabasesPath();
-  String copiedDbPath = join(dbPath, 'コピーされたデータベース.db');
-
-  Database database = await openDatabase(copiedDbPath);
-  List<Map<String, dynamic>> details =
-      await database.query('detail', where: '授業名 = ?', whereArgs: [className]);
-
-  if (details.isNotEmpty) {
-    return details.first;
-  } else {
-    return {};
-  }
-}
-
-class KamokuScreen extends StatelessWidget {
-  const KamokuScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'DB Test',
-      home: Scaffold(
-        body: Center(
-          child: FutureBuilder<List<Map<String, dynamic>>>(
-            future: fetchRecords(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Text('No data found');
-              } else {
-                List<Map<String, dynamic>> records = snapshot.data!;
-                return ListView.builder(
-                  itemCount: records.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(records[index]['授業名']),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                DetailScreen(className: records[index]['授業名']),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
-              }
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DetailScreen extends StatelessWidget {
-  final String className;
-
-  DetailScreen({required this.className});
+  final int lessonId;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<Map<String, dynamic>>(
-        future: fetchDetails(className),
+        future: fetchDetails(lessonId),
         builder: (context, snapshot) {
           Map<String, dynamic> details = snapshot.data!;
           return ListView.builder(
-            itemCount: 1, // リストアイテムは1つのみ
+            itemCount: 1,
             itemBuilder: (context, index) {
               return ListTile(
                 //title: Text('LessonId: ${details['LessonId']}'),
-                title: Text(
+                title: const Text(
                   '詳細情報',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
