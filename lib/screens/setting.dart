@@ -23,7 +23,7 @@ const List<String> course = <String>[
 class _SettingScreenState extends State<SettingScreen> {
   final PageController _pageController = PageController();
   int _currentPageIndex = 0;
-  final TextEditingController _userKeyController = TextEditingController();
+  TextEditingController _userKeyController = TextEditingController();
 
   // 2つのプルダウンの初期値を設定
   String dropdownValue1 = 'なし';
@@ -33,6 +33,12 @@ class _SettingScreenState extends State<SettingScreen> {
   void dispose() {
     _userKeyController.dispose(); // リソースの解放
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSettings();
   }
 
   @override
@@ -146,10 +152,10 @@ class _SettingScreenState extends State<SettingScreen> {
                         onPressed: _saveSettings,
                         child: const Text("設定保存"),
                       ),
-                      ElevatedButton(
+                      /*ElevatedButton(
                         onPressed: _checkSettings,
                         child: const Text("保存設定を確認"),
-                      )
+                      )*/
                     ],
                   ),
                 ),
@@ -172,21 +178,32 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   // 設定保存処理
-  _saveSettings() async {
+  void _saveSettings() async {
     await UserPreferences.setGrade(dropdownValue1);
     await UserPreferences.setCourse(dropdownValue2);
     await UserPreferences.setUserKey(_userKeyController.text);
+    _saveMessage();
+  }
+
+  void _saveMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('設定が保存されました。')),
     );
   }
 
 //保存設定を確認する処理
-  _checkSettings() async {
-    String? grade = await UserPreferences.getGrade();
-    String? course = await UserPreferences.getCourse();
-    String? userKey = await UserPreferences.getUserKey();
+  void _checkSettings() async {
+    final String? grade = await UserPreferences.getGrade();
+    final String? course = await UserPreferences.getCourse();
+    final String? userKey = await UserPreferences.getUserKey();
 
+    setState(() {
+      _userKeyController = TextEditingController(text: userKey);
+      dropdownValue1 = grade ?? 'なし';
+      dropdownValue2 = course ?? 'なし';
+    });
+
+    /*
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -209,7 +226,7 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ],
           );
-        });
+        });*/
   }
 
   String _getPageName(int index) {

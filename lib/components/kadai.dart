@@ -1,5 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
-
 class Kadai {
   Kadai(
     this.id,
@@ -22,7 +20,11 @@ class Kadai {
         data["course"],
         data["name"],
         data["url"],
-        DateTime.fromMillisecondsSinceEpoch(data["starttime"] * 1000),
-        DateTime.fromMillisecondsSinceEpoch(data["endtime"] * 1000));
+        data["starttime"] == 0
+            ? null
+            : DateTime.fromMillisecondsSinceEpoch(data["starttime"] * 1000),
+        data["endtime"] == 0
+            ? null
+            : DateTime.fromMillisecondsSinceEpoch(data["endtime"] * 1000));
   }
 }

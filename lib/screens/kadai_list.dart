@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/kadai.dart';
 import 'package:flutter_app/repository/firebase_get_kadai.dart';
+import '../components/widgets/progress_indicator.dart';
+import 'package:intl/intl.dart';
 
 class KadaiListScreen extends StatefulWidget {
   const KadaiListScreen({Key? key}) : super(key: key);
@@ -10,32 +12,44 @@ class KadaiListScreen extends StatefulWidget {
 }
 
 class _KadaiListScreenState extends State<KadaiListScreen> {
-  FirebaseGetKadai firebaseGetKadai =
-      const FirebaseGetKadai("swift2023c_hope_user_key_f10EvmEDa7k6bmpi");
+  String stringFromDateTime(DateTime? dt) {
+    if (dt == null) {
+      return "";
+    }
+    return DateFormat('yyyy年MM月dd日 hh時mm分ss秒').format(dt);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-            child: FutureBuilder(
-                future: firebaseGetKadai.getKadaiFromFirebase(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<Kadai>> snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView(
-                      children: snapshot.data!
-                          .map(
-                            (e) => Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: ListTile(
-                                title: Text(e.name!),
-                              ),
-                            ),
-                          )
-                          .toList(),
+        body: FutureBuilder(
+            future: const FirebaseGetKadai().getKadaiFromFirebase(),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Kadai>> snapshot) {
+              if (snapshot.hasData) {
+                List<Kadai> data = snapshot.data!;
+                return ListView.separated(
+                  padding: const EdgeInsets.all(5.0),
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(data[index].name!),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(data[index].course!),
+                          if ((data[index].endtime != null))
+                            Text(
+                                "終了：${stringFromDateTime(data[index].endtime)}"),
+                        ],
+                      ),
                     );
-                  } else {
-                    return const Center(child: Text("Error"));
-                  }
-                })));
+                  },
+                  separatorBuilder: (context, index) => const Divider(),
+                );
+              } else {
+                return createProgressIndicator();
+              }
+            }));
   }
 }
