@@ -100,101 +100,135 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
           SearchBox(
             onSearch: searchClasses,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              for (int i = 0; i < term.length; i++)
-                Row(
-                  children: [
-                    Checkbox(
-                      value: termCheckedList[i], // チェック状態を取得
-                      onChanged: (bool? value) {
-                        setState(() {
-                          termCheckedList[i] = value ?? false; // チェック状態を更新
-                        });
-                      },
+          Align(
+            alignment: const AlignmentDirectional(-1.00, 0.00),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  for (int i = 0; i < term.length; i++)
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: termCheckedList[i], // チェック状態を取得
+                          onChanged: (bool? value) {
+                            setState(() {
+                              termCheckedList[i] = value ?? false; // チェック状態を更新
+                            });
+                          },
+                        ),
+                        Text(term[i]),
+                      ],
                     ),
-                    Text(term[i]),
-                  ],
-                ),
-            ],
+                  const SizedBox(width: 20),
+                ],
+              ),
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              for (int i = 0; i < grade.length; i++)
-                Row(
-                  children: [
-                    Checkbox(
-                      value: gradeCheckedList[i], // チェック状態を取得
-                      onChanged: (bool? value) {
-                        setState(() {
-                          gradeCheckedList[i] = value ?? false; // チェック状態を更新
-                        });
-                      },
-                    ),
-                    Text(grade[i]),
-                  ],
-                ),
-            ],
+          Align(
+            alignment: const AlignmentDirectional(-1.00, 0.00),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                for (int i = 0; i < grade.length; i++)
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: gradeCheckedList[i], // チェック状態を取得
+                        onChanged: (bool? value) {
+                          setState(() {
+                            gradeCheckedList[i] = value ?? false; // チェック状態を更新
+                          });
+                        },
+                      ),
+                      Text(grade[i]),
+                    ],
+                  ),
+                const SizedBox(width: 20),
+              ]),
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              for (int i = 0; i < courseStr.length; i++)
-                Row(
-                  children: [
-                    Checkbox(
-                      value: courseStrCheckedList[i], // チェック状態を取得
-                      onChanged: (bool? value) {
-                        setState(() {
-                          courseStrCheckedList[i] = value ?? false; // チェック状態を更新
-                        });
-                      },
+          Align(
+            alignment: const AlignmentDirectional(-1.00, 0.00),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  for (int i = 0; i < courseStr.length; i++)
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: courseStrCheckedList[i], // チェック状態を取得
+                          onChanged: (bool? value) {
+                            setState(() {
+                              courseStrCheckedList[i] =
+                                  value ?? false; // チェック状態を更新
+                            });
+                          },
+                        ),
+                        Text(courseStr[i]),
+                      ],
                     ),
-                    Text(courseStr[i]),
-                  ],
-                ),
-            ],
+                  const SizedBox(width: 20),
+                ],
+              ),
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              for (int i = 0; i < classification.length; i++)
-                Row(
-                  children: [
-                    Checkbox(
-                      value: classificationCheckedList[i], // チェック状態を取得
-                      onChanged: (bool? value) {
-                        setState(() {
-                          classificationCheckedList[i] =
-                              value ?? false; // チェック状態を更新
-                        });
-                      },
+          Align(
+            alignment: const AlignmentDirectional(-1.00, 0.00),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  for (int i = 0; i < classification.length; i++)
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: classificationCheckedList[i], // チェック状態を取得
+                          onChanged: (bool? value) {
+                            setState(() {
+                              classificationCheckedList[i] =
+                                  value ?? false; // チェック状態を更新
+                            });
+                          },
+                        ),
+                        Text(classification[i]),
+                      ],
                     ),
-                    Text(classification[i]),
-                  ],
-                ),
-            ],
+                  const SizedBox(width: 20),
+                ],
+              ),
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              for (int i = 0; i < education.length; i++)
-                Row(
-                  children: [
-                    Checkbox(
-                      value: educationCheckedList[i], // チェック状態を取得
-                      onChanged: (bool? value) {
-                        setState(() {
-                          educationCheckedList[i] = value ?? false; // チェック状態を更新
-                        });
-                      },
+          Align(
+            alignment: const AlignmentDirectional(-1.00, 0.00),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  for (int i = 0; i < education.length; i++)
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: educationCheckedList[i], // チェック状態を取得
+                          onChanged: (bool? value) {
+                            setState(() {
+                              educationCheckedList[i] =
+                                  value ?? false; // チェック状態を更新
+                            });
+                          },
+                        ),
+                        Text(education[i]),
+                      ],
                     ),
-                    Text(education[i]),
-                  ],
-                ),
-            ],
+                  const SizedBox(width: 20),
+                ],
+              ),
+            ),
           ),
           const Text('とりまいろんなボタン作った'),
           Row(
