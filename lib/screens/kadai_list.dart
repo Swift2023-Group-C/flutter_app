@@ -37,7 +37,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(data[index].course!),
+                          Text(data[index].courseName!),
                           if ((data[index].endtime != null))
                             Text(
                                 "終了：${stringFromDateTime(data[index].endtime)}"),
