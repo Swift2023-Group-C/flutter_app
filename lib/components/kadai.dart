@@ -1,14 +1,16 @@
 class Kadai {
   Kadai(
     this.id,
-    this.course,
+    this.courseId,
+    this.courseName,
     this.name,
     this.url,
     this.starttime,
     this.endtime,
   );
   final int? id;
-  final String? course;
+  final int? courseId;
+  final String? courseName;
   final String? name;
   final String? url;
   final DateTime? starttime;
@@ -17,7 +19,8 @@ class Kadai {
   factory Kadai.fromFirebase(String id, Map data) {
     return Kadai(
         int.parse(id),
-        data["course"],
+        data["course_id"],
+        data["course_name"],
         data["name"],
         data["url"],
         data["starttime"] == 0
