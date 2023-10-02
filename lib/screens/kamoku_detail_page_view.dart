@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'kamoku_detail_syllabus.dart';
 import 'kakomon_list.dart';
 import '../components/color_fun.dart';
+import 'kamoku_detail_feedback.dart';
 
 class KamokuDetailPageScreen extends StatefulWidget {
   const KamokuDetailPageScreen(
@@ -78,11 +79,7 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
               },
               children: [
                 KamokuDetailSyllabusScreen(lessonId: widget.lessonId),
-                const SizedBox(
-                  child: Center(
-                    child: Text('Feedback', style: TextStyle(fontSize: 24.0)),
-                  ),
-                ),
+                KamokuFeedbackScreen(lessonId: widget.lessonId),
                 KakomonListScreen(url: widget.lessonId),
               ],
             ),
