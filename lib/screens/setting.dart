@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'setting_user_info.dart';
+import '../components/setting_user_info.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
