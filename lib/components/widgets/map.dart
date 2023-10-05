@@ -8,6 +8,7 @@ abstract final class TileColors {
   static Color get toilet => Colors.red.shade300;
   static Color get stair => Colors.blueGrey.shade600;
   static Color get ev => Colors.blueGrey.shade700;
+  static Color get using => Colors.yellow.shade500;
   static const Color empty = Colors.transparent;
 }
 
