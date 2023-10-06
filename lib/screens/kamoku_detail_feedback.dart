@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_app/firebase_options.dart';
 import 'package:flutter_app/repository/get_feedbacklist.dart';
+import 'package:flutter_app/components/setting_user_info.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Firebaseの初期化前に呼び出す
@@ -58,13 +59,17 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () {
-                  // Firestoreにデータを追加
-                  FirebaseFirestore.instance.collection('feedback').add({
-                    'lessonId': widget.lessonId,
-                    'score': selectedScore, // 選択された満足度を保存
-                    'detail': detailController.text,
-                  });
+                onPressed: () async {
+                  final String? userKey = await UserPreferences.getUserKey();
+                  if (userKey != "") {
+                    // Firestoreにデータを追加
+                    FirebaseFirestore.instance.collection('feedback').add({
+                      'User': userKey,
+                      'lessonId': widget.lessonId,
+                      'score': selectedScore,
+                      'detail': detailController.text,
+                    });
+                  }
 
                   // テキストフィールドと選択をクリア
                   userController.clear();

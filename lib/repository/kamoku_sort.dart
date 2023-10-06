@@ -136,7 +136,6 @@ Future<List<Map<String, dynamic>>> search(
   String sqlWhere1 = "";
   String sqlWhere2 = "";
   String sqlWhere3 = "";
-  String sqlWhere4 = "";
   String sqlWhere5 = "";
 
   List<int> kyoyokubun = [];
@@ -213,68 +212,40 @@ Future<List<Map<String, dynamic>>> search(
     sqlWhere2 += " )";
   }
   sqlWhere += sqlWhere2;
+  final List<String> courseName = [
+    "情報システムコース",
+    "情報デザインコース",
+    "複雑コース",
+    "知能システムコース",
+    "高度ICTコース",
+  ];
   if (courseStr.isNotEmpty) {
     if (sqlWhere != "") {
       sqlWhere += " AND ";
     }
     for (int i = 0; i < courseStr.length; i++) {
-      if (courseStr[i] == 0) {
-        sqlWhere3 += "( sort.情報システムコース!=0";
-      }
-      if (courseStr[i] == 1) {
-        if (sqlWhere3 != "") {
-          sqlWhere3 += " OR sort.情報デザインコース!=0";
-        } else {
-          sqlWhere3 += "( sort.情報デザインコース!=0";
+      if (classification.isNotEmpty) {
+        for (int j = 0; j < classification.length; j++) {
+          if (sqlWhere3 != "") {
+            sqlWhere3 += " OR ";
+          } else {
+            sqlWhere3 += "( ";
+          }
+          if (classification[j] == 0) {
+            sqlWhere3 += "sort.${courseName[courseStr[i]]}=101";
+          }
+          if (classification[j] == 1) {
+            sqlWhere3 += "sort.${courseName[courseStr[i]]}=100";
+          }
         }
-      }
-      if (courseStr[i] == 2) {
-        if (sqlWhere3 != "") {
-          sqlWhere3 += " OR sort.複雑コース!=0";
-        } else {
-          sqlWhere3 += "( sort.複雑コース!=0";
-        }
-      }
-      if (courseStr[i] == 3) {
-        if (sqlWhere3 != "") {
-          sqlWhere3 += " OR sort.知能システムコース!=0";
-        } else {
-          sqlWhere3 += "( sort.知能システムコース!=0";
-        }
-      }
-      if (courseStr[i] == 4) {
-        if (sqlWhere3 != "") {
-          sqlWhere3 += " OR sort.高度ICTコース!=0";
-        } else {
-          sqlWhere3 += "( sort.高度ICTコース!=0";
-        }
+      } else {
+        // 必修選択関係なし
+        sqlWhere3 += "( sort.${courseName[courseStr[i]]}!=0";
       }
     }
     sqlWhere3 += " )";
   }
   sqlWhere += sqlWhere3;
-  if (classification.isNotEmpty) {
-    if (sqlWhere != "") {
-      sqlWhere += " AND ";
-    }
-    for (int i = 0; i < classification.length; i++) {
-      if (classification[i] == 0) {
-        sqlWhere4 +=
-            "( sort.情報システムコース=101 OR sort.情報デザインコース=101 OR sort.複雑コース=101 OR sort.知能システムコース=101 OR sort.高度ICTコース=101";
-      }
-      if (classification[i] == 1) {
-        if (sqlWhere4 != "") {
-          sqlWhere4 +=
-              " OR sort.情報システムコース=100 OR sort.情報デザインコース=100 OR sort.複雑コース=100 OR sort.知能システムコース=100 OR sort.高度ICTコース=100 OR sort.教養必修=1";
-        } else {
-          sqlWhere4 +=
-              "( sort.情報システムコース=100 OR sort.情報デザインコース=100 OR sort.複雑コース=100 OR sort.知能システムコース=100 OR sort.高度ICTコース=100 OR sort.教養必修=1";
-        }
-      }
-    }
-    sqlWhere4 += " )";
-  }
-  sqlWhere += sqlWhere4;
   if (kyoyokubun.isNotEmpty) {
     if (sqlWhere != "") {
       sqlWhere += " AND ";
@@ -315,6 +286,7 @@ Future<List<Map<String, dynamic>>> search(
     sqlWhere5 += " )";
   }
   sqlWhere += sqlWhere5;
+  print(sqlWhere);
   if (sqlWhere != "") {
     List<Map<String, dynamic>> records = await database.rawQuery(
         'SELECT detail.LessonId,detail.授業名 FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId WHERE $sqlWhere ');

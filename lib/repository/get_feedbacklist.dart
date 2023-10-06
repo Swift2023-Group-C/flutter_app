@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FeedbackList extends StatelessWidget {
+class FeedbackList extends StatefulWidget {
   const FeedbackList({Key? key, required this.lessonId});
 
   final int lessonId;
+
+  @override
+  _FeedbackListState createState() => _FeedbackListState();
+}
+
+class _FeedbackListState extends State<FeedbackList> {
+  double averageScore = 0.0; // 平均値を保持する変数
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection('feedback')
-          .where('lessonId', isEqualTo: lessonId) // 条件を指定
+          .where('lessonId', isEqualTo: widget.lessonId)
           .snapshots(),
       builder: (BuildContext context,
           AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
@@ -28,22 +35,39 @@ class FeedbackList extends StatelessWidget {
               snapshot.data!;
           final List<DocumentSnapshot<Map<String, dynamic>>> documents =
               querySnapshot.docs;
-          print(documents);
+
           if (documents.isEmpty) {
             return const Text('データがありません');
           }
 
-          return ListView.builder(
-            itemCount: documents.length,
-            itemBuilder: (BuildContext context, int index) {
-              final document = documents[index];
-              final detail = document.get('detail');
-              final score = document.get('score');
+          // scoreの合計を計算
+          double totalScore = 0.0;
+          for (final document in documents) {
+            final score = document.get('score') ?? 0.0;
+            totalScore += score;
+          }
 
-              return ListTile(
-                title: Text('満足度:$score, 内容: $detail'),
-              );
-            },
+          // 平均値を計算
+          averageScore = totalScore / documents.length;
+
+          return Column(
+            children: [
+              Text('平均満足度: ${averageScore.toStringAsFixed(2)}'),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: documents.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final document = documents[index];
+                    final detail = document.get('detail');
+                    final score = document.get('score');
+
+                    return ListTile(
+                      title: Text('満足度:$score, 内容: $detail'),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         }
 
