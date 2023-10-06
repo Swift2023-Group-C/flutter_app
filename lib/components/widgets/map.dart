@@ -21,13 +21,19 @@ class Tile {
   double bottom;
   double left;
   String txt;
+  String? classroomNo;
 
-  Tile(this.width, this.height, this.c,
-      {this.top = 1,
-      this.right = 1,
-      this.bottom = 1,
-      this.left = 1,
-      this.txt = ''});
+  Tile(
+    this.width,
+    this.height,
+    this.c, {
+    this.top = 1,
+    this.right = 1,
+    this.bottom = 1,
+    this.left = 1,
+    this.txt = '',
+    this.classroomNo,
+  });
 
   StaggeredTile staggeredTile() {
     return StaggeredTile.count(width, height.toDouble());
