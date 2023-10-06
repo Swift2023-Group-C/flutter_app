@@ -7,7 +7,8 @@ class FirebaseGetKadai {
   const FirebaseGetKadai();
 
   Future<List<Kadai>> getKadaiFromFirebase() async {
-    final String? userKey = await UserPreferences.getUserKey();
+    final String userKey =
+        "swift2023c_hope_user_key_${await UserPreferences.getUserKey()}";
     final FirebaseApp firebaseApp = Firebase.app();
     final ref = FirebaseDatabase.instanceFor(
             app: firebaseApp,
@@ -15,16 +16,14 @@ class FirebaseGetKadai {
                 "https://swift2023groupc-default-rtdb.asia-southeast1.firebasedatabase.app")
         .ref();
     List<Kadai> returnList = [];
-    if (userKey != null) {
-      final snapshot = await ref.child('hope/users/$userKey/data').get();
-      if (snapshot.exists) {
-        final data = snapshot.value as Map;
-        data.forEach((key, value) {
-          returnList.add(Kadai.fromFirebase(key, value));
-        });
-      } else {
-        print('No data available.');
-      }
+    final snapshot = await ref.child('hope/users/$userKey/data').get();
+    if (snapshot.exists) {
+      final data = snapshot.value as Map;
+      data.forEach((key, value) {
+        returnList.add(Kadai.fromFirebase(key, value));
+      });
+    } else {
+      print('No data available.');
     }
     returnList.sort(((a, b) {
       if (a.endtime == null) {
