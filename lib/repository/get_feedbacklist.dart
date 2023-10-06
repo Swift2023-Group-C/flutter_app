@@ -39,6 +39,7 @@ class FeedbackList extends StatelessWidget {
               final document = documents[index];
               final detail = document.get('detail');
               final score = document.get('score');
+              print(score);
 
               return ListTile(
                 title: Text('満足度:$score, 内容: $detail'),

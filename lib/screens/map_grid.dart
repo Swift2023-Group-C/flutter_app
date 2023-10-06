@@ -10,32 +10,24 @@ class MapGridScreen extends StatefulWidget {
   final int mapIndex;
   const MapGridScreen({Key? key, this.mapIndex = 2}) : super(key: key);
 
-  static List<List<Tile>> gridMapsList = [
-    GridMaps.map05TileList,
-    GridMaps.map04TileList,
-    GridMaps.map03TileList,
-    GridMaps.map02TileList,
-    GridMaps.map01TileList,
-    GridMaps.mapr2TileList,
-    GridMaps.mapr1TileList
-  ];
-
   @override
   State<MapGridScreen> createState() => _MapGridScreenState();
 }
 
 class _MapGridScreenState extends State<MapGridScreen> {
+  final List<String> gridMapsList = ["5", "4", "3", "2", "1", "r2", "r1"];
   @override
   Widget build(BuildContext context) {
     return StaggeredGridView.countBuilder(
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 48,
-      itemCount: MapGridScreen.gridMapsList[widget.mapIndex].length,
+      itemCount: GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]!.length,
       itemBuilder: (BuildContext context, int index) {
-        return MapGridScreen.gridMapsList[widget.mapIndex][index].tileWidget();
+        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index]
+            .tileWidget();
       },
       staggeredTileBuilder: (int index) {
-        return MapGridScreen.gridMapsList[widget.mapIndex][index]
+        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index]
             .staggeredTile();
       },
     );
@@ -58,6 +50,7 @@ class _MapGridScreenState extends State<MapGridScreen> {
         resourceIds.add('1');
         resourceIds.add('2');
 
+        /*
         if (resourceIds.isNotEmpty) {
           for (String resourceId in resourceIds) {
             print("ResourceId: $resourceId");
@@ -90,6 +83,7 @@ class _MapGridScreenState extends State<MapGridScreen> {
         } else {
           print("No ResourceId exists for the current time.");
         }
+        */
       } catch (e) {
         print(e);
       }
