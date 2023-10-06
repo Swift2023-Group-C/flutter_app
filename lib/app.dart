@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/repository/find_rooms_in_use.dart';
 import 'package:flutter_app/repository/read_schedule_file.dart';
@@ -8,8 +10,10 @@ import 'screens/home.dart';
 import 'screens/map.dart';
 import 'components/color_fun.dart';
 import 'screens/setting.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'repository/get_room_from_firebase.dart';
+import 'package:flutter_app/components/setting_user_info.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -48,11 +52,42 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     BottomNavigationBarItem(icon: Icon(Icons.assignment), label: '課題'),
   ];
 
+  StreamSubscription? _sub;
+  late List<String?> parameter;
+
+  Future<void> initUniLinks() async {
+    _sub = linkStream.listen((String? link) {
+      //さっき設定したスキームをキャッチしてここが走る。
+      print(link);
+      parameter = getQueryParameter(link);
+      print(parameter);
+      if (parameter[0] != null && parameter[1] != null) {
+        print("link: ${parameter[0]!}");
+        if (parameter[0] == 'config') {
+          UserPreferences.setUserKey(parameter[1]!);
+          /*setState(() {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('設定が保存されました。')),
+            );
+          });*/
+        }
+      }
+    }, onError: (err) {
+      print(err);
+    });
+  }
+
+  List<String?> getQueryParameter(String? link) {
+    if (link == null) return [null, null];
+    final uri = Uri.parse(link);
+    List<String?> returnParam = [uri.host, uri.queryParameters['userkey']];
+    return returnParam;
+  }
+
   @override
   void initState() {
     super.initState();
-    // アプリ起動時に一度だけ実行される
-    // initState内で非同期処理を行うための方法
+    initUniLinks();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Firebaseからファイルをダウンロード
       await downloadFileFromFirebase();

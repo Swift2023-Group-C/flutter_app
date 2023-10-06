@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_app/components/kadai.dart';
-import '../screens/setting_user_info.dart';
+import '../components/setting_user_info.dart';
 
 class FirebaseGetKadai {
   const FirebaseGetKadai();
