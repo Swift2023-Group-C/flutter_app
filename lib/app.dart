@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
-
 import 'screens/home.dart';
 import 'screens/map.dart';
 import 'components/color_fun.dart';
@@ -11,6 +10,7 @@ import 'screens/setting.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:flutter_app/components/setting_user_info.dart';
+import 'package:flutter_app/components/syllabus_db_config.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -85,6 +85,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   void initState() {
     super.initState();
     initUniLinks();
+    SyllabusDBConfig.setDB();
   }
 
   int _selectedIndex = 0;

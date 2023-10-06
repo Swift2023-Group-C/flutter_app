@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FeedbackList extends StatelessWidget {
-  const FeedbackList({Key? key, required this.lessonId});
+  const FeedbackList({Key? key, required this.lessonId}) : super(key: key);
 
   final int lessonId;
 

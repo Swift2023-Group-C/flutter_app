@@ -1,21 +1,11 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:flutter/services.dart';
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../screens/kamoku_detail_page_view.dart';
+import 'package:flutter_app/components/syllabus_db_config.dart';
 
 //sort用のDB取得
 Future<List<Map<String, dynamic>>> fetchRecords() async {
-  String dbPath = await getDatabasesPath();
-  String assetDbPath = join('assets', 'syllabus.db');
-  String copiedDbPath = join(dbPath, 'コピーされたデータベース.db');
-
-  ByteData data = await rootBundle.load(assetDbPath);
-  List<int> bytes = data.buffer.asUint8List();
-  await File(copiedDbPath).writeAsBytes(bytes);
-
-  Database database = await openDatabase(copiedDbPath);
+  Database database = await openDatabase(SyllabusDBConfig.dbPath);
   List<Map<String, dynamic>> records =
       await database.rawQuery('SELECT * FROM sort');
   return records;
@@ -23,10 +13,7 @@ Future<List<Map<String, dynamic>>> fetchRecords() async {
 
 //授業名でdetailDBを検索
 Future<Map<String, dynamic>> fetchDetails(int lessonId) async {
-  String dbPath = await getDatabasesPath();
-  String copiedDbPath = join(dbPath, 'コピーされたデータベース.db');
-
-  Database database = await openDatabase(copiedDbPath);
+  Database database = await openDatabase(SyllabusDBConfig.dbPath);
   List<Map<String, dynamic>> details = await database
       .query('detail', where: 'LessonId = ?', whereArgs: [lessonId]);
 
@@ -123,15 +110,7 @@ Future<List<Map<String, dynamic>>> search(
     required List<int> courseStr,
     required List<int> classification,
     required List<int> education}) async {
-  String dbPath = await getDatabasesPath();
-  String assetDbPath = join('assets', 'syllabus.db');
-  String copiedDbPath = join(dbPath, 'コピーされたデータベース.db');
-
-  ByteData data = await rootBundle.load(assetDbPath);
-  List<int> bytes = data.buffer.asUint8List();
-  await File(copiedDbPath).writeAsBytes(bytes);
-
-  Database database = await openDatabase(copiedDbPath);
+  Database database = await openDatabase(SyllabusDBConfig.dbPath);
   String sqlWhere = "";
   String sqlWhere1 = "";
   String sqlWhere2 = "";
