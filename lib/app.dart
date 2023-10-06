@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/repository/find_rooms_in_use.dart';
-import 'package:flutter_app/repository/read_schedule_file.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
 
@@ -12,7 +10,6 @@ import 'components/color_fun.dart';
 import 'screens/setting.dart';
 import 'package:uni_links/uni_links.dart';
 
-import 'repository/get_room_from_firebase.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 
 class MyApp extends StatelessWidget {
@@ -88,27 +85,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   void initState() {
     super.initState();
     initUniLinks();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Firebaseからファイルをダウンロード
-      await downloadFileFromFirebase();
-
-      // ダウンロードしたファイルの中身を読み取る
-      try {
-        String fileContent = await readScheduleFile();
-        List<String> resourceIds = findRoomsInUse(fileContent);
-
-        if (resourceIds.isNotEmpty) {
-          for (String resourceId in resourceIds) {
-            print("ResourceId: $resourceId");
-            // ここで取得したresourceIdをつかえるとおもう
-          }
-        } else {
-          print("No ResourceId exists for the current time.");
-        }
-      } catch (e) {
-        print(e);
-      }
-    });
   }
 
   int _selectedIndex = 0;

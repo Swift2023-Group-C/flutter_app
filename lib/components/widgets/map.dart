@@ -8,6 +8,7 @@ abstract final class TileColors {
   static Color get toilet => Colors.red.shade300;
   static Color get stair => Colors.blueGrey.shade600;
   static Color get ev => Colors.blueGrey.shade700;
+  static Color get using => Colors.yellow.shade500;
   static const Color empty = Colors.transparent;
 }
 
@@ -20,13 +21,19 @@ class Tile {
   double bottom;
   double left;
   String txt;
+  String? classroomNo;
 
-  Tile(this.width, this.height, this.c,
-      {this.top = 1,
-      this.right = 1,
-      this.bottom = 1,
-      this.left = 1,
-      this.txt = ''});
+  Tile(
+    this.width,
+    this.height,
+    this.c, {
+    this.top = 1,
+    this.right = 1,
+    this.bottom = 1,
+    this.left = 1,
+    this.txt = '',
+    this.classroomNo,
+  });
 
   StaggeredTile staggeredTile() {
     return StaggeredTile.count(width, height.toDouble());
@@ -123,8 +130,8 @@ abstract final class GridMaps {
     Tile(1, 6, TileColors.road),
     Tile(3, 4, TileColors.toilet, txt: 'wc'),
     Tile(2, 6, TileColors.empty),
-    Tile(6, 6, TileColors.room, txt: '495'),
-    Tile(6, 6, TileColors.room, txt: '494'),
+    Tile(6, 6, TileColors.room, txt: '495C&D', classroomNo: '9'),
+    Tile(6, 6, TileColors.room, txt: '494C&D', classroomNo: '8'),
     Tile(6, 6, TileColors.room, txt: '493'),
     Tile(6, 6, TileColors.room2),
     Tile(1, 6, TileColors.road),

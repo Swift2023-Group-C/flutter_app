@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_app/firebase_options.dart';
 
 class FeedbackList extends StatelessWidget {
   const FeedbackList({Key? key, required this.lessonId});
