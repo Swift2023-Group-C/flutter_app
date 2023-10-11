@@ -35,6 +35,29 @@ class _MapGridScreenState extends State<MapGridScreen> {
 
   @override
   void initState() {
+    final Map<String, List<String>> classroomNoFloorMap = {
+      "1": ["4", "5"],
+      "2": ["3"],
+      "3": ["4"],
+      "4": ["5"],
+      "5": ["5"],
+      "6": ["5"],
+      "7": ["r2"],
+      "8": ["4"],
+      "9": ["4"],
+      "10": ["4"],
+      "11": ["5"],
+      "12": ["5"],
+      "13": ["5"],
+      "14": ["r2"],
+      "15": ["r2"],
+      "16": ["3"],
+      "17": ["3"],
+      "18": ["3"],
+      "19": ["4"],
+      "50": ["1"],
+      "51": ["3"],
+    };
     super.initState();
     // アプリ起動時に一度だけ実行される
     // initState内で非同期処理を行うための方法
@@ -50,40 +73,33 @@ class _MapGridScreenState extends State<MapGridScreen> {
         resourceIds.add('1');
         resourceIds.add('2');
 
-        /*
         if (resourceIds.isNotEmpty) {
           for (String resourceId in resourceIds) {
             print("ResourceId: $resourceId");
-            // ここで取得したresourceIdをつかえるとおもう
-            // 講堂でテスト
-            if (resourceIds.contains('1')) {
-              setState(() {
-                final tileIndex = GridMaps.map04TileList
-                    .indexWhere((tile) => tile.txt == '講堂');
 
-                if (tileIndex != -1) {
-                  GridMaps.map04TileList[tileIndex] =
-                      Tile(6, 12, TileColors.using, txt: '講堂');
+            setState(() {
+              final tilesList =
+                  GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]];
+              if (tilesList != null) {
+                for (int i = 0; i < tilesList.length; i++) {
+                  if (tilesList[i].classroomNo == resourceId) {
+                    // タイルの色をTileColors.usingに変更したい
+                    tilesList[i] = Tile(tilesList[i].width, tilesList[i].height,
+                        TileColors.using,
+                        top: tilesList[i].top,
+                        right: tilesList[i].right,
+                        bottom: tilesList[i].bottom,
+                        left: tilesList[i].left,
+                        txt: tilesList[i].txt,
+                        classroomNo: tilesList[i].classroomNo);
+                  }
                 }
-              });
-            }
-
-            if (resourceIds.contains('2')) {
-              setState(() {
-                final tileIndex = GridMaps.map04TileList
-                    .indexWhere((tile) => tile.txt == '495');
-
-                if (tileIndex != -1) {
-                  GridMaps.map04TileList[tileIndex] =
-                      Tile(6, 6, TileColors.using, txt: '495');
-                }
-              });
-            }
+              }
+            });
           }
         } else {
           print("No ResourceId exists for the current time.");
         }
-        */
       } catch (e) {
         print(e);
       }

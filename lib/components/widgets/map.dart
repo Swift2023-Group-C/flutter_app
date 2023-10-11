@@ -167,7 +167,7 @@ abstract final class GridMaps {
       Tile(2, 2, TileColors.ev), //ev
       Tile(2, 2, TileColors.road),
       Tile(6, 9, TileColors.road),
-      Tile(12, 7, TileColors.room2), //アトリエ
+      Tile(12, 7, TileColors.room2, classroomNo: '50'), //アトリエ
       Tile(18, 7, TileColors.road),
     ],
     "2": [
@@ -255,13 +255,14 @@ abstract final class GridMaps {
       Tile(8, 2, TileColors.road, top: 0, bottom: 0, right: 1.5),
       Tile(48, 2, TileColors.road,
           top: 0, bottom: 0, left: 1.5, right: 1.5), // モール
-      Tile(12, 7, TileColors.room, txt: '大講義室', left: 1.5, top: 0, bottom: 0),
+      Tile(12, 7, TileColors.room,
+          txt: '大講義室', left: 1.5, top: 0, bottom: 0, classroomNo: '2'),
       Tile(1, 7, TileColors.room2),
       Tile(3, 5, TileColors.room2),
       Tile(2, 7, TileColors.road),
-      Tile(6, 7, TileColors.room, txt: '365'),
-      Tile(6, 7, TileColors.room, txt: '364'),
-      Tile(6, 7, TileColors.room, txt: '363'),
+      Tile(6, 7, TileColors.room, txt: '365', classroomNo: '18'),
+      Tile(6, 7, TileColors.room, txt: '364', classroomNo: '17'),
+      Tile(6, 7, TileColors.room, txt: '363', classroomNo: '16'),
       Tile(4, 2, TileColors.room2),
       Tile(2, 7, TileColors.road),
       Tile(6, 37, TileColors.room, txt: 'Library'),
@@ -330,7 +331,7 @@ abstract final class GridMaps {
       Tile(2, 6, TileColors.empty),
       Tile(6, 6, TileColors.room, txt: '495C&D', classroomNo: '9'),
       Tile(6, 6, TileColors.room, txt: '494C&D', classroomNo: '8'),
-      Tile(6, 6, TileColors.room, txt: '493'),
+      Tile(6, 6, TileColors.room, txt: '493', classroomNo: '3'),
       Tile(6, 6, TileColors.room2),
       Tile(1, 6, TileColors.road),
       Tile(5, 10, TileColors.room, txt: '事務局', top: 0, right: 1.5),
@@ -340,8 +341,8 @@ abstract final class GridMaps {
       Tile(3, 5, TileColors.room2),
       Tile(2, 5, TileColors.empty),
       Tile(6, 5, TileColors.room, txt: '485'),
-      Tile(6, 5, TileColors.room, txt: '484'),
-      Tile(6, 5, TileColors.room, txt: '483'),
+      Tile(6, 5, TileColors.room, txt: '484', classroomNo: '10'),
+      Tile(6, 5, TileColors.room, txt: '483', classroomNo: '19'),
       Tile(1, 13, TileColors.road),
       Tile(3, 5, TileColors.toilet, txt: 'wc'),
       Tile(2, 5, TileColors.stair),
@@ -442,7 +443,7 @@ abstract final class GridMaps {
       Tile(2, 2, TileColors.empty),
       Tile(26, 1, TileColors.road),
       Tile(4, 8, TileColors.empty),
-      Tile(6, 12, TileColors.room, txt: '講堂'),
+      Tile(6, 12, TileColors.room, txt: '講堂', classroomNo: '1'),
       Tile(2, 11, TileColors.road),
       Tile(4, 11, TileColors.room, txt: 'デルタ'),
       Tile(18, 10, TileColors.empty),
@@ -462,9 +463,9 @@ abstract final class GridMaps {
       Tile(1, 14, TileColors.road),
       Tile(11, 14, TileColors.empty), //empty gym
       Tile(1, 9, TileColors.road),
-      Tile(6, 6, TileColors.room, txt: '595'),
-      Tile(6, 6, TileColors.room, txt: '594'),
-      Tile(6, 6, TileColors.room, txt: '593'),
+      Tile(6, 6, TileColors.room, txt: '595', classroomNo: '6'),
+      Tile(6, 6, TileColors.room, txt: '594', classroomNo: '5'),
+      Tile(6, 6, TileColors.room, txt: '593', classroomNo: '4'),
       Tile(6, 6, TileColors.empty), //吹き抜け
       Tile(6, 12, TileColors.room2),
       Tile(3, 2, TileColors.stair), // 階段体育館側
@@ -472,9 +473,9 @@ abstract final class GridMaps {
       Tile(1, 4, TileColors.road),
       Tile(3, 5, TileColors.toilet), // 585トイレ
       Tile(2, 5, TileColors.toilet), //吹き抜け
-      Tile(6, 5, TileColors.room, txt: '585'),
-      Tile(6, 5, TileColors.room, txt: '584'),
-      Tile(6, 5, TileColors.room, txt: '583'),
+      Tile(6, 5, TileColors.room, txt: '585', classroomNo: '13'),
+      Tile(6, 5, TileColors.room, txt: '584', classroomNo: '12'),
+      Tile(6, 5, TileColors.room, txt: '583', classroomNo: '11'),
       Tile(1, 5, TileColors.road),
       Tile(3, 5, TileColors.room2), // 583側トイレ
       Tile(2, 5, TileColors.empty), //吹き抜け
@@ -607,8 +608,8 @@ abstract final class GridMaps {
       Tile(1, 2, TileColors.room2),
       Tile(4, 2, TileColors.room, txt: 'R751'),
       Tile(5, 2, TileColors.room2),
-      Tile(4, 8, TileColors.room, txt: 'R781'),
-      Tile(4, 8, TileColors.room, txt: 'R782'),
+      Tile(4, 8, TileColors.room, txt: 'R781', classroomNo: '14'),
+      Tile(4, 8, TileColors.room, txt: 'R782', classroomNo: '15'),
       Tile(2, 2, TileColors.ev),
       Tile(2, 2, TileColors.road),
       Tile(4, 2, TileColors.room, txt: 'R703'),
