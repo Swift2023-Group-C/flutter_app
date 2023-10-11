@@ -61,14 +61,33 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
               TextButton(
                 onPressed: () async {
                   final String? userKey = await UserPreferences.getUserKey();
-                  if (userKey != "") {
-                    // Firestoreにデータを追加
-                    FirebaseFirestore.instance.collection('feedback').add({
-                      'User': userKey,
-                      'lessonId': widget.lessonId,
-                      'score': selectedScore,
-                      'detail': detailController.text,
-                    });
+                  if (userKey != "" && selectedScore != null) {
+                    // Firestoreで同じUserKeyとlessonIdを持つフィードバックを検索
+                    final querySnapshot = await FirebaseFirestore.instance
+                        .collection('feedback')
+                        .where('User', isEqualTo: userKey)
+                        .where('lessonId', isEqualTo: widget.lessonId)
+                        .get();
+
+                    if (querySnapshot.docs.isNotEmpty) {
+                      // 既存のフィードバックが存在してたらそれを更新
+                      final docId = querySnapshot.docs[0].id;
+                      FirebaseFirestore.instance
+                          .collection('feedback')
+                          .doc(docId)
+                          .update({
+                        'score': selectedScore,
+                        'detail': detailController.text,
+                      });
+                    } else {
+                      // 既存のフィードバックが存在しなかったら新しいドキュメントを作成
+                      FirebaseFirestore.instance.collection('feedback').add({
+                        'User': userKey,
+                        'lessonId': widget.lessonId,
+                        'score': selectedScore,
+                        'detail': detailController.text,
+                      });
+                    }
                   }
 
                   // テキストフィールドと選択をクリア

@@ -65,7 +65,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                     onPressed: () {
                       setState(() {
                         finishList[index] = !finishList[index];
-                        print(finishList);
                         saveFinishList();
                       });
                     },
