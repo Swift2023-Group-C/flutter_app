@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'map_grid.dart';
+import 'package:flutter_app/components/map_controller.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class _MapScreenState extends State<MapScreen> {
   void onFloorBarTapped(int findex) {
     setState(() {
       mapGridCount = findex;
+      print(MapController.instance.getZoomRatio());
     });
   }
 
@@ -22,9 +24,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     viewTransformationController.value =
-        Matrix4(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    viewTransformationController.value.setEntry(0, 3, -300);
-    viewTransformationController.value.setEntry(1, 3, -100);
+        Matrix4(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, -300, -100, 0, 1);
     super.initState();
   }
 
@@ -41,7 +41,8 @@ class _MapScreenState extends State<MapScreen> {
             height: MediaQuery.of(context).size.height,
             child: InteractiveViewer(
                 maxScale: 10.0,
-                transformationController: viewTransformationController,
+                transformationController:
+                    MapController.instance.getController(),
                 child: Padding(
                   padding: const EdgeInsets.all(30),
                   child: MapGridScreen(mapIndex: mapGridCount),
