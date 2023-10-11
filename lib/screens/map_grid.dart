@@ -10,32 +10,24 @@ class MapGridScreen extends StatefulWidget {
   final int mapIndex;
   const MapGridScreen({Key? key, this.mapIndex = 2}) : super(key: key);
 
-  static List<List<Tile>> gridMapsList = [
-    GridMaps.map05TileList,
-    GridMaps.map04TileList,
-    GridMaps.map03TileList,
-    GridMaps.map02TileList,
-    GridMaps.map01TileList,
-    GridMaps.mapr2TileList,
-    GridMaps.mapr1TileList
-  ];
-
   @override
   State<MapGridScreen> createState() => _MapGridScreenState();
 }
 
 class _MapGridScreenState extends State<MapGridScreen> {
+  final List<String> gridMapsList = ["5", "4", "3", "2", "1", "r2", "r1"];
   @override
   Widget build(BuildContext context) {
     return StaggeredGridView.countBuilder(
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 48,
-      itemCount: MapGridScreen.gridMapsList[widget.mapIndex].length,
+      itemCount: GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]!.length,
       itemBuilder: (BuildContext context, int index) {
-        return MapGridScreen.gridMapsList[widget.mapIndex][index].tileWidget();
+        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index]
+            .tileWidget();
       },
       staggeredTileBuilder: (int index) {
-        return MapGridScreen.gridMapsList[widget.mapIndex][index]
+        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index]
             .staggeredTile();
       },
     );
@@ -43,6 +35,29 @@ class _MapGridScreenState extends State<MapGridScreen> {
 
   @override
   void initState() {
+    final Map<String, List<String>> classroomNoFloorMap = {
+      "1": ["4", "5"],
+      "2": ["3"],
+      "3": ["4"],
+      "4": ["5"],
+      "5": ["5"],
+      "6": ["5"],
+      "7": ["r2"],
+      "8": ["4"],
+      "9": ["4"],
+      "10": ["4"],
+      "11": ["5"],
+      "12": ["5"],
+      "13": ["5"],
+      "14": ["r2"],
+      "15": ["r2"],
+      "16": ["3"],
+      "17": ["3"],
+      "18": ["3"],
+      "19": ["4"],
+      "50": ["1"],
+      "51": ["3"],
+    };
     super.initState();
     // アプリ起動時に一度だけ実行される
     // initState内で非同期処理を行うための方法
@@ -61,31 +76,26 @@ class _MapGridScreenState extends State<MapGridScreen> {
         if (resourceIds.isNotEmpty) {
           for (String resourceId in resourceIds) {
             print("ResourceId: $resourceId");
-            // ここで取得したresourceIdをつかえるとおもう
-            // 講堂でテスト
-            if (resourceIds.contains('1')) {
-              setState(() {
-                final tileIndex = GridMaps.map04TileList
-                    .indexWhere((tile) => tile.txt == '講堂');
 
-                if (tileIndex != -1) {
-                  GridMaps.map04TileList[tileIndex] =
-                      Tile(6, 12, TileColors.using, txt: '講堂');
+            setState(() {
+              final tilesList =
+                  GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]];
+              if (tilesList != null) {
+                for (int i = 0; i < tilesList.length; i++) {
+                  if (tilesList[i].classroomNo == resourceId) {
+                    // タイルの色をTileColors.usingに変更したい
+                    tilesList[i] = Tile(tilesList[i].width, tilesList[i].height,
+                        TileColors.using,
+                        top: tilesList[i].top,
+                        right: tilesList[i].right,
+                        bottom: tilesList[i].bottom,
+                        left: tilesList[i].left,
+                        txt: tilesList[i].txt,
+                        classroomNo: tilesList[i].classroomNo);
+                  }
                 }
-              });
-            }
-
-            if (resourceIds.contains('2')) {
-              setState(() {
-                final tileIndex = GridMaps.map04TileList
-                    .indexWhere((tile) => tile.txt == '495');
-
-                if (tileIndex != -1) {
-                  GridMaps.map04TileList[tileIndex] =
-                      Tile(6, 6, TileColors.using, txt: '495');
-                }
-              });
-            }
+              }
+            });
           }
         } else {
           print("No ResourceId exists for the current time.");
