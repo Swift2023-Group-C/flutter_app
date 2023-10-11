@@ -9,6 +9,7 @@ class KamokuSearchScreen extends StatefulWidget {
 }
 
 class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
+  bool isFiltersVisible = true;
   List<Map<String, dynamic>>? _searchResults;
 
   List<String> term = ['前期', '後期', '通年'];
@@ -100,140 +101,159 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
           SearchBox(
             onSearch: searchClasses,
           ),
-          Align(
-            alignment: const AlignmentDirectional(-1.00, 0.00),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  for (int i = 0; i < term.length; i++)
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: termCheckedList[i], // チェック状態を取得
-                          onChanged: (bool? value) {
-                            setState(() {
-                              termCheckedList[i] = value ?? false; // チェック状態を更新
-                            });
-                          },
-                        ),
-                        Text(term[i]),
-                      ],
-                    ),
-                  const SizedBox(width: 20),
-                ],
-              ),
+          Visibility(
+            visible: isFiltersVisible,
+            child: Column(
+              children: [
+                buildFilterRow(term, termCheckedList),
+                buildFilterRow(grade, gradeCheckedList),
+                buildFilterRow(courseStr, courseStrCheckedList),
+                buildFilterRow(classification, classificationCheckedList),
+                buildFilterRow(education, educationCheckedList),
+              ],
             ),
           ),
-          Align(
-            alignment: const AlignmentDirectional(-1.00, 0.00),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                for (int i = 0; i < grade.length; i++)
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: gradeCheckedList[i], // チェック状態を取得
-                        onChanged: (bool? value) {
-                          setState(() {
-                            gradeCheckedList[i] = value ?? false; // チェック状態を更新
-                          });
-                        },
-                      ),
-                      Text(grade[i]),
-                    ],
-                  ),
-                const SizedBox(width: 20),
-              ]),
-            ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                isFiltersVisible = !isFiltersVisible;
+              });
+            },
+            child: Text(isFiltersVisible ? 'フィルター非表示' : 'フィルター表示'),
           ),
-          Align(
-            alignment: const AlignmentDirectional(-1.00, 0.00),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  for (int i = 0; i < courseStr.length; i++)
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: courseStrCheckedList[i], // チェック状態を取得
-                          onChanged: (bool? value) {
-                            setState(() {
-                              courseStrCheckedList[i] =
-                                  value ?? false; // チェック状態を更新
-                            });
-                          },
-                        ),
-                        Text(courseStr[i]),
-                      ],
-                    ),
-                  const SizedBox(width: 20),
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: const AlignmentDirectional(-1.00, 0.00),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  for (int i = 0; i < classification.length; i++)
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: classificationCheckedList[i], // チェック状態を取得
-                          onChanged: (bool? value) {
-                            setState(() {
-                              classificationCheckedList[i] =
-                                  value ?? false; // チェック状態を更新
-                            });
-                          },
-                        ),
-                        Text(classification[i]),
-                      ],
-                    ),
-                  const SizedBox(width: 20),
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: const AlignmentDirectional(-1.00, 0.00),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  for (int i = 0; i < education.length; i++)
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: educationCheckedList[i], // チェック状態を取得
-                          onChanged: (bool? value) {
-                            setState(() {
-                              educationCheckedList[i] =
-                                  value ?? false; // チェック状態を更新
-                            });
-                          },
-                        ),
-                        Text(education[i]),
-                      ],
-                    ),
-                  const SizedBox(width: 20),
-                ],
-              ),
-            ),
-          ),
-          const Text('とりまいろんなボタン作った'),
+          // Align(
+          //   alignment: const AlignmentDirectional(-1.00, 0.00),
+          //   child: SingleChildScrollView(
+          //     scrollDirection: Axis.horizontal,
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.start,
+          //       children: [
+          //         for (int i = 0; i < term.length; i++)
+          //           Row(
+          //             children: [
+          //               Checkbox(
+          //                 value: termCheckedList[i], // チェック状態を取得
+          //                 onChanged: (bool? value) {
+          //                   setState(() {
+          //                     termCheckedList[i] = value ?? false; // チェック状態を更新
+          //                   });
+          //                 },
+          //               ),
+          //               Text(term[i]),
+          //             ],
+          //           ),
+          //         const SizedBox(width: 20),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          // Align(
+          //   alignment: const AlignmentDirectional(-1.00, 0.00),
+          //   child: SingleChildScrollView(
+          //     scrollDirection: Axis.horizontal,
+          //     child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+          //       for (int i = 0; i < grade.length; i++)
+          //         Row(
+          //           children: [
+          //             Checkbox(
+          //               value: gradeCheckedList[i], // チェック状態を取得
+          //               onChanged: (bool? value) {
+          //                 setState(() {
+          //                   gradeCheckedList[i] = value ?? false; // チェック状態を更新
+          //                 });
+          //               },
+          //             ),
+          //             Text(grade[i]),
+          //           ],
+          //         ),
+          //       const SizedBox(width: 20),
+          //     ]),
+          //   ),
+          // ),
+          // Align(
+          //   alignment: const AlignmentDirectional(-1.00, 0.00),
+          //   child: SingleChildScrollView(
+          //     scrollDirection: Axis.horizontal,
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.start,
+          //       children: [
+          //         for (int i = 0; i < courseStr.length; i++)
+          //           Row(
+          //             children: [
+          //               Checkbox(
+          //                 value: courseStrCheckedList[i], // チェック状態を取得
+          //                 onChanged: (bool? value) {
+          //                   setState(() {
+          //                     courseStrCheckedList[i] =
+          //                         value ?? false; // チェック状態を更新
+          //                   });
+          //                 },
+          //               ),
+          //               Text(courseStr[i]),
+          //             ],
+          //           ),
+          //         const SizedBox(width: 20),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          // Align(
+          //   alignment: const AlignmentDirectional(-1.00, 0.00),
+          //   child: SingleChildScrollView(
+          //     scrollDirection: Axis.horizontal,
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.start,
+          //       children: [
+          //         for (int i = 0; i < classification.length; i++)
+          //           Row(
+          //             children: [
+          //               Checkbox(
+          //                 value: classificationCheckedList[i], // チェック状態を取得
+          //                 onChanged: (bool? value) {
+          //                   setState(() {
+          //                     classificationCheckedList[i] =
+          //                         value ?? false; // チェック状態を更新
+          //                   });
+          //                 },
+          //               ),
+          //               Text(classification[i]),
+          //             ],
+          //           ),
+          //         const SizedBox(width: 20),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          // Align(
+          //   alignment: const AlignmentDirectional(-1.00, 0.00),
+          //   child: SingleChildScrollView(
+          //     scrollDirection: Axis.horizontal,
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.start,
+          //       children: [
+          //         for (int i = 0; i < education.length; i++)
+          //           Row(
+          //             children: [
+          //               Checkbox(
+          //                 value: educationCheckedList[i], // チェック状態を取得
+          //                 onChanged: (bool? value) {
+          //                   setState(() {
+          //                     educationCheckedList[i] =
+          //                         value ?? false; // チェック状態を更新
+          //                   });
+          //                 },
+          //               ),
+          //               Text(education[i]),
+          //             ],
+          //           ),
+          //         const SizedBox(width: 20),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Row(
             children: [
-              ElevatedButton(
+              TextButton(
                 onPressed: () {
                   // ボタンをクリックしたら全選択状態を切り替える
                   toggleAll();
@@ -250,7 +270,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                     falseAll();
                   },
                   child: const Text('リセット')),
-              TextButton(
+              ElevatedButton(
                   onPressed: () async {
                     termlist.clear();
                     gradelist.clear();
@@ -293,10 +313,13 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                       _searchResults = records;
                     });
                   },
-                  child: const Text('絞り込み')),
+                  child: const Text('検索の実行')),
             ],
           ),
-          const Text('結果一覧'),
+          const Text(
+            '結果一覧',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           Expanded(
             //よくわからんけどこれがあると授業名検索結果が表示される
             child: _searchResults == null
@@ -304,6 +327,35 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                 : SearchResults(records: _searchResults!),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildFilterRow(List<String> items, List<bool> checkedList) {
+    return Align(
+      alignment: const AlignmentDirectional(-1.00, 0.00),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            for (int i = 0; i < items.length; i++)
+              Row(
+                children: [
+                  Checkbox(
+                    value: checkedList[i],
+                    onChanged: (bool? value) {
+                      setState(() {
+                        checkedList[i] = value ?? false;
+                      });
+                    },
+                  ),
+                  Text(items[i]),
+                ],
+              ),
+            const SizedBox(width: 20),
+          ],
+        ),
       ),
     );
   }
