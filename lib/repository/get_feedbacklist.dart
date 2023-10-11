@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FeedbackList extends StatefulWidget {
-  const FeedbackList({Key? key, required this.lessonId});
+  const FeedbackList({Key? key, required this.lessonId}) : super(key: key);
 
   final int lessonId;
 
   @override
-  _FeedbackListState createState() => _FeedbackListState();
+  State<FeedbackList> createState() => _FeedbackListState();
 }
 
 class _FeedbackListState extends State<FeedbackList> {
