@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_app/components/widgets/progress_indicator.dart';
 
 class FeedbackList extends StatefulWidget {
   const FeedbackList({Key? key, required this.lessonId}) : super(key: key);
@@ -27,7 +28,7 @@ class _FeedbackListState extends State<FeedbackList> {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return createProgressIndicator();
         }
 
         if (snapshot.hasData) {

@@ -68,35 +68,22 @@ class _MapGridScreenState extends State<MapGridScreen> {
       // ダウンロードしたファイルの中身を読み取る
       try {
         String fileContent = await readScheduleFile();
-        List<String> resourceIds = findRoomsInUse(fileContent);
-        //テスト用
-        resourceIds.add('1');
-        resourceIds.add('2');
+        Map<String, List<String>> resourceIds = findRoomsInUse(fileContent);
 
         if (resourceIds.isNotEmpty) {
-          for (String resourceId in resourceIds) {
-            print("ResourceId: $resourceId");
-
-            setState(() {
-              final tilesList =
-                  GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]];
-              if (tilesList != null) {
-                for (int i = 0; i < tilesList.length; i++) {
-                  if (tilesList[i].classroomNo == resourceId) {
-                    // タイルの色をTileColors.usingに変更したい
-                    tilesList[i] = Tile(tilesList[i].width, tilesList[i].height,
-                        TileColors.using,
-                        top: tilesList[i].top,
-                        right: tilesList[i].right,
-                        bottom: tilesList[i].bottom,
-                        left: tilesList[i].left,
-                        txt: tilesList[i].txt,
-                        classroomNo: tilesList[i].classroomNo);
-                  }
+          resourceIds.forEach((String resourceId, List<String> lessonIds) {
+            print(resourceId);
+            if (classroomNoFloorMap.containsKey(resourceId)) {
+              for (var floor in classroomNoFloorMap[resourceId]!) {
+                final tileIndex = GridMaps.mapTileListMap[floor]!
+                    .indexWhere((tile) => tile.classroomNo == resourceId);
+                if (tileIndex != -1) {
+                  GridMaps.mapTileListMap[floor]![tileIndex]
+                      .setColor(TileColors.using);
                 }
               }
-            });
-          }
+            }
+          });
         } else {
           print("No ResourceId exists for the current time.");
         }

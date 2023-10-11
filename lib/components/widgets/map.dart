@@ -15,7 +15,7 @@ abstract final class TileColors {
 class Tile {
   final int width;
   final int height;
-  final Color c;
+  Color c;
   double top;
   double right;
   double bottom;
@@ -62,6 +62,10 @@ class Tile {
       left: left,
       txt: txt,
     );
+  }
+
+  void setColor(Color color) {
+    c = color;
   }
 }
 
