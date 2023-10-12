@@ -144,6 +144,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           ),
         ],
       ),
+      //最強
       body: FutureBuilder(
         future: const FirebaseGetKadai().getKadaiFromFirebase(),
         builder: (BuildContext context, AsyncSnapshot<List<Kadai>> snapshot) {
@@ -159,78 +160,111 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               deleteList = List<bool>.filled(data.length, true);
             }
             return ListView.separated(
-              padding: const EdgeInsets.all(3.0),
-              itemCount: deleteList
-                  .where((element) => element)
-                  .length, // deleteList内のtrueの数をitemCountに設定
+              padding: const EdgeInsets.all(12.0),
+              itemCount: deleteList.where((element) => element).length,
               itemBuilder: (context, index) {
                 int dataIndex = 0;
                 for (int i = 0; i < data.length; i++) {
                   if (deleteList[i]) {
                     if (index == dataIndex) {
-                      // trueの要素に対応するリストタイルを構築
                       return Slidable(
                         actionPane: const SlidableDrawerActionPane(),
                         actionExtentRatio: 0.25,
                         secondaryActions: [
                           IconSlideAction(
                             caption: '削除',
-                            color: Colors.red,
+                            color: Colors.red[300],
                             icon: Icons.delete,
                             onTap: () {
                               _showDeleteConfirmation(i);
                             },
                           ),
                         ],
-                        child: ListTile(
-                          trailing: SizedBox(
-                            width: 96.0,
-                            child: Row(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            trailing: SizedBox(
+                              width: 96.0,
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    splashColor: Colors.white,
+                                    onPressed: () {
+                                      setState(() {
+                                        alertList[i] = !alertList[i];
+                                        saveAlertList();
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.circle_notifications_outlined,
+                                      size: 40,
+                                      color: alertList[i]
+                                          ? Colors.green
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    splashColor: Colors.white,
+                                    onPressed: () {
+                                      setState(() {
+                                        finishList[i] = !finishList[i];
+                                        saveFinishList();
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.check_circle_outline_outlined,
+                                      size: 40,
+                                      color: finishList[i]
+                                          ? Colors.green
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            title: Text(
+                              data[i].name!,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                IconButton(
-                                  splashColor: Colors.white,
-                                  onPressed: () {
-                                    setState(() {
-                                      alertList[i] = !alertList[i];
-                                      saveAlertList();
-                                    });
-                                  },
-                                  icon: Icon(
-                                    Icons.circle_notifications_outlined,
-                                    size: 40,
-                                    color: alertList[i]
-                                        ? Colors.green
-                                        : const Color.fromARGB(96, 31, 26, 26),
+                                Text(
+                                  data[i].courseName!,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
                                   ),
                                 ),
-                                IconButton(
-                                  splashColor: Colors.white,
-                                  onPressed: () {
-                                    setState(() {
-                                      finishList[i] = !finishList[i];
-                                      saveFinishList();
-                                    });
-                                  },
-                                  icon: Icon(
-                                    Icons.check_circle_outline_outlined,
-                                    size: 40,
-                                    color: finishList[i]
-                                        ? Colors.green
-                                        : const Color.fromARGB(96, 31, 26, 26),
+                                if ((data[i].endtime != null))
+                                  Text(
+                                    "終了：${stringFromDateTime(data[i].endtime)}",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black45,
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
-                          ),
-                          title: Text(data[i].name!),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(data[i].courseName!),
-                              if ((data[i].endtime != null))
-                                Text(
-                                    "終了：${stringFromDateTime(data[i].endtime)}"),
-                            ],
                           ),
                         ),
                       );
@@ -238,9 +272,10 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                     dataIndex++;
                   }
                 }
-                return Container(); // deleteList内のtrueの数に対応する要素がない場合、空のContainerを返す
+                return Container(); // Should not reach here
               },
-              separatorBuilder: (context, index) => const Divider(),
+              separatorBuilder: (context, index) =>
+                  const SizedBox(height: 10), // Adjust the space between items
             );
           } else {
             return createProgressIndicator();
