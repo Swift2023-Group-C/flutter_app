@@ -155,7 +155,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           ),
         ],
       ),
-      //最強
       body: FutureBuilder(
         future: const FirebaseGetKadai().getKadaiFromFirebase(),
         builder: (BuildContext context, AsyncSnapshot<List<Kadai>> snapshot) {
@@ -190,6 +189,18 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                               _showDeleteConfirmation(i);
                             },
                           ),
+                          IconSlideAction(
+                            caption: finishList[i] ? '未完了' : '完了',
+                            color: finishList[i] ? Colors.blue : Colors.green,
+                            icon: Icons.check_circle_outline,
+                            onTap: () {
+                              setState(() {
+                                finishList[i] = !finishList[i];
+                                saveFinishList();
+                              });
+                              //_showDeleteConfirmation(i);
+                            },
+                          ),
                         ],
                         child: Container(
                           decoration: BoxDecoration(
@@ -210,7 +221,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            trailing: SizedBox(
+                            /*trailing: SizedBox(
                               width: 96.0,
                               child: Row(
                                 children: [
@@ -248,12 +259,15 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                   ),
                                 ],
                               ),
-                            ),
+                            ),*/
                             title: Text(
                               data[i].name!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                color: finishList[i]
+                                    ? Colors.green
+                                    : Colors.black, // <--- Adjust color here
                               ),
                             ),
                             subtitle: Column(
@@ -261,24 +275,34 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                               children: [
                                 Text(
                                   data[i].courseName!,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.black54,
+                                    color: finishList[i]
+                                        ? Colors.green
+                                        : Colors
+                                            .black54, // <--- Adjust color here
                                   ),
                                 ),
                                 if ((data[i].endtime != null))
                                   Text(
                                     "終了：${stringFromDateTime(data[i].endtime)}",
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.black45,
+                                      color: finishList[i]
+                                          ? Colors.green
+                                          : Colors
+                                              .black45, // <--- Adjust color here
                                     ),
                                   ),
                               ],
                             ),
+                            leading: finishList[i]
+                                ? const Icon(Icons.check,
+                                    color: Colors
+                                        .green) // <--- Add check icon if finished
+                                : null,
                             onTap: () {
                               final url = Uri.parse(data[i].url!);
-                              //final url = Uri.parse('https://blog.flutteruniv.com/');
                               launchUrl(url);
                             },
                           ),
