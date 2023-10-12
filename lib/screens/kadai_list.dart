@@ -6,6 +6,7 @@ import '../components/widgets/progress_indicator.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 
 class KadaiListScreen extends StatefulWidget {
   const KadaiListScreen({Key? key}) : super(key: key);
@@ -19,6 +20,16 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   List<bool> alertList = []; //通知管理
   List<bool> deleteList = []; //削除状態管理
   //List<Kadai> resetList = [];
+
+  void launchUrl(Uri url) async {
+    // ignore: deprecated_member_use
+    if (await canLaunch(url.toString())) {
+      // ignore: deprecated_member_use
+      await launch(url.toString());
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   //保存したfinishListの状態を呼び出す
   Future<void> loadFinishList() async {
@@ -173,7 +184,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                         secondaryActions: [
                           IconSlideAction(
                             caption: '削除',
-                            color: Colors.red[300],
+                            color: Colors.red,
                             icon: Icons.delete,
                             onTap: () {
                               _showDeleteConfirmation(i);
@@ -265,6 +276,11 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                   ),
                               ],
                             ),
+                            onTap: () {
+                              final url = Uri.parse(data[i].url!);
+                              //final url = Uri.parse('https://blog.flutteruniv.com/');
+                              launchUrl(url);
+                            },
                           ),
                         ),
                       );
