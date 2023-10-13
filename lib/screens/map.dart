@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/color_fun.dart';
 import 'map_grid.dart';
 import 'package:flutter_app/components/map_controller.dart';
 
@@ -10,12 +11,12 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  int mapGridCount = 4;
+  int mapGridCount = 2;
 
   void onFloorBarTapped(int findex) {
     setState(() {
       mapGridCount = findex;
-      print(MapController.instance.getZoomRatio());
+      print(MapController.instance.viewTransformationController.value);
     });
   }
 
@@ -23,15 +24,16 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void initState() {
-    viewTransformationController.value =
-        Matrix4(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, -300, -100, 0, 1);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     const double floorWidth = 40.0;
-    var floorBarTextStyle = const TextStyle(fontSize: 18.0);
+    var floorBarTextStyle =
+        const TextStyle(fontSize: 18.0, color: Colors.black87);
+    var floorBarSelectedTextStyle =
+        const TextStyle(fontSize: 18.0, color: customFunColor);
     List<String> floorBarString = ['5', '4', '3', '2', '1', 'R2', 'R1'];
     return Scaffold(
         body: Stack(
@@ -52,7 +54,7 @@ class _MapScreenState extends State<MapScreen> {
             child: Align(
               alignment: Alignment.centerRight,
               child: Container(
-                color: Colors.grey.withOpacity(0.8),
+                color: Colors.grey.withOpacity(0.9),
                 height: 350,
                 width: floorWidth,
                 child: Column(
@@ -63,13 +65,24 @@ class _MapScreenState extends State<MapScreen> {
                         height: 50,
                         child: Center(
                           child: TextButton(
+                              style: TextButton.styleFrom(
+                                fixedSize: const Size(floorWidth, 50),
+                                backgroundColor:
+                                    (mapGridCount == i) ? Colors.black12 : null,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                              ),
                               onPressed: () {
                                 onFloorBarTapped(i);
                               },
-                              child: Text(
+                              child: Center(
+                                  child: Text(
                                 floorBarString[i],
-                                style: floorBarTextStyle,
-                              )),
+                                style: (mapGridCount == i)
+                                    ? floorBarSelectedTextStyle
+                                    : floorBarTextStyle,
+                              ))),
                         ),
                       ),
                     }

@@ -127,26 +127,26 @@ class Tile extends StatelessWidget {
         icons.add(Icon(
           Icons.man,
           color: MapColors.wcMan,
-          size: 10,
+          size: 8,
         ));
       }
       if (wc & 0x0100 > 0) {
         icons.add(Icon(
           Icons.woman,
           color: MapColors.wcWoman,
-          size: 10,
+          size: 8,
         ));
       }
       if (wc & 0x0010 > 0) {
         icons.add(const Icon(
           Icons.accessible,
-          size: 10,
+          size: 8,
         ));
       }
       if (wc & 0x0001 > 0) {
         icons.add(const Icon(
           Icons.coffee_outlined,
-          size: 10,
+          size: 8,
         ));
       }
       return Wrap(
@@ -280,61 +280,76 @@ abstract final class GridMaps {
     "1": [
       Tile(48, 36, TileType.empty),
       Tile(40, 7, TileType.empty),
-      Tile(8, 7, TileType.otherroom),
-      Tile(40, 1, TileType.road),
-      Tile(2, 7, TileType.stair,
-          stairType: const StairType(Axis.vertical, true, false)),
-      Tile(6, 4, TileType.otherroom),
-      Tile(1, 6, TileType.road),
+      Tile(8, 7, TileType.otherroom, left: 1, top: 1, right: 1),
+      Tile(40, 1, TileType.road, left: 1, top: 1),
+      Tile(2, 3, TileType.otherroom),
+      Tile(6, 4, TileType.otherroom, right: 1),
+      Tile(1, 6, TileType.road, left: 1),
       Tile(1, 6, TileType.otherroom),
-      Tile(10, 2, TileType.otherroom),
+      Tile(4, 2, TileType.otherroom),
+      Tile(6, 2, TileType.otherroom),
       Tile(1, 6, TileType.road),
       Tile(3, 6, TileType.wc, wc: 0x1101), // アトリエ側トイレ
-      Tile(2, 6, TileType.stair,
-          stairType: const StairType(Axis.vertical, true, false)),
-      Tile(16, 2, TileType.otherroom),
+      Tile(2, 2, TileType.otherroom),
+      Tile(6, 2, TileType.otherroom),
+      Tile(6, 2, TileType.otherroom),
+      Tile(4, 2, TileType.otherroom),
       Tile(2, 2, TileType.wc, wc: 0x0100), // 食堂側トイレ
       Tile(1, 6, TileType.road),
       Tile(3, 2, TileType.wc, wc: 0x1010), // 食堂側トイレ
-      Tile(2, 4, TileType.classroom), //135
-      Tile(2, 4, TileType.classroom), //134
-      Tile(2, 4, TileType.classroom), //133
-      Tile(2, 4, TileType.classroom), //132
-      Tile(2, 4, TileType.classroom), //131
-      Tile(2, 4, TileType.classroom), //130
-      Tile(2, 4, TileType.classroom), //129
-      Tile(2, 4, TileType.classroom), //128
-      Tile(2, 4, TileType.classroom), //127
-      Tile(2, 4, TileType.classroom), //126
-      Tile(2, 4, TileType.classroom), //125
-      Tile(2, 4, TileType.classroom), //124
-      Tile(2, 4, TileType.classroom), //123
-      Tile(2, 4, TileType.classroom), //122
+      Tile(2, 4, TileType.classroom, txt: '135'), //135
+      Tile(2, 4, TileType.classroom, txt: '134'), //134
+      Tile(2, 4, TileType.classroom, txt: '133'), //133
+      Tile(2, 4, TileType.classroom, txt: '132'), //132
+      Tile(2, 4, TileType.classroom, txt: '131'), //131
+      Tile(2, 4, TileType.stair,
+          top: 1,
+          left: 1,
+          right: 1,
+          stairType: const StairType(Axis.vertical, true, false)),
+      Tile(2, 4, TileType.classroom, txt: '130'), //130
+      Tile(2, 4, TileType.classroom, txt: '129'), //129
+      Tile(2, 4, TileType.classroom, txt: '128'), //128
+      Tile(2, 4, TileType.classroom, txt: '127'), //127
+      Tile(2, 4, TileType.classroom, txt: '126'), //126
+      Tile(2, 4, TileType.classroom, txt: '125'), //125
+      Tile(2, 4, TileType.classroom, txt: '124'), //124
+      Tile(2, 4, TileType.classroom, txt: '123'), //123
+      Tile(2, 4, TileType.classroom, txt: '122'), //122
       Tile(1, 4, TileType.otherroom),
-      Tile(2, 4, TileType.classroom), //121
-      Tile(4, 3, TileType.otherroom),
-      Tile(2, 3, TileType.otherroom),
-      Tile(42, 1, TileType.road),
-      Tile(6, 13, TileType.classroom), //食堂
-      Tile(12, 5, TileType.otherroom),
-      Tile(6, 12, TileType.road),
+      Tile(2, 4, TileType.classroom, txt: '121'), //121
+      Tile(2, 4, TileType.stair,
+          top: 1,
+          left: 1,
+          right: 1,
+          stairType: const StairType(Axis.vertical, true, false)),
+      Tile(6, 16, TileType.classroom, right: 1, bottom: 1, txt: '食堂'), //食堂
+      Tile(42, 1, TileType.road, left: 1),
+      Tile(12, 5, TileType.otherroom, left: 1),
+      Tile(6, 12, TileType.road, bottom: 1),
       Tile(18, 2, TileType.otherroom, right: 1, left: 1),
       Tile(6, 1, TileType.road),
       Tile(2, 2, TileType.road),
-      Tile(2, 2, TileType.ev), //ev
+      Tile(2, 2, TileType.ev, left: 1, top: 1, right: 1), //ev
       Tile(2, 2, TileType.road),
       Tile(18, 2, TileType.road, right: 1, left: 1),
-      Tile(6, 9, TileType.road),
+      Tile(2, 1, TileType.road),
+      Tile(2, 1, TileType.road, bottom: 1),
+      Tile(2, 1, TileType.road),
       Tile(18, 2, TileType.road),
-      Tile(12, 7, TileType.otherroom, classroomNo: '50', txt: 'アトリエ'), //アトリエ
-      Tile(18, 6, TileType.road, left: 1, right: 1),
+      Tile(6, 8, TileType.road, bottom: 1),
+      Tile(12, 7, TileType.otherroom,
+          classroomNo: '50', txt: 'アトリエ', left: 1, bottom: 1), //アトリエ
+      Tile(6, 6, TileType.road, left: 1, bottom: 1, txt: 'プレゼンテーションベイB'),
+      Tile(6, 6, TileType.road, bottom: 1, txt: 'プレゼンテーションベイG'),
+      Tile(6, 6, TileType.road, right: 1, bottom: 1, txt: 'プレゼンテーションベイR'),
     ],
     "2": [
       Tile(48, 37, TileType.empty),
-      Tile(40, 1, TileType.road),
-      Tile(2, 3, TileType.otherroom),
-      Tile(6, 7, TileType.otherroom),
-      Tile(1, 6, TileType.road),
+      Tile(40, 1, TileType.road, left: 1, top: 1),
+      Tile(2, 3, TileType.otherroom, top: 1),
+      Tile(6, 7, TileType.otherroom, top: 1, right: 1),
+      Tile(1, 6, TileType.road, left: 1),
       Tile(3, 2, TileType.otherroom),
       Tile(2, 2, TileType.otherroom),
       Tile(6, 2, TileType.otherroom),
@@ -348,42 +363,60 @@ abstract final class GridMaps {
       Tile(1, 6, TileType.road),
       Tile(3, 2, TileType.wc, wc: 0x1010), // 購買側トイレ
       Tile(1, 4, TileType.otherroom),
-      Tile(2, 4, TileType.classroom), //235
-      Tile(2, 4, TileType.classroom), //234
-      Tile(2, 4, TileType.classroom), //233
-      Tile(2, 4, TileType.classroom), //232
-      Tile(2, 4, TileType.classroom), //231
+      Tile(2, 4, TileType.classroom, txt: '235'), //235
+      Tile(2, 4, TileType.classroom, txt: '234'), //234
+      Tile(2, 4, TileType.classroom, txt: '233'), //233
+      Tile(2, 4, TileType.classroom, txt: '232'), //232
+      Tile(2, 4, TileType.classroom, txt: '231'), //231
       Tile(2, 4, TileType.stair,
+          top: 1,
+          right: 1,
+          left: 1,
           stairType: const StairType(Axis.vertical, true, false)), // アトリエ側階段
-      Tile(2, 4, TileType.classroom), //230
-      Tile(2, 4, TileType.classroom), //229
-      Tile(2, 4, TileType.classroom), //228
-      Tile(2, 4, TileType.classroom), //227
-      Tile(2, 4, TileType.classroom), //226
-      Tile(2, 4, TileType.classroom), //225
-      Tile(2, 4, TileType.classroom), //224
-      Tile(2, 4, TileType.classroom), //223
-      Tile(2, 4, TileType.classroom), //222
+      Tile(2, 4, TileType.classroom, txt: '230'), //230
+      Tile(2, 4, TileType.classroom, txt: '229'), //229
+      Tile(2, 4, TileType.classroom, txt: '228'), //228
+      Tile(2, 4, TileType.classroom, txt: '227'), //227
+      Tile(2, 4, TileType.classroom, txt: '226'), //226
+      Tile(2, 4, TileType.classroom, txt: '225'), //225
+      Tile(2, 4, TileType.classroom, txt: '224'), //224
+      Tile(2, 4, TileType.classroom, txt: '223'), //223
+      Tile(2, 4, TileType.classroom, txt: '222'), //222
       Tile(1, 4, TileType.otherroom),
-      Tile(2, 4, TileType.classroom), //221
+      Tile(2, 4, TileType.classroom, txt: '221'), //221
       Tile(2, 4, TileType.stair,
+          top: 1,
+          right: 1,
+          left: 1,
           stairType: const StairType(Axis.vertical, true, false)), // 購買側階段
-      Tile(42, 1, TileType.road),
-      Tile(6, 6, TileType.classroom), //売店
-      Tile(12, 5, TileType.otherroom),
-      Tile(4, 5, TileType.road),
-      Tile(2, 5, TileType.stair,
-          stairType: const StairType(Axis.vertical, false, true)),
-      Tile(18, 2, TileType.otherroom),
+      Tile(42, 1, TileType.road, left: 1),
+      Tile(6, 6, TileType.classroom, txt: '購買', right: 1, bottom: 1), //売店
+      Tile(12, 5, TileType.otherroom, left: 1, bottom: 1),
       Tile(6, 1, TileType.road),
+      Tile(17, 2, TileType.otherroom),
+      Tile(1, 2, TileType.road, right: 1),
+      Tile(6, 1, TileType.road),
+      Tile(4, 4, TileType.road, bottom: 1),
+      Tile(2, 4, TileType.stair,
+          right: 1,
+          bottom: 1,
+          left: 1,
+          stairType: const StairType(Axis.vertical, false, true)),
       Tile(4, 4, TileType.road),
       Tile(2, 4, TileType.stair,
+          right: 1,
+          bottom: 1,
+          left: 1,
           stairType: const StairType(Axis.vertical, false, true)),
-      Tile(18, 3, TileType.road),
+      Tile(18, 3, TileType.road, bottom: 1),
       Tile(36, 6, TileType.empty), //empty
-      Tile(2, 6, TileType.road),
-      Tile(10, 2, TileType.empty),
-      Tile(2, 2, TileType.ev), //ev
+      Tile(2, 6, TileType.road, left: 1, bottom: 1),
+      Tile(10, 2, TileType.empty, top: 1, left: 1),
+      Tile(2, 2, TileType.ev, top: 1, right: 1, left: 1), //ev
+      Tile(8, 2, TileType.empty), //empty
+      Tile(2, 1, TileType.road, right: 1, bottom: 1),
+      Tile(8, 1, TileType.empty), //empty
+      Tile(10, 1, TileType.empty, left: 1), //empty
     ],
     "3": [
       Tile(12, 18, TileType.classroom,
@@ -485,17 +518,19 @@ abstract final class GridMaps {
       Tile(42, 1, TileType.road, left: 1),
       Tile(12, 5, TileType.otherroom, left: 1, bottom: 1),
       Tile(4, 3, TileType.road),
-      Tile(2, 5, TileType.stair,
-          bottom: 1,
-          left: 1,
-          right: 1,
-          stairType: const StairType(Axis.vertical, false, true)), // 階段331側下り
+      Tile(2, 1, TileType.road),
       Tile(2, 2, TileType.otherroom),
       Tile(1, 2, TileType.road),
       Tile(14, 2, TileType.otherroom),
       Tile(1, 2, TileType.road),
       Tile(4, 3, TileType.road),
-      Tile(2, 5, TileType.stair,
+      Tile(2, 1, TileType.road),
+      Tile(2, 4, TileType.stair,
+          bottom: 1,
+          left: 1,
+          right: 1,
+          stairType: const StairType(Axis.vertical, false, true)), // 階段331側下り
+      Tile(2, 4, TileType.stair,
           bottom: 1,
           left: 1,
           right: 1,
