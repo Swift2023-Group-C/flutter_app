@@ -10,8 +10,6 @@ Map<String, List<String>> findRoomsInUse(String jsonString) {
 
   Map<String, List<String>> resourceIds = {};
   DateTime now = DateTime.now();
-  //DateTime now = DateTime(2023, 9, 25, 11, 30);
-  print(now);
 
   for (var item in decodedData) {
     if (item is Map<String, dynamic>) {
