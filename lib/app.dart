@@ -22,10 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: customFunColor,
       ),
-      home: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: const MyStatefulWidget(),
-      ),
+      home: const MyStatefulWidget(),
     );
   }
 }
