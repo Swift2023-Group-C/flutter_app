@@ -22,6 +22,8 @@ const List<String> course = <String>[
 
 class _SettingScreenState extends State<SettingScreen> {
   final PageController _pageController = PageController();
+  final url = Uri.parse('https://swift2023groupc.web.app/');
+
   int _currentPageIndex = 0;
   TextEditingController _userKeyController = TextEditingController();
 
@@ -101,67 +103,113 @@ class _SettingScreenState extends State<SettingScreen> {
               },
               children: [
                 Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      DropdownButton<String>(
-                        value: dropdownValue1,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            dropdownValue1 = newValue!;
-                          });
-                        },
-                        items: <String>['なし', '1年', '2年', '3年', '4年']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                      DropdownButton<String>(
-                        value: dropdownValue2,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            dropdownValue2 = newValue!;
-                          });
-                        },
-                        items: <String>[
-                          'なし',
-                          '情報システム',
-                          '情報デザイン',
-                          '知能',
-                          '複雑',
-                          '高度ICT'
-                        ].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(
-                        controller: _userKeyController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'ユーザーキー',
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 50.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "学年:",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            DropdownButton<String>(
+                              value: dropdownValue1,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  dropdownValue1 = newValue!;
+                                });
+                              },
+                              items: <String>[
+                                'なし',
+                                '1年',
+                                '2年',
+                                '3年',
+                                '4年'
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                          ],
                         ),
-                      ),
-                      ElevatedButton(
-                        onPressed: _saveSettings,
-                        child: const Text("設定保存"),
-                      ),
-                      /*ElevatedButton(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "コース:",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            DropdownButton<String>(
+                              value: dropdownValue2,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  dropdownValue2 = newValue!;
+                                });
+                              },
+                              items: <String>[
+                                'なし',
+                                '情報システム',
+                                '情報デザイン',
+                                '知能',
+                                '複雑',
+                                '高度ICT'
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: _userKeyController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'ユーザーキー',
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: _saveSettings,
+                          child: const Text("設定保存"),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "ユーザーキーを設定する方法(PCで開くこと推奨)",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "https://swift2023groupc.web.app/",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                        /*ElevatedButton(
                         onPressed: _checkSettings,
                         child: const Text("保存設定を確認"),
                       )*/
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(
                   child: Center(
-                    child: Text('項目2の内容', style: TextStyle(fontSize: 24.0)),
+                    child: Text('項目２', style: TextStyle(fontSize: 24.0)),
                   ),
                 ),
                 const SizedBox(

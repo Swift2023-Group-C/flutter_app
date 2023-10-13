@@ -52,6 +52,7 @@ dependencies:
   intl: ^0.18.1
   uni_links: ^0.5.1
   path: ^1.8.3
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   flutter_test:
