@@ -23,8 +23,7 @@ class _MapGridScreenState extends State<MapGridScreen> {
       crossAxisCount: 48,
       itemCount: GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]!.length,
       itemBuilder: (BuildContext context, int index) {
-        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index]
-            .tileWidget();
+        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index];
       },
       staggeredTileBuilder: (int index) {
         return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index]
@@ -78,8 +77,7 @@ class _MapGridScreenState extends State<MapGridScreen> {
                 final tileIndex = GridMaps.mapTileListMap[floor]!
                     .indexWhere((tile) => tile.classroomNo == resourceId);
                 if (tileIndex != -1) {
-                  GridMaps.mapTileListMap[floor]![tileIndex]
-                      .setColor(TileColors.using);
+                  GridMaps.mapTileListMap[floor]![tileIndex].setUsing(true);
                 }
               }
             }
