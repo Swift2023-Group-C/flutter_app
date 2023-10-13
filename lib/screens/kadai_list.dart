@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/components/kadai.dart';
 import 'package:flutter_app/repository/firebase_get_kadai.dart';
+import '../components/setting_user_info.dart';
 import '../components/widgets/progress_indicator.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +21,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   List<bool> alertList = []; //通知管理
   List<bool> deleteList = []; //削除状態管理
   //List<Kadai> resetList = [];
+  String? userKey;
 
   void launchUrl(Uri url) async {
     // ignore: deprecated_member_use
@@ -95,6 +97,10 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     });
   }
 
+  Future<void> getUserKey() async {
+    userKey = await UserPreferences.getUserKey();
+  }
+
   String stringFromDateTime(DateTime? dt) {
     if (dt == null) {
       return "";
@@ -138,23 +144,12 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     loadFinishList();
     loadAlertList();
     loadDeleteList();
+    getUserKey();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //課題を戻せるように一旦設置
-      /*appBar: AppBar(
-        actions: [
-          IconButton(
-            splashColor: Colors.white,
-            onPressed: _resetDeleteList,
-            icon: const Icon(
-              Icons.restart_alt_outlined,
-            ),
-          ),
-        ],
-      ),*/
       body: FutureBuilder(
         future: const FirebaseGetKadai().getKadaiFromFirebase(),
         builder: (BuildContext context, AsyncSnapshot<List<Kadai>> snapshot) {
@@ -169,73 +164,77 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             if (deleteList.isEmpty) {
               deleteList = List<bool>.filled(data.length, true);
             }
-            return ListView.separated(
-              padding: const EdgeInsets.all(12.0),
-              itemCount: deleteList.where((element) => element).length,
-              itemBuilder: (context, index) {
-                int dataIndex = 0;
-                for (int i = 0; i < data.length; i++) {
-                  if (deleteList[i]) {
-                    if (index == dataIndex) {
-                      return Slidable(
-                        actionPane: const SlidableDrawerActionPane(),
-                        actionExtentRatio: 0.25,
-                        actions: <Widget>[
-                          IconSlideAction(
-                            caption: alertList[i] ? '通知off' : '通知on',
-                            color: alertList[i] ? Colors.red : Colors.green,
-                            icon: alertList[i]
-                                ? Icons.notifications_off_outlined
-                                : Icons.notifications_active_outlined,
-                            onTap: () {
-                              setState(() {
-                                alertList[i] = !alertList[i];
-                                saveAlertList();
-                              });
-                            },
-                          ),
-                        ],
-                        secondaryActions: [
-                          IconSlideAction(
-                            caption: '削除',
-                            color: Colors.red,
-                            icon: Icons.delete,
-                            onTap: () {
-                              _showDeleteConfirmation(i);
-                            },
-                          ),
-                          IconSlideAction(
-                            caption: finishList[i] ? '未完了' : '完了',
-                            color: finishList[i] ? Colors.blue : Colors.green,
-                            icon: Icons.check_circle_outline,
-                            onTap: () {
-                              setState(() {
-                                finishList[i] = !finishList[i];
-                                saveFinishList();
-                              });
-                            },
-                          ),
-                        ],
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 1,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+            return Column(children: [
+              ElevatedButton(
+                  onPressed: _resetDeleteList, child: const Text("リセット")),
+              Expanded(
+                  child: ListView.separated(
+                //padding: const EdgeInsets.all(12.0),
+                itemCount: deleteList.where((element) => element).length,
+                itemBuilder: (context, index) {
+                  int dataIndex = 0;
+                  for (int i = 0; i < data.length; i++) {
+                    if (deleteList[i]) {
+                      if (index == dataIndex) {
+                        return Slidable(
+                          actionPane: const SlidableDrawerActionPane(),
+                          actionExtentRatio: 0.25,
+                          actions: <Widget>[
+                            IconSlideAction(
+                              caption: alertList[i] ? '通知off' : '通知on',
+                              color: alertList[i] ? Colors.red : Colors.green,
+                              icon: alertList[i]
+                                  ? Icons.notifications_off_outlined
+                                  : Icons.notifications_active_outlined,
+                              onTap: () {
+                                setState(() {
+                                  alertList[i] = !alertList[i];
+                                  saveAlertList();
+                                });
+                              },
                             ),
-                            /*trailing: SizedBox(
+                          ],
+                          secondaryActions: [
+                            IconSlideAction(
+                              caption: '削除',
+                              color: Colors.red,
+                              icon: Icons.delete,
+                              onTap: () {
+                                _showDeleteConfirmation(i);
+                              },
+                            ),
+                            IconSlideAction(
+                              caption: finishList[i] ? '未完了' : '完了',
+                              color: finishList[i] ? Colors.blue : Colors.green,
+                              icon: Icons.check_circle_outline,
+                              onTap: () {
+                                setState(() {
+                                  finishList[i] = !finishList[i];
+                                  saveFinishList();
+                                });
+                              },
+                            ),
+                          ],
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.3),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              /*trailing: SizedBox(
                               width: 96.0,
                               child: Row(
                                 children: [
@@ -274,77 +273,87 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                 ],
                               ),
                             ),*/
-                            title: Text(
-                              data[i].name!,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    finishList[i] ? Colors.green : Colors.black,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  data[i].courseName!,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: finishList[i]
-                                        ? Colors.green
-                                        : Colors.black54,
-                                  ),
+                              title: Text(
+                                data[i].name!,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: finishList[i]
+                                      ? Colors.green
+                                      : Colors.black,
                                 ),
-                                if ((data[i].endtime != null))
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Text(
-                                    "終了：${stringFromDateTime(data[i].endtime)}",
+                                    data[i].courseName!,
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 14,
                                       color: finishList[i]
                                           ? Colors.green
-                                          : Colors.black45,
+                                          : Colors.black54,
                                     ),
                                   ),
-                              ],
-                            ),
-                            leading: Column(
-                              children: [
-                                /*Icon(
+                                  if ((data[i].endtime != null))
+                                    Text(
+                                      "終了：${stringFromDateTime(data[i].endtime)}",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: finishList[i]
+                                            ? Colors.green
+                                            : Colors.black45,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              leading: Column(
+                                children: [
+                                  /*Icon(
                                   finishList[i] ? Icons.done : Icons.task,
                                   size: 20,
                                   color: finishList[i]
                                       ? Colors.green
                                       : Colors.grey,
                                 ),*/
-                                const SizedBox(
-                                  height: 8,
-                                  width: 5,
-                                ),
-                                Icon(
-                                  alertList[i]
-                                      ? Icons.notifications_active_outlined
-                                      : Icons.notifications_off_outlined,
-                                  size: 30,
-                                  color:
-                                      alertList[i] ? Colors.green : Colors.grey,
-                                ),
-                              ],
+                                  const SizedBox(
+                                    height: 8,
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    alertList[i]
+                                        ? Icons.notifications_active_outlined
+                                        : Icons.notifications_off_outlined,
+                                    size: 30,
+                                    color: alertList[i]
+                                        ? Colors.green
+                                        : Colors.grey,
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                final url = Uri.parse(data[i].url!);
+                                launchUrl(url);
+                              },
                             ),
-                            onTap: () {
-                              final url = Uri.parse(data[i].url!);
-                              launchUrl(url);
-                            },
                           ),
-                        ),
-                      );
+                        );
+                      }
+                      dataIndex++;
                     }
-                    dataIndex++;
                   }
-                }
-                return Container();
-              },
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
-            );
+                  return Container();
+                },
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
+              )),
+            ]);
+          } else if (snapshot.hasError) {
+            // 設定してね画面
+            return const Column(children: [
+              Text("ユーザーキーが設定されていません"),
+              Text("https://swift2023groupc.web.app/"),
+            ]);
           } else {
             return createProgressIndicator();
           }

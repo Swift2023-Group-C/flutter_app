@@ -24,6 +24,7 @@ class FirebaseGetKadai {
       });
     } else {
       print('No data available.');
+      throw Exception();
     }
     returnList.sort(((a, b) {
       if (a.endtime == null) {
