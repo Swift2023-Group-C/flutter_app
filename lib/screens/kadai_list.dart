@@ -144,7 +144,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       //課題を戻せるように一旦設置
-      appBar: AppBar(
+      /*appBar: AppBar(
         actions: [
           IconButton(
             splashColor: Colors.white,
@@ -154,7 +154,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             ),
           ),
         ],
-      ),
+      ),*/
       body: FutureBuilder(
         future: const FirebaseGetKadai().getKadaiFromFirebase(),
         builder: (BuildContext context, AsyncSnapshot<List<Kadai>> snapshot) {
@@ -180,6 +180,21 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                       return Slidable(
                         actionPane: const SlidableDrawerActionPane(),
                         actionExtentRatio: 0.25,
+                        actions: <Widget>[
+                          IconSlideAction(
+                            caption: alertList[i] ? '通知off' : '通知on',
+                            color: alertList[i] ? Colors.red : Colors.green,
+                            icon: alertList[i]
+                                ? Icons.notifications_off_outlined
+                                : Icons.notifications_active_outlined,
+                            onTap: () {
+                              setState(() {
+                                alertList[i] = !alertList[i];
+                                saveAlertList();
+                              });
+                            },
+                          ),
+                        ],
                         secondaryActions: [
                           IconSlideAction(
                             caption: '削除',
@@ -198,7 +213,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                 finishList[i] = !finishList[i];
                                 saveFinishList();
                               });
-                              //_showDeleteConfirmation(i);
                             },
                           ),
                         ],
@@ -265,9 +279,8 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: finishList[i]
-                                    ? Colors.green
-                                    : Colors.black, // <--- Adjust color here
+                                color:
+                                    finishList[i] ? Colors.green : Colors.black,
                               ),
                             ),
                             subtitle: Column(
@@ -279,8 +292,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                     fontSize: 14,
                                     color: finishList[i]
                                         ? Colors.green
-                                        : Colors
-                                            .black54, // <--- Adjust color here
+                                        : Colors.black54,
                                   ),
                                 ),
                                 if ((data[i].endtime != null))
@@ -290,17 +302,34 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                       fontSize: 12,
                                       color: finishList[i]
                                           ? Colors.green
-                                          : Colors
-                                              .black45, // <--- Adjust color here
+                                          : Colors.black45,
                                     ),
                                   ),
                               ],
                             ),
-                            leading: finishList[i]
-                                ? const Icon(Icons.check,
-                                    color: Colors
-                                        .green) // <--- Add check icon if finished
-                                : null,
+                            leading: Column(
+                              children: [
+                                /*Icon(
+                                  finishList[i] ? Icons.done : Icons.task,
+                                  size: 20,
+                                  color: finishList[i]
+                                      ? Colors.green
+                                      : Colors.grey,
+                                ),*/
+                                const SizedBox(
+                                  height: 8,
+                                  width: 5,
+                                ),
+                                Icon(
+                                  alertList[i]
+                                      ? Icons.notifications_active_outlined
+                                      : Icons.notifications_off_outlined,
+                                  size: 30,
+                                  color:
+                                      alertList[i] ? Colors.green : Colors.grey,
+                                ),
+                              ],
+                            ),
                             onTap: () {
                               final url = Uri.parse(data[i].url!);
                               launchUrl(url);
@@ -312,10 +341,9 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                     dataIndex++;
                   }
                 }
-                return Container(); // Should not reach here
+                return Container();
               },
-              separatorBuilder: (context, index) =>
-                  const SizedBox(height: 10), // Adjust the space between items
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
             );
           } else {
             return createProgressIndicator();
