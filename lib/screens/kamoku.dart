@@ -96,237 +96,241 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          SearchBox(
-            onSearch: searchClasses,
-          ),
-          Visibility(
-            visible: isFiltersVisible,
-            child: Column(
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(
+          children: [
+            SearchBox(
+              onSearch: searchClasses,
+            ),
+            Visibility(
+              visible: isFiltersVisible,
+              child: Column(
+                children: [
+                  buildFilterRow(term, termCheckedList),
+                  buildFilterRow(grade, gradeCheckedList),
+                  buildFilterRow(courseStr, courseStrCheckedList),
+                  buildFilterRow(classification, classificationCheckedList),
+                  buildFilterRow(education, educationCheckedList),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  isFiltersVisible = !isFiltersVisible;
+                });
+              },
+              child: Text(isFiltersVisible ? 'フィルター非表示' : 'フィルター表示'),
+            ),
+            // Align(
+            //   alignment: const AlignmentDirectional(-1.00, 0.00),
+            //   child: SingleChildScrollView(
+            //     scrollDirection: Axis.horizontal,
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.start,
+            //       children: [
+            //         for (int i = 0; i < term.length; i++)
+            //           Row(
+            //             children: [
+            //               Checkbox(
+            //                 value: termCheckedList[i], // チェック状態を取得
+            //                 onChanged: (bool? value) {
+            //                   setState(() {
+            //                     termCheckedList[i] = value ?? false; // チェック状態を更新
+            //                   });
+            //                 },
+            //               ),
+            //               Text(term[i]),
+            //             ],
+            //           ),
+            //         const SizedBox(width: 20),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // Align(
+            //   alignment: const AlignmentDirectional(-1.00, 0.00),
+            //   child: SingleChildScrollView(
+            //     scrollDirection: Axis.horizontal,
+            //     child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            //       for (int i = 0; i < grade.length; i++)
+            //         Row(
+            //           children: [
+            //             Checkbox(
+            //               value: gradeCheckedList[i], // チェック状態を取得
+            //               onChanged: (bool? value) {
+            //                 setState(() {
+            //                   gradeCheckedList[i] = value ?? false; // チェック状態を更新
+            //                 });
+            //               },
+            //             ),
+            //             Text(grade[i]),
+            //           ],
+            //         ),
+            //       const SizedBox(width: 20),
+            //     ]),
+            //   ),
+            // ),
+            // Align(
+            //   alignment: const AlignmentDirectional(-1.00, 0.00),
+            //   child: SingleChildScrollView(
+            //     scrollDirection: Axis.horizontal,
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.start,
+            //       children: [
+            //         for (int i = 0; i < courseStr.length; i++)
+            //           Row(
+            //             children: [
+            //               Checkbox(
+            //                 value: courseStrCheckedList[i], // チェック状態を取得
+            //                 onChanged: (bool? value) {
+            //                   setState(() {
+            //                     courseStrCheckedList[i] =
+            //                         value ?? false; // チェック状態を更新
+            //                   });
+            //                 },
+            //               ),
+            //               Text(courseStr[i]),
+            //             ],
+            //           ),
+            //         const SizedBox(width: 20),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // Align(
+            //   alignment: const AlignmentDirectional(-1.00, 0.00),
+            //   child: SingleChildScrollView(
+            //     scrollDirection: Axis.horizontal,
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.start,
+            //       children: [
+            //         for (int i = 0; i < classification.length; i++)
+            //           Row(
+            //             children: [
+            //               Checkbox(
+            //                 value: classificationCheckedList[i], // チェック状態を取得
+            //                 onChanged: (bool? value) {
+            //                   setState(() {
+            //                     classificationCheckedList[i] =
+            //                         value ?? false; // チェック状態を更新
+            //                   });
+            //                 },
+            //               ),
+            //               Text(classification[i]),
+            //             ],
+            //           ),
+            //         const SizedBox(width: 20),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // Align(
+            //   alignment: const AlignmentDirectional(-1.00, 0.00),
+            //   child: SingleChildScrollView(
+            //     scrollDirection: Axis.horizontal,
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.start,
+            //       children: [
+            //         for (int i = 0; i < education.length; i++)
+            //           Row(
+            //             children: [
+            //               Checkbox(
+            //                 value: educationCheckedList[i], // チェック状態を取得
+            //                 onChanged: (bool? value) {
+            //                   setState(() {
+            //                     educationCheckedList[i] =
+            //                         value ?? false; // チェック状態を更新
+            //                   });
+            //                 },
+            //               ),
+            //               Text(education[i]),
+            //             ],
+            //           ),
+            //         const SizedBox(width: 20),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            Row(
               children: [
-                buildFilterRow(term, termCheckedList),
-                buildFilterRow(grade, gradeCheckedList),
-                buildFilterRow(courseStr, courseStrCheckedList),
-                buildFilterRow(classification, classificationCheckedList),
-                buildFilterRow(education, educationCheckedList),
+                TextButton(
+                  onPressed: () {
+                    // ボタンをクリックしたら全選択状態を切り替える
+                    toggleAll();
+                  },
+                  child: Text(allSelected ? 'すべて解除' : 'すべて選択'),
+                ),
+                TextButton(
+                    onPressed: () {
+                      trueAll();
+                    },
+                    child: const Text('全選択')),
+                TextButton(
+                    onPressed: () {
+                      falseAll();
+                    },
+                    child: const Text('リセット')),
+                ElevatedButton(
+                    onPressed: () async {
+                      termlist.clear();
+                      gradelist.clear();
+                      courseStrlist.clear();
+                      classlist.clear();
+                      educationlist.clear();
+                      for (int i = 0; i < term.length; i++) {
+                        if (termCheckedList[i] == true) {
+                          termlist.add(i);
+                        }
+                      }
+                      for (int i = 0; i < grade.length; i++) {
+                        if (gradeCheckedList[i] == true) {
+                          gradelist.add(i);
+                        }
+                      }
+                      for (int i = 0; i < courseStr.length; i++) {
+                        if (courseStrCheckedList[i] == true) {
+                          courseStrlist.add(i);
+                        }
+                      }
+                      for (int i = 0; i < classification.length; i++) {
+                        if (classificationCheckedList[i] == true) {
+                          classlist.add(i);
+                        }
+                      }
+                      for (int i = 0; i < education.length; i++) {
+                        if (educationCheckedList[i] == true) {
+                          educationlist.add(i);
+                        }
+                      }
+                      List<Map<String, dynamic>> records = await search(
+                          term: termlist,
+                          grade: gradelist,
+                          courseStr: courseStrlist,
+                          classification: classlist,
+                          education: educationlist);
+                      //print(records);
+                      setState(() {
+                        _searchResults = records;
+                      });
+                    },
+                    child: const Text('検索の実行')),
               ],
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                isFiltersVisible = !isFiltersVisible;
-              });
-            },
-            child: Text(isFiltersVisible ? 'フィルター非表示' : 'フィルター表示'),
-          ),
-          // Align(
-          //   alignment: const AlignmentDirectional(-1.00, 0.00),
-          //   child: SingleChildScrollView(
-          //     scrollDirection: Axis.horizontal,
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.start,
-          //       children: [
-          //         for (int i = 0; i < term.length; i++)
-          //           Row(
-          //             children: [
-          //               Checkbox(
-          //                 value: termCheckedList[i], // チェック状態を取得
-          //                 onChanged: (bool? value) {
-          //                   setState(() {
-          //                     termCheckedList[i] = value ?? false; // チェック状態を更新
-          //                   });
-          //                 },
-          //               ),
-          //               Text(term[i]),
-          //             ],
-          //           ),
-          //         const SizedBox(width: 20),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          // Align(
-          //   alignment: const AlignmentDirectional(-1.00, 0.00),
-          //   child: SingleChildScrollView(
-          //     scrollDirection: Axis.horizontal,
-          //     child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          //       for (int i = 0; i < grade.length; i++)
-          //         Row(
-          //           children: [
-          //             Checkbox(
-          //               value: gradeCheckedList[i], // チェック状態を取得
-          //               onChanged: (bool? value) {
-          //                 setState(() {
-          //                   gradeCheckedList[i] = value ?? false; // チェック状態を更新
-          //                 });
-          //               },
-          //             ),
-          //             Text(grade[i]),
-          //           ],
-          //         ),
-          //       const SizedBox(width: 20),
-          //     ]),
-          //   ),
-          // ),
-          // Align(
-          //   alignment: const AlignmentDirectional(-1.00, 0.00),
-          //   child: SingleChildScrollView(
-          //     scrollDirection: Axis.horizontal,
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.start,
-          //       children: [
-          //         for (int i = 0; i < courseStr.length; i++)
-          //           Row(
-          //             children: [
-          //               Checkbox(
-          //                 value: courseStrCheckedList[i], // チェック状態を取得
-          //                 onChanged: (bool? value) {
-          //                   setState(() {
-          //                     courseStrCheckedList[i] =
-          //                         value ?? false; // チェック状態を更新
-          //                   });
-          //                 },
-          //               ),
-          //               Text(courseStr[i]),
-          //             ],
-          //           ),
-          //         const SizedBox(width: 20),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          // Align(
-          //   alignment: const AlignmentDirectional(-1.00, 0.00),
-          //   child: SingleChildScrollView(
-          //     scrollDirection: Axis.horizontal,
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.start,
-          //       children: [
-          //         for (int i = 0; i < classification.length; i++)
-          //           Row(
-          //             children: [
-          //               Checkbox(
-          //                 value: classificationCheckedList[i], // チェック状態を取得
-          //                 onChanged: (bool? value) {
-          //                   setState(() {
-          //                     classificationCheckedList[i] =
-          //                         value ?? false; // チェック状態を更新
-          //                   });
-          //                 },
-          //               ),
-          //               Text(classification[i]),
-          //             ],
-          //           ),
-          //         const SizedBox(width: 20),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          // Align(
-          //   alignment: const AlignmentDirectional(-1.00, 0.00),
-          //   child: SingleChildScrollView(
-          //     scrollDirection: Axis.horizontal,
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.start,
-          //       children: [
-          //         for (int i = 0; i < education.length; i++)
-          //           Row(
-          //             children: [
-          //               Checkbox(
-          //                 value: educationCheckedList[i], // チェック状態を取得
-          //                 onChanged: (bool? value) {
-          //                   setState(() {
-          //                     educationCheckedList[i] =
-          //                         value ?? false; // チェック状態を更新
-          //                   });
-          //                 },
-          //               ),
-          //               Text(education[i]),
-          //             ],
-          //           ),
-          //         const SizedBox(width: 20),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          Row(
-            children: [
-              TextButton(
-                onPressed: () {
-                  // ボタンをクリックしたら全選択状態を切り替える
-                  toggleAll();
-                },
-                child: Text(allSelected ? 'すべて解除' : 'すべて選択'),
-              ),
-              TextButton(
-                  onPressed: () {
-                    trueAll();
-                  },
-                  child: const Text('全選択')),
-              TextButton(
-                  onPressed: () {
-                    falseAll();
-                  },
-                  child: const Text('リセット')),
-              ElevatedButton(
-                  onPressed: () async {
-                    termlist.clear();
-                    gradelist.clear();
-                    courseStrlist.clear();
-                    classlist.clear();
-                    educationlist.clear();
-                    for (int i = 0; i < term.length; i++) {
-                      if (termCheckedList[i] == true) {
-                        termlist.add(i);
-                      }
-                    }
-                    for (int i = 0; i < grade.length; i++) {
-                      if (gradeCheckedList[i] == true) {
-                        gradelist.add(i);
-                      }
-                    }
-                    for (int i = 0; i < courseStr.length; i++) {
-                      if (courseStrCheckedList[i] == true) {
-                        courseStrlist.add(i);
-                      }
-                    }
-                    for (int i = 0; i < classification.length; i++) {
-                      if (classificationCheckedList[i] == true) {
-                        classlist.add(i);
-                      }
-                    }
-                    for (int i = 0; i < education.length; i++) {
-                      if (educationCheckedList[i] == true) {
-                        educationlist.add(i);
-                      }
-                    }
-                    List<Map<String, dynamic>> records = await search(
-                        term: termlist,
-                        grade: gradelist,
-                        courseStr: courseStrlist,
-                        classification: classlist,
-                        education: educationlist);
-                    //print(records);
-                    setState(() {
-                      _searchResults = records;
-                    });
-                  },
-                  child: const Text('検索の実行')),
-            ],
-          ),
-          const Text(
-            '結果一覧',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(
-            //よくわからんけどこれがあると授業名検索結果が表示される
-            child: _searchResults == null
-                ? Container()
-                : SearchResults(records: _searchResults!),
-          ),
-        ],
+            const Text(
+              '結果一覧',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Expanded(
+              //よくわからんけどこれがあると授業名検索結果が表示される
+              child: _searchResults == null
+                  ? Container()
+                  : SearchResults(records: _searchResults!),
+            ),
+          ],
+        ),
       ),
     );
   }
