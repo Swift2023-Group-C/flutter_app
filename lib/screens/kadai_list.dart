@@ -350,10 +350,25 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             ]);
           } else if (snapshot.hasError) {
             // 設定してね画面
-            return const Column(children: [
-              Text("ユーザーキーが設定されていません"),
-              Text("https://swift2023groupc.web.app/"),
-            ]);
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "ユーザーキーが設定されていません",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Text(
+                    "以下のURLから設定してください",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Text(
+                    "https://swift2023groupc.web.app/",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            );
           } else {
             return createProgressIndicator();
           }
