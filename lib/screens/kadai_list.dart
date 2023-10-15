@@ -234,45 +234,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              /*trailing: SizedBox(
-                              width: 96.0,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    splashColor: Colors.white,
-                                    onPressed: () {
-                                      setState(() {
-                                        alertList[i] = !alertList[i];
-                                        saveAlertList();
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.circle_notifications_outlined,
-                                      size: 40,
-                                      color: alertList[i]
-                                          ? Colors.green
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    splashColor: Colors.white,
-                                    onPressed: () {
-                                      setState(() {
-                                        finishList[i] = !finishList[i];
-                                        saveFinishList();
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.check_circle_outline_outlined,
-                                      size: 40,
-                                      color: finishList[i]
-                                          ? Colors.green
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),*/
                               title: Text(
                                 data[i].name!,
                                 style: TextStyle(
@@ -363,6 +324,10 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                     style: TextStyle(fontSize: 20),
                   ),
                   Text(
+                    "パソコンでの設定をおすすめします",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  SelectableText(
                     "https://swift2023groupc.web.app/",
                     style: TextStyle(fontSize: 20),
                   ),

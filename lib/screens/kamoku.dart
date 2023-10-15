@@ -101,9 +101,28 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Column(
         children: [
-          SearchBox(
-            onSearch: searchClasses,
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 36,
+            ),
+            child: TextField(
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+              ),
+              decoration: const InputDecoration(
+                hintText: '授業名を検索',
+              ),
+              onChanged: (text) {
+                searchClasses(text);
+              },
+            ),
           ),
+
+          /*SearchBox(
+            onSearch: searchClasses,
+          ),*/
           Visibility(
             visible: isFiltersVisible,
             child: Column(
