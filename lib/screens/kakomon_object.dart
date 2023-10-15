@@ -26,32 +26,32 @@ class _KakomonObjectScreenState extends State<KakomonObjectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.filename),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.share),
-              onPressed: () async {
-                if (dataUint != null) {
-                  final temp = await getTemporaryDirectory();
-                  final path = '${temp.path}/${widget.filename}';
-                  File(path).writeAsBytesSync(dataUint as List<int>);
-                  await Share.shareXFiles([XFile(path)]);
-                }
-              },
-            ),
-          ],
-        ),
-        body: FutureBuilder(
-            future: getListObjectsString(),
-            builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-              if (snapshot.hasData) {
-                return KakomonObjectIfType(
-                    url: widget.url, data: snapshot.data!);
-              } else {
-                return Center(child: createProgressIndicator());
+      appBar: AppBar(
+        title: Text(widget.filename),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () async {
+              if (dataUint != null) {
+                final temp = await getTemporaryDirectory();
+                final path = '${temp.path}/${widget.filename}';
+                File(path).writeAsBytesSync(dataUint as List<int>);
+                await Share.shareXFiles([XFile(path)]);
               }
-            }));
+            },
+          ),
+        ],
+      ),
+      body: FutureBuilder(
+          future: getListObjectsString(),
+          builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+            if (snapshot.hasData) {
+              return KakomonObjectIfType(url: widget.url, data: snapshot.data!);
+            } else {
+              return Center(child: createProgressIndicator());
+            }
+          }),
+    );
   }
 
   Future<Uint8List> getListObjectsString() async {

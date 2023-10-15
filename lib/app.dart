@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'Project 03 Group C',
       theme: ThemeData(
         primarySwatch: customFunColor,
+        fontFamily: 'Murecho',
       ),
       home: const MyStatefulWidget(),
     );
