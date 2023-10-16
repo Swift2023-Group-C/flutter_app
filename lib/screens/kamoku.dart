@@ -242,4 +242,37 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
       ),
     );
   }
+  /*チェックボックスが枠内に収まるバージョン
+  Widget buildFilterRow(List<String> items, List<bool> checkedList) {
+  return Align(
+    alignment: const AlignmentDirectional(-1.00, 0.00),
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          for (int i = 0; i < items.length; i++)
+            Row(
+              children: [
+                Checkbox(
+                  value: checkedList[i],
+                  onChanged: (bool? value) {
+                    setState(() {
+                      checkedList[i] = value ?? false;
+                    });
+                  },
+                  visualDensity: VisualDensity(
+                    horizontal: -4, // チェックボックスの幅を小さく調整
+                    vertical: -4, // チェックボックスの高さを小さく調整
+                  ),
+                ),
+                Text(items[i]),
+              ],
+            ),
+          const SizedBox(width: 20),
+        ],
+      ),
+    ),
+  );
+}*/
 }
