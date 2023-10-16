@@ -11,6 +11,8 @@ class KamokuSearchScreen extends StatefulWidget {
 class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   bool isFiltersVisible = true;
   List<Map<String, dynamic>>? _searchResults;
+  var word = '';
+  final TextEditingController _controller = TextEditingController();
 
   List<String> term = ['前期', '後期', '通年'];
   List<String> grade = ['1年', '2年', '3年', '4年', '教養', '専門'];
@@ -34,13 +36,11 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   bool alltrue = true;
   bool allfalse = false;
 
-  void searchClasses(String searchText) {
-    fetchRecords().then((records) {
-      setState(() {
-        _searchResults = records
-            .where((record) => record['授業名'].toString().contains(searchText))
-            .toList();
-      });
+  void searchClasses(String searchText, List<Map<String, dynamic>> records) {
+    setState(() {
+      _searchResults = records
+          .where((record) => record['授業名'].toString().contains(searchText))
+          .toList();
     });
   }
 
@@ -107,6 +107,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
               horizontal: 36,
             ),
             child: TextField(
+              controller: _controller,
               style: const TextStyle(
                 fontSize: 18,
                 color: Colors.black,
@@ -115,14 +116,10 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                 hintText: '授業名を検索',
               ),
               onChanged: (text) {
-                searchClasses(text);
+                word = text;
               },
             ),
           ),
-
-          /*SearchBox(
-            onSearch: searchClasses,
-          ),*/
           Visibility(
             visible: isFiltersVisible,
             child: Column(
@@ -195,10 +192,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                   courseStr: courseStrlist,
                   classification: classlist,
                   education: educationlist);
-              //print(records);
-              setState(() {
-                _searchResults = records;
-              });
+              searchClasses(word, records);
             },
             child: const Text(
               '検索の実行',
@@ -211,7 +205,6 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Expanded(
-            //よくわからんけどこれがあると授業名検索結果が表示される
             child: _searchResults == null
                 ? Container()
                 : SearchResults(records: _searchResults!),
