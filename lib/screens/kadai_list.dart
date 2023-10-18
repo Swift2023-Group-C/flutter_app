@@ -177,44 +177,52 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                     if (deleteList[i]) {
                       if (index == dataIndex) {
                         return Slidable(
-                          actionPane: const SlidableDrawerActionPane(),
-                          actionExtentRatio: 0.25,
-                          actions: <Widget>[
-                            IconSlideAction(
-                              caption: alertList[i] ? '通知off' : '通知on',
-                              color: alertList[i] ? Colors.red : Colors.green,
-                              icon: alertList[i]
-                                  ? Icons.notifications_off_outlined
-                                  : Icons.notifications_active_outlined,
-                              onTap: () {
-                                setState(() {
-                                  alertList[i] = !alertList[i];
-                                  saveAlertList();
-                                });
-                              },
-                            ),
-                          ],
-                          secondaryActions: [
-                            IconSlideAction(
-                              caption: '削除',
-                              color: Colors.red,
-                              icon: Icons.delete,
-                              onTap: () {
-                                _showDeleteConfirmation(i);
-                              },
-                            ),
-                            IconSlideAction(
-                              caption: finishList[i] ? '未完了' : '完了',
-                              color: finishList[i] ? Colors.blue : Colors.green,
-                              icon: Icons.check_circle_outline,
-                              onTap: () {
-                                setState(() {
-                                  finishList[i] = !finishList[i];
-                                  saveFinishList();
-                                });
-                              },
-                            ),
-                          ],
+                          startActionPane: ActionPane(
+                            motion: const DrawerMotion(),
+                            extentRatio: 0.25,
+                            children: [
+                              SlidableAction(
+                                label: alertList[i] ? '通知off' : '通知on',
+                                backgroundColor:
+                                    alertList[i] ? Colors.red : Colors.green,
+                                icon: alertList[i]
+                                    ? Icons.notifications_off_outlined
+                                    : Icons.notifications_active_outlined,
+                                onPressed: (context) {
+                                  setState(() {
+                                    alertList[i] = !alertList[i];
+                                    saveAlertList();
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          endActionPane: ActionPane(
+                            motion: const DrawerMotion(),
+                            extentRatio: 0.5,
+                            children: [
+                              SlidableAction(
+                                label: '削除',
+                                backgroundColor: Colors.red,
+                                icon: Icons.delete,
+                                onPressed: (context) {
+                                  _showDeleteConfirmation(i);
+                                },
+                              ),
+                              SlidableAction(
+                                label: finishList[i] ? '未完了' : '完了',
+                                backgroundColor:
+                                    finishList[i] ? Colors.blue : Colors.green,
+                                icon: Icons.check_circle_outline,
+                                onPressed: (context) {
+                                  setState(() {
+                                    finishList[i] = !finishList[i];
+                                    saveFinishList();
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
