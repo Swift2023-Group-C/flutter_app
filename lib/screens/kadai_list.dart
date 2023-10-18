@@ -234,45 +234,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              /*trailing: SizedBox(
-                              width: 96.0,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    splashColor: Colors.white,
-                                    onPressed: () {
-                                      setState(() {
-                                        alertList[i] = !alertList[i];
-                                        saveAlertList();
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.circle_notifications_outlined,
-                                      size: 40,
-                                      color: alertList[i]
-                                          ? Colors.green
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    splashColor: Colors.white,
-                                    onPressed: () {
-                                      setState(() {
-                                        finishList[i] = !finishList[i];
-                                        saveFinishList();
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.check_circle_outline_outlined,
-                                      size: 40,
-                                      color: finishList[i]
-                                          ? Colors.green
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),*/
                               title: Text(
                                 data[i].name!,
                                 style: TextStyle(
@@ -350,10 +311,29 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             ]);
           } else if (snapshot.hasError) {
             // 設定してね画面
-            return const Column(children: [
-              Text("ユーザーキーが設定されていません"),
-              Text("https://swift2023groupc.web.app/"),
-            ]);
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "ユーザーキーが設定されていません",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Text(
+                    "以下のURLから設定してください",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Text(
+                    "パソコンでの設定をおすすめします",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  SelectableText(
+                    "https://swift2023groupc.web.app/",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            );
           } else {
             return createProgressIndicator();
           }
