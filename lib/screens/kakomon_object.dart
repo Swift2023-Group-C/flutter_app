@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
-import '../components/s3.dart';
+import 'package:flutter_app/components/s3.dart';
 import 'dart:typed_data';
-import '../components/widgets/progress_indicator.dart';
+import 'package:flutter_app/components/widgets/progress_indicator.dart';
 import 'package:share_plus/share_plus.dart';
 
 class KakomonObjectScreen extends StatefulWidget {

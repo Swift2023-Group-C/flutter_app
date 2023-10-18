@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutter_app/components/map_controller.dart';
 
 enum TileType {
   classroom,
@@ -16,7 +15,9 @@ enum TileType {
 
 abstract final class TileColors {
   static Color get room => Colors.grey.shade700;
-  static Color get room2 => Colors.grey.shade500;
+  static Color get teacherRoom => Colors.grey.shade600;
+  static Color get subRoom => Colors.grey.shade500;
+  static Color get room2 => Colors.grey.shade400;
   static Color get road => Colors.grey.shade300;
   static Color get toilet => Colors.red.shade200;
   //static Color get stair => Colors.blueGrey.shade600;
@@ -81,10 +82,10 @@ class Tile extends StatelessWidget {
         tileColor = TileColors.room;
         break;
       case TileType.teacherroom:
-        tileColor = TileColors.room;
+        tileColor = TileColors.teacherRoom;
         break;
       case TileType.subroom:
-        tileColor = TileColors.room;
+        tileColor = TileColors.subRoom;
         break;
       case TileType.otherroom:
         tileColor = TileColors.room2;
@@ -114,6 +115,7 @@ class Tile extends StatelessWidget {
 
   void setUsing(bool u) {
     using = u;
+    tileColor = TileColors.using;
   }
 
   void setLessonIds(List<String> lIds) {
@@ -286,38 +288,46 @@ abstract final class GridMaps {
       Tile(6, 4, TileType.otherroom, right: 1),
       Tile(1, 6, TileType.road, left: 1),
       Tile(1, 6, TileType.otherroom),
-      Tile(4, 2, TileType.otherroom),
-      Tile(6, 2, TileType.otherroom),
+      Tile(2, 2, TileType.teacherroom, txt: '155'),
+      Tile(2, 2, TileType.teacherroom, txt: '154'),
+      Tile(2, 2, TileType.teacherroom, txt: '153'),
+      Tile(2, 2, TileType.teacherroom, txt: '152'),
+      Tile(2, 2, TileType.teacherroom, txt: '151'),
       Tile(1, 6, TileType.road),
       Tile(3, 6, TileType.wc, wc: 0x1101), // アトリエ側トイレ
       Tile(2, 2, TileType.otherroom),
-      Tile(6, 2, TileType.otherroom),
-      Tile(6, 2, TileType.otherroom),
-      Tile(4, 2, TileType.otherroom),
+      Tile(2, 2, TileType.teacherroom, txt: '150'),
+      Tile(2, 2, TileType.teacherroom, txt: '149'),
+      Tile(2, 2, TileType.teacherroom, txt: '148'),
+      Tile(2, 2, TileType.teacherroom, txt: '147'),
+      Tile(2, 2, TileType.teacherroom, txt: '146'),
+      Tile(2, 2, TileType.teacherroom, txt: '145'),
+      Tile(2, 2, TileType.teacherroom, txt: '144'),
+      Tile(2, 2, TileType.teacherroom, txt: '143'),
       Tile(2, 2, TileType.wc, wc: 0x0100), // 食堂側トイレ
       Tile(1, 6, TileType.road),
       Tile(3, 2, TileType.wc, wc: 0x1010), // 食堂側トイレ
-      Tile(2, 4, TileType.classroom, txt: '135'), //135
-      Tile(2, 4, TileType.classroom, txt: '134'), //134
-      Tile(2, 4, TileType.classroom, txt: '133'), //133
-      Tile(2, 4, TileType.classroom, txt: '132'), //132
-      Tile(2, 4, TileType.classroom, txt: '131'), //131
+      Tile(2, 4, TileType.teacherroom, txt: '135'), //135
+      Tile(2, 4, TileType.teacherroom, txt: '134'), //134
+      Tile(2, 4, TileType.teacherroom, txt: '133'), //133
+      Tile(2, 4, TileType.teacherroom, txt: '132'), //132
+      Tile(2, 4, TileType.teacherroom, txt: '131'), //131
       Tile(2, 4, TileType.stair,
           top: 1,
           left: 1,
           right: 1,
           stairType: const StairType(Axis.vertical, true, false)),
-      Tile(2, 4, TileType.classroom, txt: '130'), //130
-      Tile(2, 4, TileType.classroom, txt: '129'), //129
-      Tile(2, 4, TileType.classroom, txt: '128'), //128
-      Tile(2, 4, TileType.classroom, txt: '127'), //127
-      Tile(2, 4, TileType.classroom, txt: '126'), //126
-      Tile(2, 4, TileType.classroom, txt: '125'), //125
-      Tile(2, 4, TileType.classroom, txt: '124'), //124
-      Tile(2, 4, TileType.classroom, txt: '123'), //123
-      Tile(2, 4, TileType.classroom, txt: '122'), //122
+      Tile(2, 4, TileType.teacherroom, txt: '130'), //130
+      Tile(2, 4, TileType.teacherroom, txt: '129'), //129
+      Tile(2, 4, TileType.teacherroom, txt: '128'), //128
+      Tile(2, 4, TileType.teacherroom, txt: '127'), //127
+      Tile(2, 4, TileType.teacherroom, txt: '126'), //126
+      Tile(2, 4, TileType.teacherroom, txt: '125'), //125
+      Tile(2, 4, TileType.teacherroom, txt: '124'), //124
+      Tile(2, 4, TileType.teacherroom, txt: '123'), //123
+      Tile(2, 4, TileType.subroom, txt: '122'), //122
       Tile(1, 4, TileType.otherroom),
-      Tile(2, 4, TileType.classroom, txt: '121'), //121
+      Tile(2, 4, TileType.subroom, txt: '121'), //121
       Tile(2, 4, TileType.stair,
           top: 1,
           left: 1,
@@ -487,32 +497,40 @@ abstract final class GridMaps {
       Tile(3, 2, TileType.otherroom),
       Tile(42, 1, TileType.road, left: 1),
       Tile(1, 6, TileType.road, left: 1),
-      Tile(5, 2, TileType.otherroom),
-      Tile(6, 2, TileType.classroom),
+      Tile(3, 2, TileType.teacherroom, txt: '355'),
+      Tile(2, 2, TileType.teacherroom, txt: '354'),
+      Tile(2, 2, TileType.teacherroom, txt: '353'),
+      Tile(2, 2, TileType.teacherroom, txt: '352'),
+      Tile(2, 2, TileType.teacherroom, txt: '351'),
       Tile(4, 4, TileType.wc, wc: 0x1101), // 331側トイレ
       Tile(2, 6, TileType.road),
-      Tile(6, 2, TileType.classroom),
-      Tile(6, 2, TileType.classroom),
-      Tile(4, 2, TileType.classroom),
-      Tile(2, 2, TileType.classroom),
+      Tile(2, 2, TileType.teacherroom, txt: '350'),
+      Tile(2, 2, TileType.teacherroom, txt: '349'),
+      Tile(2, 2, TileType.teacherroom, txt: '348'),
+      Tile(2, 2, TileType.teacherroom, txt: '347'),
+      Tile(2, 2, TileType.teacherroom, txt: '346'),
+      Tile(2, 2, TileType.teacherroom, txt: '345'),
+      Tile(2, 2, TileType.teacherroom, txt: '344'),
+      Tile(2, 2, TileType.teacherroom, txt: '343'),
+      Tile(2, 2, TileType.teacherroom, txt: '342'),
       Tile(4, 2, TileType.wc, wc: 0x0110), // 入口側トイレ女
       Tile(2, 6, TileType.road),
       Tile(1, 4, TileType.classroom),
-      Tile(2, 4, TileType.classroom, txt: '335'),
-      Tile(2, 4, TileType.classroom, txt: '334'),
-      Tile(2, 4, TileType.classroom, txt: '333'),
-      Tile(2, 4, TileType.classroom, txt: '332'),
-      Tile(2, 4, TileType.classroom, txt: '331'),
-      Tile(2, 4, TileType.classroom, txt: '330'),
-      Tile(2, 4, TileType.classroom, txt: '329'),
-      Tile(2, 4, TileType.classroom, txt: '328'),
-      Tile(2, 4, TileType.classroom, txt: '327'),
-      Tile(2, 4, TileType.classroom, txt: '326'),
-      Tile(2, 4, TileType.classroom, txt: '325'),
-      Tile(2, 4, TileType.classroom, txt: '324'),
-      Tile(2, 4, TileType.classroom, txt: '323'),
-      Tile(2, 4, TileType.classroom, txt: '322'),
-      Tile(2, 4, TileType.classroom, txt: '321'),
+      Tile(2, 4, TileType.teacherroom, txt: '335'),
+      Tile(2, 4, TileType.teacherroom, txt: '334'),
+      Tile(2, 4, TileType.teacherroom, txt: '333'),
+      Tile(2, 4, TileType.teacherroom, txt: '332'),
+      Tile(2, 4, TileType.teacherroom, txt: '331'),
+      Tile(2, 4, TileType.teacherroom, txt: '330'),
+      Tile(2, 4, TileType.teacherroom, txt: '329'),
+      Tile(2, 4, TileType.teacherroom, txt: '328'),
+      Tile(2, 4, TileType.teacherroom, txt: '327'),
+      Tile(2, 4, TileType.teacherroom, txt: '326'),
+      Tile(2, 4, TileType.teacherroom, txt: '325'),
+      Tile(2, 4, TileType.teacherroom, txt: '324'),
+      Tile(2, 4, TileType.teacherroom, txt: '323'),
+      Tile(2, 4, TileType.teacherroom, txt: '322'),
+      Tile(2, 4, TileType.teacherroom, txt: '321'),
       Tile(4, 2, TileType.classroom),
       Tile(2, 4, TileType.classroom),
       Tile(42, 1, TileType.road, left: 1),

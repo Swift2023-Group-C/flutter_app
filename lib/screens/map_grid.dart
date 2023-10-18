@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_app/components/widgets/map.dart';
 
-import '../repository/find_rooms_in_use.dart';
-import '../repository/get_room_from_firebase.dart';
-import '../repository/read_schedule_file.dart';
+import 'package:flutter_app/repository/find_rooms_in_use.dart';
+import 'package:flutter_app/repository/get_room_from_firebase.dart';
+import 'package:flutter_app/repository/read_schedule_file.dart';
 
 class MapGridScreen extends StatefulWidget {
   final int mapIndex;

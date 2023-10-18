@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
-import 'screens/home.dart';
-import 'screens/map.dart';
-import 'components/color_fun.dart';
-import 'screens/setting.dart';
+import 'package:flutter_app/screens/home.dart';
+import 'package:flutter_app/screens/map.dart';
+import 'package:flutter_app/components/color_fun.dart';
+import 'package:flutter_app/screens/setting.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:flutter_app/components/setting_user_info.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../components/s3.dart';
-import '../components/widgets/kakomon_list_objects.dart';
-import '../components/widgets/progress_indicator.dart';
+import 'package:flutter_app/components/s3.dart';
+import 'package:flutter_app/components/widgets/kakomon_list_objects.dart';
+import 'package:flutter_app/components/widgets/progress_indicator.dart';
 
 class KakomonListScreen extends StatefulWidget {
   const KakomonListScreen({Key? key, required this.url}) : super(key: key);

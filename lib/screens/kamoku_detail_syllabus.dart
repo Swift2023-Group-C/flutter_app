@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../repository/kamoku_sort.dart';
+import 'package:flutter_app/repository/kamoku_sort.dart';
 
 class KamokuDetailSyllabusScreen extends StatelessWidget {
   const KamokuDetailSyllabusScreen({Key? key, required this.lessonId})

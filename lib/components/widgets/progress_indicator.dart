@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../color_fun.dart';
+import 'package:flutter_app/components/color_fun.dart';
 
 Widget createProgressIndicator() {
   return Container(

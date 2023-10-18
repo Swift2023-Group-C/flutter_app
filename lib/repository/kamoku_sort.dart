@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-import '../screens/kamoku_detail_page_view.dart';
+import 'package:flutter_app/screens/kamoku_detail_page_view.dart';
 import 'package:flutter_app/components/syllabus_db_config.dart';
 
 //sort用のDB取得
