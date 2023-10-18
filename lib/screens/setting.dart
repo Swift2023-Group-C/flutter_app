@@ -106,23 +106,26 @@ class _SettingScreenState extends State<SettingScreen> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: _userKeyController,
-                  // 入力数
-                  maxLength: 16,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'ユーザーキー',
-                    hintText: '半角英数字16桁',
-                  ),
-                  inputFormatters: [
-                    // 最大16文字まで入力可能
-                    LengthLimitingTextInputFormatter(16),
-                    // 半角英数字のみ許可
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'[a-zA-Z0-9]'),
+                Container(
+                  margin: const EdgeInsets.only(right: 15, left: 15),
+                  child: TextField(
+                    controller: _userKeyController,
+                    // 入力数
+                    maxLength: 16,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'ユーザーキー',
+                      hintText: '半角英数字16桁',
                     ),
-                  ],
+                    inputFormatters: [
+                      // 最大16文字まで入力可能
+                      LengthLimitingTextInputFormatter(16),
+                      // 半角英数字のみ許可
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[a-zA-Z0-9]'),
+                      ),
+                    ],
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: _saveSettings,
