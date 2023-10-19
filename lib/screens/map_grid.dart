@@ -16,7 +16,7 @@ class MapGridScreen extends StatefulWidget {
 }
 
 class _MapGridScreenState extends State<MapGridScreen> {
-  final List<String> gridMapsList = ["5", "4", "3", "2", "1", "r2", "r1"];
+  final List<String> gridMapsList = ["1", "2", "3", "4", "5", "R1", "R2"];
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, ref, child) {
@@ -46,15 +46,15 @@ class _MapGridScreenState extends State<MapGridScreen> {
       "4": ["5"],
       "5": ["5"],
       "6": ["5"],
-      "7": ["r2"],
+      "7": ["R2"],
       "8": ["4"],
       "9": ["4"],
       "10": ["4"],
       "11": ["5"],
       "12": ["5"],
       "13": ["5"],
-      "14": ["r2"],
-      "15": ["r2"],
+      "14": ["R2"],
+      "15": ["R2"],
       "16": ["3"],
       "17": ["3"],
       "18": ["3"],

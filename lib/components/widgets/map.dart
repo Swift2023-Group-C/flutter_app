@@ -323,24 +323,7 @@ class Tile extends StatelessWidget {
             showBottomSheet(
               context: context,
               builder: (BuildContext context) {
-                return Container(
-                  height: 200,
-                  width: double.infinity,
-                  color: Colors.grey.shade100,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(height: 10),
-                        Text(txt),
-                        ElevatedButton(
-                          child: const Text('Close BottomSheet'),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        const SizedBox(height: 200),
-                      ],
-                    ),
-                  ),
-                );
+                return MapBottomSheet(roomId: txt);
               },
             );
           },
@@ -354,6 +337,33 @@ class Tile extends StatelessWidget {
           fit: StackFit.loose,
           children: widgetList);
     }
+  }
+}
+
+class MapBottomSheet extends StatelessWidget {
+  const MapBottomSheet({Key? key, required this.roomId}) : super(key: key);
+  final String roomId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      width: double.infinity,
+      color: Colors.grey.shade100,
+      child: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 10),
+            Text(roomId),
+            ElevatedButton(
+              child: const Text('Close BottomSheet'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            const SizedBox(height: 200),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -928,8 +938,8 @@ abstract final class GridMaps {
       Tile(42, 7, TileType.empty), //empty ev横
       Tile(6, 7, TileType.empty), //empty
     ],
-    "r1": [],
-    "r2": [
+    "R1": [],
+    "R2": [
       Tile(4, 2, TileType.classroom, txt: 'R711', top: 1, left: 1),
       Tile(1, 30, TileType.road, top: 1, bottom: 1),
       Tile(3, 3, TileType.empty, bottom: 1, left: 1),

@@ -55,7 +55,7 @@ class FloorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> floorBarString = ['5', '4', '3', '2', '1', 'R2', 'R1'];
+    List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
     TextStyle floorBarTextStyle =
         const TextStyle(fontSize: 18.0, color: Colors.black87);
     TextStyle floorBarSelectedTextStyle =
