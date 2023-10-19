@@ -891,18 +891,18 @@ abstract final class GridMaps {
       Tile(44, 1, TileType.road, left: 1),
       Tile(12, 2, TileType.otherroom, left: 1, bottom: 1), //スタジオleft
       Tile(2, 2, TileType.road),
-      Tile(2, 2, TileType.otherroom, right: 1, bottom: 1),
+      Tile(2, 2, TileType.subroom, right: 1, bottom: 1, txt: '大学生協学生委員室'),
       Tile(2, 2, TileType.empty, top: 1), //吹き抜け
       Tile(18, 2, TileType.otherroom, left: 1, bottom: 1), //スタジオcenter
       Tile(2, 11, TileType.road),
-      Tile(2, 2, TileType.otherroom, right: 1, bottom: 1),
+      Tile(2, 2, TileType.classroom, right: 1, bottom: 1, txt: 'M502'),
       Tile(2, 2, TileType.empty, top: 1, right: 1), //吹き抜け
       Tile(2, 4, TileType.road),
       Tile(12, 12, TileType.empty, right: 1), //empty left
       Tile(2, 12, TileType.road, bottom: 1),
       Tile(22, 10, TileType.empty, left: 1, right: 1), //empty center
       Tile(4, 9, TileType.empty, left: 1, right: 1, bottom: 1), //empty right
-      Tile(4, 2, TileType.otherroom, right: 1),
+      Tile(4, 2, TileType.classroom, right: 1, txt: 'M502'),
       Tile(6, 2, TileType.road, right: 1),
       Tile(1, 5, TileType.road),
       Tile(4, 2, TileType.otherroom),
