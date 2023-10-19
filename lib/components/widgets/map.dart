@@ -23,7 +23,7 @@ abstract final class TileColors {
   //static Color get stair => Colors.blueGrey.shade600;
   static Color get stair => Colors.grey.shade300;
   static Color get ev => Colors.grey.shade800;
-  static Color get using => Colors.yellow.shade500;
+  static Color get using => Colors.orange.shade300;
   static const Color empty = Colors.transparent;
 }
 
@@ -60,6 +60,7 @@ class Tile extends StatelessWidget {
   late Color tileColor;
   late Color fontColor;
   final StairType stairType;
+  DateTime? useEndTime;
 
   Tile(
     this.width,
@@ -77,7 +78,18 @@ class Tile extends StatelessWidget {
     this.using = false,
     this.fontSize = 4,
     this.stairType = const StairType(Axis.horizontal, true, true),
+    this.useEndTime,
   }) : super(key: key) {
+    setColors();
+    if (width == 1) {
+      fontSize = 3;
+    }
+  }
+  StaggeredTile staggeredTile() {
+    return StaggeredTile.count(width, height.toDouble());
+  }
+
+  void setColors() {
     switch (ttype) {
       case TileType.classroom:
         tileColor = TileColors.room;
@@ -115,17 +127,22 @@ class Tile extends StatelessWidget {
         tileColor = TileColors.empty;
         fontColor = Colors.black;
     }
-    if (width == 1) {
-      fontSize = 3;
-    }
-  }
-  StaggeredTile staggeredTile() {
-    return StaggeredTile.count(width, height.toDouble());
   }
 
   void setUsing(bool u) {
     using = u;
-    tileColor = TileColors.using;
+  }
+
+  void setTileColor(Color c) {
+    tileColor = c;
+  }
+
+  void setFontColor(Color c) {
+    fontColor = c;
+  }
+
+  void setUseEndTime(DateTime dt) {
+    useEndTime = dt;
   }
 
   void setLessonIds(List<String> lIds) {
@@ -133,32 +150,42 @@ class Tile extends StatelessWidget {
   }
 
   Widget stackTextIcon() {
+    double iconSize = 8;
+    int iconLength = (wc & 0x0001) +
+        (wc & 0x0010) ~/ 0x0010 +
+        (wc & 0x0100) ~/ 0x0100 +
+        (wc & 0x1000) ~/ 0x1000;
+    if (width == 1) {
+      iconSize = 6;
+    } else if (width * height / iconLength <= 2) {
+      iconSize = 6;
+    }
     if (wc > 0) {
       List<Icon> icons = [];
       if (wc & 0x1000 > 0) {
         icons.add(Icon(
           Icons.man,
           color: MapColors.wcMan,
-          size: 8,
+          size: iconSize,
         ));
       }
       if (wc & 0x0100 > 0) {
         icons.add(Icon(
           Icons.woman,
           color: MapColors.wcWoman,
-          size: 8,
+          size: iconSize,
         ));
       }
       if (wc & 0x0010 > 0) {
-        icons.add(const Icon(
+        icons.add(Icon(
           Icons.accessible,
-          size: 8,
+          size: iconSize,
         ));
       }
       if (wc & 0x0001 > 0) {
-        icons.add(const Icon(
+        icons.add(Icon(
           Icons.coffee_outlined,
-          size: 8,
+          size: iconSize,
         ));
       }
       return Wrap(
@@ -216,6 +243,13 @@ class Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    if (useEndTime != null) {
+      if (now.isAfter(useEndTime!)) {
+        setUsing(false);
+        setColors();
+      }
+    }
     List<Widget> widgetList = [];
     widgetList.add(SizedBox.expand(
         child: Container(
@@ -938,7 +972,8 @@ abstract final class GridMaps {
       Tile(4, 2, TileType.stair, left: 1),
       Tile(6, 4, TileType.empty, left: 1, bottom: 1, right: 1),
       Tile(30, 2, TileType.road),
-      Tile(5, 10, TileType.classroom, txt: 'R791', right: 1, bottom: 1),
+      Tile(5, 10, TileType.classroom,
+          txt: 'R791', right: 1, bottom: 1, classroomNo: '7'),
       Tile(4, 2, TileType.road, left: 1),
       Tile(3, 3, TileType.empty, left: 1, top: 1, right: 1),
       Tile(1, 7, TileType.road),

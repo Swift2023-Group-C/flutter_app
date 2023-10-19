@@ -67,10 +67,10 @@ class _MapGridScreenState extends State<MapGridScreen> {
       // ダウンロードしたファイルの中身を読み取る
       try {
         String fileContent = await readScheduleFile();
-        Map<String, List<String>> resourceIds = findRoomsInUse(fileContent);
+        Map<String, DateTime> resourceIds = findRoomsInUse(fileContent);
 
         if (resourceIds.isNotEmpty) {
-          resourceIds.forEach((String resourceId, List<String> lessonIds) {
+          resourceIds.forEach((String resourceId, DateTime useEndTime) {
             print(resourceId);
             if (classroomNoFloorMap.containsKey(resourceId)) {
               for (var floor in classroomNoFloorMap[resourceId]!) {
@@ -78,6 +78,12 @@ class _MapGridScreenState extends State<MapGridScreen> {
                     .indexWhere((tile) => tile.classroomNo == resourceId);
                 if (tileIndex != -1) {
                   GridMaps.mapTileListMap[floor]![tileIndex].setUsing(true);
+                  GridMaps.mapTileListMap[floor]![tileIndex]
+                      .setTileColor(TileColors.using);
+                  GridMaps.mapTileListMap[floor]![tileIndex]
+                      .setFontColor(Colors.black);
+                  GridMaps.mapTileListMap[floor]![tileIndex]
+                      .setUseEndTime(useEndTime);
                 }
               }
             }
