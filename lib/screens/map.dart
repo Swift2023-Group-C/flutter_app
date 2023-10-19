@@ -29,7 +29,10 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const double floorWidth = 40.0;
+    double floorButtonWidth = (MediaQuery.of(context).size.width - 30 < 350)
+        ? MediaQuery.of(context).size.width - 30
+        : 350;
+    double floorButtonHeight = 50;
     var floorBarTextStyle =
         const TextStyle(fontSize: 18.0, color: Colors.black87);
     var floorBarSelectedTextStyle =
@@ -50,23 +53,24 @@ class _MapScreenState extends State<MapScreen> {
                   child: MapGridScreen(mapIndex: mapGridCount),
                 ))),
         Padding(
-            padding: const EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.only(top: 20),
             child: Align(
-              alignment: Alignment.centerRight,
+              alignment: Alignment.topCenter,
               child: Container(
                 color: Colors.grey.withOpacity(0.9),
-                height: 350,
-                width: floorWidth,
-                child: Column(
+                width: floorButtonWidth,
+                height: floorButtonHeight,
+                child: Row(
                   children: [
                     for (int i = 0; i < 7; i++) ...{
                       SizedBox(
-                        width: floorWidth,
-                        height: 50,
+                        width: floorButtonWidth / 7,
+                        height: floorButtonHeight,
                         child: Center(
                           child: TextButton(
                               style: TextButton.styleFrom(
-                                fixedSize: const Size(floorWidth, 50),
+                                fixedSize: Size(
+                                    floorButtonWidth / 7, floorButtonHeight),
                                 backgroundColor:
                                     (mapGridCount == i) ? Colors.black12 : null,
                                 shape: RoundedRectangleBorder(

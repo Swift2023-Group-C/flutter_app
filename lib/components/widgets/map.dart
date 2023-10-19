@@ -58,6 +58,7 @@ class Tile extends StatelessWidget {
   bool using;
   double fontSize;
   late Color tileColor;
+  late Color fontColor;
   final StairType stairType;
 
   Tile(
@@ -80,30 +81,39 @@ class Tile extends StatelessWidget {
     switch (ttype) {
       case TileType.classroom:
         tileColor = TileColors.room;
+        fontColor = Colors.white;
         break;
       case TileType.teacherroom:
         tileColor = TileColors.teacherRoom;
+        fontColor = Colors.white;
         break;
       case TileType.subroom:
         tileColor = TileColors.subRoom;
+        fontColor = Colors.white;
         break;
       case TileType.otherroom:
         tileColor = TileColors.room2;
+        fontColor = Colors.black;
         break;
       case TileType.wc:
         tileColor = TileColors.toilet;
+        fontColor = Colors.black;
         break;
       case TileType.stair:
         tileColor = TileColors.stair;
+        fontColor = Colors.black;
         break;
       case TileType.ev:
         tileColor = TileColors.ev;
+        fontColor = Colors.black;
         break;
       case TileType.road:
         tileColor = TileColors.road;
+        fontColor = Colors.black;
         break;
       default:
         tileColor = TileColors.empty;
+        fontColor = Colors.black;
     }
     if (width == 1) {
       fontSize = 3;
@@ -192,9 +202,7 @@ class Tile extends StatelessWidget {
 
     return Text(
       txt,
-      style: TextStyle(
-          color: (tileColor == TileColors.room) ? Colors.white : Colors.black,
-          fontSize: fontSize),
+      style: TextStyle(color: fontColor, fontSize: fontSize),
     );
   }
 
@@ -270,10 +278,48 @@ class Tile extends StatelessWidget {
         }
       }
     }
-    return Stack(
-        alignment: AlignmentDirectional.center,
-        fit: StackFit.loose,
-        children: widgetList);
+    if ([
+      TileType.classroom,
+      TileType.otherroom,
+      TileType.subroom,
+      TileType.teacherroom
+    ].contains(ttype)) {
+      return GestureDetector(
+          onTap: () {
+            showBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return Container(
+                  height: 200,
+                  width: double.infinity,
+                  color: Colors.grey.shade100,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        const SizedBox(height: 10),
+                        Text(txt),
+                        ElevatedButton(
+                          child: const Text('Close BottomSheet'),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        const SizedBox(height: 200),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+          child: Stack(
+              alignment: AlignmentDirectional.center,
+              fit: StackFit.loose,
+              children: widgetList));
+    } else {
+      return Stack(
+          alignment: AlignmentDirectional.center,
+          fit: StackFit.loose,
+          children: widgetList);
+    }
   }
 }
 
