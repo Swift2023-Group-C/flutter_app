@@ -42,7 +42,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   minio_new:
     path: ./plugins_customized/minio_new-1.0.2
-  provider: ^6.0.5
+  flutter_riverpod: ^2.4.4
   flutter_pdfview: ^1.3.2
   share_plus: ^7.2.1
   path_provider: ^2.1.1

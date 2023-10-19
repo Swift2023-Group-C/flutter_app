@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_app/components/widgets/map.dart';
 
@@ -7,8 +9,7 @@ import 'package:flutter_app/repository/get_room_from_firebase.dart';
 import 'package:flutter_app/repository/read_schedule_file.dart';
 
 class MapGridScreen extends StatefulWidget {
-  final int mapIndex;
-  const MapGridScreen({Key? key, this.mapIndex = 2}) : super(key: key);
+  const MapGridScreen({Key? key}) : super(key: key);
 
   @override
   State<MapGridScreen> createState() => _MapGridScreenState();
@@ -18,18 +19,22 @@ class _MapGridScreenState extends State<MapGridScreen> {
   final List<String> gridMapsList = ["5", "4", "3", "2", "1", "r2", "r1"];
   @override
   Widget build(BuildContext context) {
-    return StaggeredGridView.countBuilder(
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 48,
-      itemCount: GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]!.length,
-      itemBuilder: (BuildContext context, int index) {
-        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index];
-      },
-      staggeredTileBuilder: (int index) {
-        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index]
-            .staggeredTile();
-      },
-    );
+    return Consumer(builder: (context, ref, child) {
+      final int floorIndex =
+          ref.watch(mapPageProvider.select((state) => state.mapFloorCount));
+      return StaggeredGridView.countBuilder(
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: 48,
+        itemCount: GridMaps.mapTileListMap[gridMapsList[floorIndex]]!.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GridMaps.mapTileListMap[gridMapsList[floorIndex]]![index];
+        },
+        staggeredTileBuilder: (int index) {
+          return GridMaps.mapTileListMap[gridMapsList[floorIndex]]![index]
+              .staggeredTile();
+        },
+      );
+    });
   }
 
   @override
