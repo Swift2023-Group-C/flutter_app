@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_app/components/setting_user_info.dart';
 
 class KadaiListScreen extends StatefulWidget {
   const KadaiListScreen({Key? key}) : super(key: key);
@@ -17,6 +18,12 @@ class KadaiListScreen extends StatefulWidget {
 }
 
 class _KadaiListScreenState extends State<KadaiListScreen> {
+  Map<String, bool> finishMap = {};
+  Map<String, bool> alertMap = {};
+  Map<String, bool> deleteMap = {};
+  Map<String, bool> deleteMapTrue = {};
+  Map<String, bool> deleteMapFalse = {};
+
   List<bool> finishList = []; //完了を管理する
   List<bool> alertList = []; //通知管理
   List<bool> deleteList = []; //削除状態管理
@@ -33,22 +40,58 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     }
   }
 
-  //保存したfinishListの状態を呼び出す
-  Future<void> loadFinishList() async {
+  //finishMapの状態を保存する
+  Future<void> saveFinishMap() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('finishListKey');
+    final jsonString = json.encode(finishMap);
+    await prefs.setString('finishMapKey', jsonString); // 正しいキーを指定
+  }
+
+  //finishMapの状態を読み込む
+  Future<void> loadFinishMap() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('finishMapKey'); // キーを正しく指定
     if (jsonString != null) {
       setState(() {
-        finishList = List<bool>.from(json.decode(jsonString));
+        finishMap = Map<String, bool>.from(json.decode(jsonString));
       });
     }
   }
 
-  //finishListの状態を保存する
-  Future<void> saveFinishList() async {
+  //alertMapno状態を保存する
+  Future<void> saveAlertMap() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonString = json.encode(finishList);
-    await prefs.setString('finishListKey', jsonString);
+    final jsonString = json.encode(alertMap);
+    await prefs.setString('AlertMapKey', jsonString); // 正しいキーを指定
+  }
+
+//alertMapの状態を読み込む
+  Future<void> loadAlertMap() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('AlertMapKey'); // キーを正しく指定
+    if (jsonString != null) {
+      setState(() {
+        alertMap = Map<String, bool>.from(json.decode(jsonString));
+      });
+    }
+  }
+
+  //deleteMapno状態を保存する
+  Future<void> saveDeleteMap() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = json.encode(deleteMap);
+    await prefs.setString('deleteMapKey', jsonString); // 正しいキーを指定
+  }
+
+//deleteMapの状態を読み込む
+  Future<void> loadDeleteMap() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('deleteMapKey'); // キーを正しく指定
+    if (jsonString != null) {
+      setState(() {
+        deleteMap = Map<String, bool>.from(json.decode(jsonString));
+      });
+    }
   }
 
   //保存したalertListの状態を呼び出す
@@ -88,10 +131,11 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   //deleteリストをすべてtrueに
-  void _resetDeleteList() {
+  void _resetDeleteList(List<Kadai> data, Map<String, bool> deleteMap) {
     setState(() {
-      for (int i = 0; i < deleteList.length; i++) {
-        deleteList[i] = true;
+      for (int i = 0; i < data.length; i++) {
+        deleteMap[data[i].url!] = false;
+        print(deleteMap[data[i].url]);
       }
       saveDeleteList();
     });
@@ -109,42 +153,51 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   //リストスワイプで削除アイコンタップした後の処理
-  void _showDeleteConfirmation(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('削除の確認'),
-          content: const Text('このタスクを削除しますか？'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('キャンセル'),
-            ),
-            TextButton(
-              onPressed: () {
-                deleteList[index] = !deleteList[index];
-                saveDeleteList();
-                setState(() {});
-                Navigator.of(context).pop();
-              },
-              child: const Text('削除'),
-            ),
-          ],
-        );
-      },
-    );
+  void _showDeleteConfirmation(List<Kadai> data, int i) {
+    if (i >= 0 && i < data.length) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('削除の確認'),
+            content: const Text('このタスクを削除しますか？'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('キャンセル'),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    deleteMap[data[i].url!] = true; // 削除状態を true に設定
+                    print("削除");
+                    for (int i = 0; i < data.length; i++) {
+                      print('${deleteMap[data[i].url]}');
+                    }
+                    saveDeleteMap();
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: const Text('削除'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    loadFinishList();
-    loadAlertList();
-    loadDeleteList();
+    //loadAlertList();
+    //loadDeleteList();
     getUserKey();
+    loadFinishMap();
+    loadAlertMap();
+    loadDeleteMap();
   }
 
   @override
@@ -155,6 +208,29 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
         builder: (BuildContext context, AsyncSnapshot<List<Kadai>> snapshot) {
           if (snapshot.hasData) {
             List<Kadai> data = snapshot.data!;
+            if (finishMap.isEmpty) {
+              for (int i = 0; i < data.length; i++) {
+                finishMap[data[i].url!] = false; // 初期状態は「未完了」
+              }
+            }
+
+            for (int i = 0; i < data.length; i++) {
+              alertMap[data[i].url!] = false; // 初期状態は「アラートなし」
+            }
+
+            if (deleteMap.isEmpty) {
+              for (int i = 0; i < data.length; i++) {
+                deleteMap[data[i].url!] = false; // 初期状態は「未削除」
+              }
+            }
+            deleteMap.forEach((key, value) {
+              if (value == false) {
+                deleteMapFalse[key] = value;
+              } else if (value == true) {
+                deleteMapTrue[key] = value;
+              }
+            });
+            //print(deleteMapFalse);
             if (finishList.isEmpty) {
               finishList = List<bool>.filled(data.length, false);
             }
@@ -166,11 +242,14 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             }
             return Column(children: [
               ElevatedButton(
-                  onPressed: _resetDeleteList, child: const Text("リセット")),
+                  onPressed: () {
+                    _resetDeleteList(data, deleteMap);
+                  },
+                  child: const Text("リセット")),
               Expanded(
                   child: ListView.separated(
                 //padding: const EdgeInsets.all(12.0),
-                itemCount: deleteList.where((element) => element).length,
+                itemCount: deleteMapFalse.length,
                 itemBuilder: (context, index) {
                   int dataIndex = 0;
                   for (int i = 0; i < data.length; i++) {
@@ -182,16 +261,29 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                             extentRatio: 0.25,
                             children: [
                               SlidableAction(
-                                label: alertList[i] ? '通知off' : '通知on',
-                                backgroundColor:
-                                    alertList[i] ? Colors.red : Colors.green,
-                                icon: alertList[i]
+                                label: (data[i].url != null &&
+                                        alertMap[data[i].url!] == true)
+                                    ? '通知off'
+                                    : '通知on',
+                                backgroundColor: (data[i].url != null &&
+                                        alertMap[data[i].url!] == true)
+                                    ? Colors.red
+                                    : Colors.green,
+                                icon: (data[i].url != null &&
+                                        alertMap[data[i].url!] == true)
                                     ? Icons.notifications_off_outlined
                                     : Icons.notifications_active_outlined,
                                 onPressed: (context) {
                                   setState(() {
-                                    alertList[i] = !alertList[i];
-                                    saveAlertList();
+                                    String currentUrl =
+                                        data[i].url!; // 現在の課題のURLを取得
+                                    alertMap[currentUrl] =
+                                        !alertMap[currentUrl]!;
+                                    print("完了");
+                                    for (int i = 0; i < data.length; i++) {
+                                      print('${alertMap[data[i].url]}');
+                                    }
+                                    saveAlertMap();
                                   });
                                 },
                               ),
@@ -206,18 +298,30 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                 backgroundColor: Colors.red,
                                 icon: Icons.delete,
                                 onPressed: (context) {
-                                  _showDeleteConfirmation(i);
+                                  _showDeleteConfirmation(data, i);
                                 },
                               ),
                               SlidableAction(
-                                label: finishList[i] ? '未完了' : '完了',
-                                backgroundColor:
-                                    finishList[i] ? Colors.blue : Colors.green,
+                                label: (data[i].url != null &&
+                                        finishMap[data[i].url!] == true)
+                                    ? '未完了'
+                                    : '完了',
+                                backgroundColor: (data[i].url != null &&
+                                        finishMap[data[i].url!] == true)
+                                    ? Colors.blue
+                                    : Colors.green,
                                 icon: Icons.check_circle_outline,
                                 onPressed: (context) {
                                   setState(() {
-                                    finishList[i] = !finishList[i];
-                                    saveFinishList();
+                                    String currentUrl =
+                                        data[i].url!; // 現在の課題のURLを取得
+                                    finishMap[currentUrl] =
+                                        !finishMap[currentUrl]!;
+                                    print("完了");
+                                    for (int i = 0; i < data.length; i++) {
+                                      print('${finishMap[data[i].url]}');
+                                    }
+                                    saveFinishMap();
                                   });
                                 },
                               ),
@@ -247,7 +351,8 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: finishList[i]
+                                  color: (data[i].url != null &&
+                                          finishMap[data[i].url!] == true)
                                       ? Colors.green
                                       : Colors.black,
                                 ),
@@ -259,9 +364,10 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                     data[i].courseName!,
                                     style: TextStyle(
                                       fontSize: 14,
-                                      color: finishList[i]
+                                      color: (data[i].url != null &&
+                                              finishMap[data[i].url!] == true)
                                           ? Colors.green
-                                          : Colors.black54,
+                                          : Colors.black45,
                                     ),
                                   ),
                                   if ((data[i].endtime != null))
@@ -269,7 +375,8 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                                       "終了：${stringFromDateTime(data[i].endtime)}",
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: finishList[i]
+                                        color: (data[i].url != null &&
+                                                finishMap[data[i].url!] == true)
                                             ? Colors.green
                                             : Colors.black45,
                                       ),
@@ -278,30 +385,26 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                               ),
                               leading: Column(
                                 children: [
-                                  /*Icon(
-                                  finishList[i] ? Icons.done : Icons.task,
-                                  size: 20,
-                                  color: finishList[i]
-                                      ? Colors.green
-                                      : Colors.grey,
-                                ),*/
                                   const SizedBox(
                                     height: 8,
                                     width: 5,
                                   ),
                                   Icon(
-                                    alertList[i]
+                                    (data[i].url != null &&
+                                            alertMap[data[i].url!] == true)
                                         ? Icons.notifications_active_outlined
                                         : Icons.notifications_off_outlined,
                                     size: 30,
-                                    color: alertList[i]
+                                    color: (data[i].url != null &&
+                                            alertMap[data[i].url!] == true)
                                         ? Colors.green
                                         : Colors.grey,
                                   ),
                                 ],
                               ),
                               onTap: () {
-                                final url = Uri.parse(data[i].url!);
+                                final url =
+                                    Uri.parse(data[i].url!); // 課題のURLを取得
                                 launchUrl(url);
                               },
                             ),
