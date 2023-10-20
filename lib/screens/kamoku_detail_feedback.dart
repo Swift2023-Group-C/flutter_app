@@ -61,15 +61,16 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          insetPadding: const EdgeInsets.all(8),
+          contentPadding: const EdgeInsets.all(20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
-          title: const Text('満足度'),
+          title: const Text('満足度(必須)'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               RatingBar.builder(
-                initialRating: 3,
                 minRating: 1,
                 itemBuilder: (context, index) => const Icon(
                   Icons.star,
@@ -79,18 +80,15 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                   selectedScore = rating;
                 },
               ),
-              const Row(
-                children: [
-                  Text('フィードバック (推奨)'),
-                ],
-              ),
+              const SizedBox(height: 20),
+              const Text('フィードバック (推奨)'),
               TextField(
                 decoration: const InputDecoration(
                   hintText: '単位、出席、テストの情報など...',
                 ),
                 controller: detailController,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   final String? userKey = await UserPreferences.getUserKey();
@@ -101,6 +99,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                         .where('User', isEqualTo: userKey)
                         .where('lessonId', isEqualTo: widget.lessonId)
                         .get();
+
                     if (querySnapshot.docs.isNotEmpty) {
                       // 既存のフィードバックが存在してたらそれを更新
                       final docId = querySnapshot.docs[0].id;

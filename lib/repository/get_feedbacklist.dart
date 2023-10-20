@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_app/components/widgets/progress_indicator.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class FeedbackList extends StatefulWidget {
   const FeedbackList({Key? key, required this.lessonId}) : super(key: key);
@@ -18,7 +19,7 @@ class _FeedbackListState extends State<FeedbackList> {
       List<DocumentSnapshot<Map<String, dynamic>>> documents) {
     double totalScore = 0.0;
     for (final document in documents) {
-      final score = document.get('score') ?? 0.0;
+      final score = (document.get('score') ?? 0.0).toDouble();
       totalScore += score;
     }
     return totalScore / documents.length;
@@ -58,10 +59,19 @@ class _FeedbackListState extends State<FeedbackList> {
                   itemBuilder: (BuildContext context, int index) {
                     final document = documents[index];
                     final detail = document.get('detail');
-                    final score = document.get('score');
+                    final score = (document.get('score') ?? 0).toDouble();
 
                     return ListTile(
-                      title: Text('満足度:$score, 内容: $detail'),
+                      leading: RatingBarIndicator(
+                        rating: score,
+                        itemBuilder: (context, index) => const Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        itemCount: 5,
+                        itemSize: 15.0,
+                      ),
+                      title: Text('内容: $detail'),
                     );
                   },
                 ),
