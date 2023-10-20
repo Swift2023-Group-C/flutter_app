@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
 import 'package:flutter_app/screens/home.dart';
@@ -87,6 +88,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     super.initState();
     initUniLinks();
     SyllabusDBConfig.setDB();
+    MapDetailMap.instance.getList();
   }
 
   int _selectedIndex = 0;
