@@ -7,8 +7,12 @@ Future<void> downloadFileFromFirebase(String firebaseFilePath) async {
       .refFromURL("gs://swift2023groupc.appspot.com/$firebaseFilePath");
 
   final filePath = await getApplicationFilePath(firebaseFilePath);
-
   final file = File(filePath);
+
+  bool doesFileExists = await file.exists();
+  if (!doesFileExists) {
+    file.create();
+  }
 
   final downloadTask = gsReference.writeToFile(file);
 
