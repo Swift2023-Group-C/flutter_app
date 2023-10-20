@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 enum TileType {
-  classroom,
-  teacherroom,
-  subroom,
-  otherroom,
-  wc,
-  stair,
-  ev,
-  road,
-  empty,
+  classroom, // メインの部屋
+  teacherroom, // 教員室と後ろの実験室
+  subroom, // メインには使わないけど使う部屋
+  otherroom, // 倉庫など
+  wc, // トイレ
+  stair, // 階段
+  ev, // エレベーター
+  road, // 道
+  empty, // 吹き抜けなど
 }
 
 abstract final class TileColors {
@@ -32,6 +32,7 @@ abstract final class MapColors {
   static Color get wcWoman => Colors.red.shade800;
 }
 
+// 階段の時の描画設定
 class StairType {
   final Axis direction;
   final bool up;
@@ -42,6 +43,9 @@ class StairType {
   }
 }
 
+/// require width, height: Size, require ttype: タイルタイプ enum
+///
+/// top, right, bottom, left: Borderサイズ, txt
 // ignore: must_be_immutable
 class Tile extends StatelessWidget {
   final int width;

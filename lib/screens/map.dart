@@ -18,18 +18,22 @@ class MapScreen extends StatelessWidget {
             height: MediaQuery.of(context).size.height,
             child: InteractiveViewer(
                 maxScale: 10.0,
+                // 倍率行列Matrix4
                 transformationController:
                     MapController.instance.getController(),
                 child: const Padding(
                   padding: EdgeInsets.all(30),
+                  // マップ表示
                   child: MapGridScreen(),
                 ))),
+        // 階選択ボタン
         const FloorButton(),
       ],
     )));
   }
 }
 
+// 階数インデックス保存クラス
 @immutable
 class MapState {
   const MapState({this.mapFloorCount = 3});
@@ -55,11 +59,13 @@ class FloorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // インデックスに対応した階数
     List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
     TextStyle floorBarTextStyle =
         const TextStyle(fontSize: 18.0, color: Colors.black87);
     TextStyle floorBarSelectedTextStyle =
         const TextStyle(fontSize: 18.0, color: customFunColor);
+    // 350以下なら計算
     double floorButtonWidth = (MediaQuery.of(context).size.width - 30 < 350)
         ? MediaQuery.of(context).size.width - 30
         : 350;
@@ -72,6 +78,7 @@ class FloorButton extends StatelessWidget {
             color: Colors.grey.withOpacity(0.9),
             width: floorButtonWidth,
             height: floorButtonHeight,
+            // Providerから階数の変更を検知
             child: Consumer(builder: (context, ref, child) {
               final int floorIndex = ref.watch(
                   mapPageProvider.select((state) => state.mapFloorCount));
@@ -93,6 +100,7 @@ class FloorButton extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(0),
                               ),
                             ),
+                            // 階数の変更をProviderに渡す
                             onPressed: () {
                               notifier.changeFloor(i);
                             },
