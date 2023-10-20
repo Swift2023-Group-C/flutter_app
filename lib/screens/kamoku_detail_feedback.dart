@@ -4,9 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_app/firebase_options.dart';
 import 'package:flutter_app/repository/get_feedbacklist.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Firebaseの初期化前に呼び出す
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -25,40 +26,72 @@ class KamokuFeedbackScreen extends StatefulWidget {
 
 class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
   final userController = TextEditingController();
-  int? selectedScore; // 選択された満足度を保持する変数
+  double? selectedScore;
   final detailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: DropdownButton<int>(
-                  value: selectedScore,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedScore = value;
-                    });
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(
+          children: [
+            Expanded(
+              child: FeedbackList(lessonId: widget.lessonId),
+            ),
+            Column(
+              children: [
+                ElevatedButton(
+                  child: const Text('投稿'),
+                  onPressed: () {
+                    _showCustomDialog(context);
                   },
-                  items:
-                      [1, 2, 3, 4, 5].map<DropdownMenuItem<int>>((int value) {
-                    return DropdownMenuItem<int>(
-                      value: value,
-                      child: Text(value.toString()),
-                    );
-                  }).toList(),
                 ),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: detailController,
-                  decoration: const InputDecoration(labelText: '詳細'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCustomDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          title: const Text('満足度'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              RatingBar.builder(
+                initialRating: 3,
+                minRating: 1,
+                itemBuilder: (context, index) => const Icon(
+                  Icons.star,
+                  color: Colors.yellow,
                 ),
+                onRatingUpdate: (rating) {
+                  selectedScore = rating;
+                },
               ),
-              TextButton(
+              const Row(
+                children: [
+                  Text('フィードバック (推奨)'),
+                ],
+              ),
+              TextField(
+                decoration: const InputDecoration(
+                  hintText: '単位、出席、テストの情報など...',
+                ),
+                controller: detailController,
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
                 onPressed: () async {
                   final String? userKey = await UserPreferences.getUserKey();
                   if (userKey != "" && selectedScore != null) {
@@ -97,15 +130,12 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                   });
                   detailController.clear();
                 },
-                child: const Text('追加'),
-              )
+                child: const Text('投稿する'),
+              ),
             ],
           ),
-          Expanded(
-            child: FeedbackList(lessonId: widget.lessonId),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -12,7 +12,17 @@ class FeedbackList extends StatefulWidget {
 }
 
 class _FeedbackListState extends State<FeedbackList> {
-  double averageScore = 0.0; // 平均値を保持する変数
+  double averageScore = 0.0;
+
+  double _computeAverageScore(
+      List<DocumentSnapshot<Map<String, dynamic>>> documents) {
+    double totalScore = 0.0;
+    for (final document in documents) {
+      final score = document.get('score') ?? 0.0;
+      totalScore += score;
+    }
+    return totalScore / documents.length;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,30 +36,18 @@ class _FeedbackListState extends State<FeedbackList> {
         if (snapshot.hasError) {
           return Text('エラー: ${snapshot.error}');
         }
-
         if (snapshot.connectionState == ConnectionState.waiting) {
           return createProgressIndicator();
         }
-
         if (snapshot.hasData) {
-          final QuerySnapshot<Map<String, dynamic>> querySnapshot =
-              snapshot.data!;
-          final List<DocumentSnapshot<Map<String, dynamic>>> documents =
-              querySnapshot.docs;
+          final querySnapshot = snapshot.data!;
+          final documents = querySnapshot.docs;
 
           if (documents.isEmpty) {
             return const Text('データがありません');
           }
 
-          // scoreの合計を計算
-          double totalScore = 0.0;
-          for (final document in documents) {
-            final score = document.get('score') ?? 0.0;
-            totalScore += score;
-          }
-
-          // 平均値を計算
-          averageScore = totalScore / documents.length;
+          averageScore = _computeAverageScore(documents);
 
           return Column(
             children: [
@@ -71,7 +69,6 @@ class _FeedbackListState extends State<FeedbackList> {
             ],
           );
         }
-
         return const Text('データがありません');
       },
     );
