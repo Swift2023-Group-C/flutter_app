@@ -68,7 +68,6 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                         .where('User', isEqualTo: userKey)
                         .where('lessonId', isEqualTo: widget.lessonId)
                         .get();
-
                     if (querySnapshot.docs.isNotEmpty) {
                       // 既存のフィードバックが存在してたらそれを更新
                       final docId = querySnapshot.docs[0].id;
