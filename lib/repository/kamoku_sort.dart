@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_app/screens/kamoku_detail_page_view.dart';
-import 'package:flutter_app/components/syllabus_db_config.dart';
+import 'package:flutter_app/components/db_config.dart';
 
 //sort用のDB取得
 Future<List<Map<String, dynamic>>> fetchRecords() async {
@@ -68,6 +68,8 @@ class _SearchResultsState extends State<SearchResults> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: widget.records.length,
       itemBuilder: (context, index) {
         final record = widget.records[index];

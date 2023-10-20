@@ -5,8 +5,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_app/components/widgets/map.dart';
 
 import 'package:flutter_app/repository/find_rooms_in_use.dart';
-import 'package:flutter_app/repository/get_room_from_firebase.dart';
-import 'package:flutter_app/repository/read_schedule_file.dart';
+import 'package:flutter_app/repository/download_file_from_firebase.dart';
+import 'package:flutter_app/repository/read_json_file.dart';
 
 class MapGridScreen extends StatefulWidget {
   const MapGridScreen({Key? key}) : super(key: key);
@@ -66,12 +66,13 @@ class _MapGridScreenState extends State<MapGridScreen> {
     // アプリ起動時に一度だけ実行される
     // initState内で非同期処理を行うための方法
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      String scheduleFilePath = 'map/oneweek_schedule.json';
       // Firebaseからファイルをダウンロード
-      await downloadFileFromFirebase();
+      await downloadFileFromFirebase(scheduleFilePath);
 
       // ダウンロードしたファイルの中身を読み取る
       try {
-        String fileContent = await readScheduleFile();
+        String fileContent = await readJsonFile(scheduleFilePath);
         Map<String, DateTime> resourceIds = findRoomsInUse(fileContent);
 
         if (resourceIds.isNotEmpty) {
