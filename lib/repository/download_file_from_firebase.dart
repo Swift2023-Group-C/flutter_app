@@ -1,13 +1,12 @@
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_app/repository/get_application_path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-downloadFileFromFirebase() async {
+Future<void> downloadFileFromFirebase(String firebaseFilePath) async {
   final gsReference = FirebaseStorage.instance
-      .refFromURL("gs://swift2023groupc.appspot.com/map/oneweek_schedule.json");
+      .refFromURL("gs://swift2023groupc.appspot.com/$firebaseFilePath");
 
-  final appDocDir = await getApplicationDocumentsDirectory();
-  final filePath = "${appDocDir.path}/oneweek_schedule.json";
+  final filePath = await getApplicationFilePath(firebaseFilePath);
 
   final file = File(filePath);
 

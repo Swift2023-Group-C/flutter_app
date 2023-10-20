@@ -10,7 +10,7 @@ import 'package:flutter_app/screens/setting.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:flutter_app/components/setting_user_info.dart';
-import 'package:flutter_app/components/syllabus_db_config.dart';
+import 'package:flutter_app/components/db_config.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
