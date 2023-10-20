@@ -68,6 +68,8 @@ class _SearchResultsState extends State<SearchResults> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: widget.records.length,
       itemBuilder: (context, index) {
         final record = widget.records[index];
