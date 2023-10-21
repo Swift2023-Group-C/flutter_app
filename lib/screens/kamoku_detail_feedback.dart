@@ -62,7 +62,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           insetPadding: const EdgeInsets.all(8),
-          contentPadding: const EdgeInsets.all(20),
+          contentPadding: const EdgeInsets.all(50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),

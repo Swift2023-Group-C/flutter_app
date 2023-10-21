@@ -22,7 +22,23 @@ class _FeedbackListState extends State<FeedbackList> {
       final score = (document.get('score') ?? 0.0).toDouble();
       totalScore += score;
     }
-    return totalScore / documents.length;
+    return documents.isEmpty ? 0.0 : totalScore / documents.length;
+  }
+
+  Widget _buildRatingBar(int rating, Color color, double widthFactor) {
+    return Row(
+      children: <Widget>[
+        Text('$rating'),
+        const SizedBox(width: 10),
+        Expanded(
+          child: LinearProgressIndicator(
+            value: widthFactor,
+            valueColor: AlwaysStoppedAnimation(color),
+            backgroundColor: Colors.grey[300],
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -45,41 +61,85 @@ class _FeedbackListState extends State<FeedbackList> {
           final documents = querySnapshot.docs;
 
           if (documents.isEmpty) {
-            return const Text('データがありません');
+            return const Center(child: Text('データがありません'));
           }
 
           averageScore = _computeAverageScore(documents);
 
-          return Column(
-            children: [
-              Text('平均満足度: ${averageScore.toStringAsFixed(2)}'),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: documents.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final document = documents[index];
-                    final detail = document.get('detail');
-                    final score = (document.get('score') ?? 0).toDouble();
-
-                    return ListTile(
-                      leading: RatingBarIndicator(
-                        rating: score,
-                        itemBuilder: (context, index) => const Icon(
-                          Icons.star,
-                          color: Colors.amber,
+          return Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          averageScore.toStringAsFixed(2),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 50,
+                            color: Colors.black,
+                          ),
                         ),
-                        itemCount: 5,
-                        itemSize: 15.0,
-                      ),
-                      title: Text('内容: $detail'),
-                    );
-                  },
+                        RatingBarIndicator(
+                          rating: averageScore,
+                          itemBuilder: (context, index) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          itemCount: 5,
+                          itemSize: 25.0,
+                        ),
+                        Text(
+                          'BASED OF ${documents.length} REVIEWS',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                // フィードバックリスト
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: documents.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final document = documents[index];
+                      final detail = document.get('detail');
+                      final score = (document.get('score') ?? 0).toDouble();
+
+                      return ListTile(
+                        leading: RatingBarIndicator(
+                          rating: score,
+                          itemBuilder: (context, index) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          itemCount: 5,
+                          itemSize: 15.0,
+                        ),
+                        title: Text(
+                          '$detail',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           );
         }
-        return const Text('データがありません');
+        return const Center(child: Text('データがありません'));
       },
     );
   }
