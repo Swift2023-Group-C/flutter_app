@@ -197,6 +197,7 @@ class MapScreen extends StatelessWidget {
                             // 階数の変更をProviderに渡す
                             onPressed: () {
                               mapPageNotifier.state = i;
+                              FocusScope.of(context).unfocus();
                             },
                             child: Center(
                                 child: Text(
