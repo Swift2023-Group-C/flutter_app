@@ -57,4 +57,28 @@ class MapDetailMap {
     }
     return null;
   }
+
+  List<MapDetail> searchAll(String searchText) {
+    List<MapDetail> results = [];
+    List<MapDetail> results2 = [];
+    List<MapDetail> results3 = [];
+    mapDetailList!.forEach((_, value) {
+      value.forEach((_, mapDetail) {
+        if (mapDetail.roomName == searchText) {
+          results.add(mapDetail);
+        } else if (mapDetail.header.contains(searchText)) {
+          results2.add(mapDetail);
+        } else if (mapDetail.mail != null) {
+          if (mapDetail.mail!.contains(searchText)) {
+            results2.add(mapDetail);
+          }
+        } else if (mapDetail.detail != null) {
+          if (mapDetail.detail!.contains(searchText)) {
+            results3.add(mapDetail);
+          }
+        }
+      });
+    });
+    return [...results, ...results2, ...results3];
+  }
 }

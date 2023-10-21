@@ -7,7 +7,6 @@ import 'package:flutter_app/screens/kamoku.dart';
 import 'package:flutter_app/screens/home.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/screens/setting.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:flutter_app/components/setting_user_info.dart';
@@ -103,38 +102,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Center(child: Text(appBarTitle)),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return const SettingScreen();
-                    },
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const Offset begin = Offset(0.0, 1.0);
-                      const Offset end = Offset.zero;
-                      final Animatable<Offset> tween =
-                          Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: Curves.easeInOut));
-                      final Animation<Offset> offsetAnimation =
-                          animation.drive(tween);
-                      return SlideTransition(
-                        position: offsetAnimation,
-                        child: child,
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        body: _screens[_selectedIndex],
+        backgroundColor: customFunColor,
+        body: SafeArea(child: _screens[_selectedIndex]),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

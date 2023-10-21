@@ -321,10 +321,11 @@ class Tile extends StatelessWidget {
     }
     List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
     return Consumer(builder: (context, ref, child) {
-      final int floorIndex =
-          ref.watch(mapPageProvider.select((state) => state.mapFloorCount));
+      final mapPage = ref.watch(mapPageProvider);
+      final mapSearchBarFocusNotifier =
+          ref.watch(mapSearchBarFocusProvider.notifier);
       MapDetail? mapDetail =
-          MapDetailMap.instance.searchOnce(floorBarString[floorIndex], txt);
+          MapDetailMap.instance.searchOnce(floorBarString[mapPage], txt);
       if (mapDetail != null) {
         return GestureDetector(
             onTap: () {
@@ -334,6 +335,7 @@ class Tile extends StatelessWidget {
                   return MapBottomSheet(mapDetail: mapDetail);
                 },
               );
+              mapSearchBarFocusNotifier.state.unfocus();
             },
             child: Stack(
                 alignment: AlignmentDirectional.center,

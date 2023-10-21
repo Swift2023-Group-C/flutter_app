@@ -20,17 +20,16 @@ class _MapGridScreenState extends State<MapGridScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, ref, child) {
-      final int floorIndex =
-          ref.watch(mapPageProvider.select((state) => state.mapFloorCount));
+      final mapPage = ref.watch(mapPageProvider);
       return StaggeredGridView.countBuilder(
         physics: const NeverScrollableScrollPhysics(),
         crossAxisCount: 48,
-        itemCount: GridMaps.mapTileListMap[gridMapsList[floorIndex]]!.length,
+        itemCount: GridMaps.mapTileListMap[gridMapsList[mapPage]]!.length,
         itemBuilder: (BuildContext context, int index) {
-          return GridMaps.mapTileListMap[gridMapsList[floorIndex]]![index];
+          return GridMaps.mapTileListMap[gridMapsList[mapPage]]![index];
         },
         staggeredTileBuilder: (int index) {
-          return GridMaps.mapTileListMap[gridMapsList[floorIndex]]![index]
+          return GridMaps.mapTileListMap[gridMapsList[mapPage]]![index]
               .staggeredTile();
         },
       );
