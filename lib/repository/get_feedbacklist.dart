@@ -25,9 +25,22 @@ class _FeedbackListState extends State<FeedbackList> {
     return documents.isEmpty ? 0.0 : totalScore / documents.length;
   }
 
+  double _percentageOfRating(
+      List<DocumentSnapshot<Map<String, dynamic>>> documents, int rating) {
+    int count = 0;
+    for (final document in documents) {
+      if (document.get('score') == rating) {
+        count += 1;
+      }
+    }
+    print(count / documents.length);
+    return documents.isEmpty ? 0.0 : count / documents.length;
+  }
+
   Widget _buildRatingBar(int rating, Color color, double widthFactor) {
     return Row(
       children: <Widget>[
+        const SizedBox(width: 20),
         Text('$rating'),
         const SizedBox(width: 10),
         Expanded(
@@ -67,7 +80,7 @@ class _FeedbackListState extends State<FeedbackList> {
           averageScore = _computeAverageScore(documents);
 
           return Padding(
-            padding: const EdgeInsets.only(left: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20),
             child: Column(
               children: [
                 Row(
@@ -101,6 +114,35 @@ class _FeedbackListState extends State<FeedbackList> {
                           ),
                         ),
                       ],
+                    ),
+                    Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildRatingBar(
+                            5,
+                            Colors.green,
+                            _percentageOfRating(documents, 5),
+                          ),
+                          _buildRatingBar(4, Colors.green,
+                              _percentageOfRating(documents, 4)),
+                          _buildRatingBar(
+                            3,
+                            Colors.yellow,
+                            _percentageOfRating(documents, 3),
+                          ),
+                          _buildRatingBar(
+                            2,
+                            Colors.orange,
+                            _percentageOfRating(documents, 2),
+                          ),
+                          _buildRatingBar(
+                            1,
+                            Colors.red,
+                            _percentageOfRating(documents, 1),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
