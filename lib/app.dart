@@ -102,6 +102,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: customFunColor,
         body: SafeArea(child: _screens[_selectedIndex]),
         bottomNavigationBar: BottomNavigationBar(

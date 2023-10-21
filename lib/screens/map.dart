@@ -20,6 +20,7 @@ class MapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
         child: Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(kToolbarHeight),
               child: _mapSearchBar(),
