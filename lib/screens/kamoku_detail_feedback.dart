@@ -57,87 +57,105 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
     final deviceHeight = MediaQuery.of(context).size.height;
 
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          insetPadding: const EdgeInsets.all(8.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          title: const Text('満足度(必須)'),
-          content: SizedBox(
-            height: deviceHeight * 0.3,
-            width: deviceWidth,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                RatingBar.builder(
-                  minRating: 1,
-                  itemBuilder: (context, index) => const Icon(
-                    Icons.star,
-                    color: Colors.yellow,
-                  ),
-                  onRatingUpdate: (rating) {
-                    selectedScore = rating;
-                  },
-                ),
-                const Spacer(),
-                const Text('フィードバック (推奨)'),
-                SizedBox(
-                  width: deviceWidth * 0.9,
-                  child: TextFormField(
-                    maxLines: 3,
-                    maxLength: 30,
-                    keyboardType: TextInputType.multiline,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: '単位、出席、テストの情報など...',
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: AlertDialog(
+            insetPadding: const EdgeInsets.all(8.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            title: const Text('満足度(必須)'),
+            content: SizedBox(
+              height: deviceHeight * 0.3,
+              width: deviceWidth,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  RatingBar.builder(
+                    minRating: 1,
+                    itemBuilder: (context, index) => const Icon(
+                      Icons.star,
+                      color: Colors.yellow,
                     ),
-                    controller: detailController,
+                    onRatingUpdate: (rating) {
+                      selectedScore = rating;
+                    },
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final String? userKey = await UserPreferences.getUserKey();
-                    if (userKey != "" && selectedScore != null) {
-                      // Firestoreで同じUserKeyとlessonIdを持つフィードバックを検索
-                      final querySnapshot = await FirebaseFirestore.instance
-                          .collection('feedback')
-                          .where('User', isEqualTo: userKey)
-                          .where('lessonId', isEqualTo: widget.lessonId)
-                          .get();
+                  const Spacer(),
+                  const Text('フィードバック (推奨)'),
+                  SizedBox(
+                    width: deviceWidth * 0.9,
+                    child: TextFormField(
+                      maxLines: 3,
+                      maxLength: 30,
+                      keyboardType: TextInputType.multiline,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: '単位、出席、テストの情報など...',
+                      ),
+                      controller: detailController,
+                    ),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final String? userKey =
+                              await UserPreferences.getUserKey();
+                          if (userKey != "" && selectedScore != null) {
+                            // Firestoreで同じUserKeyとlessonIdを持つフィードバックを検索
+                            final querySnapshot = await FirebaseFirestore
+                                .instance
+                                .collection('feedback')
+                                .where('User', isEqualTo: userKey)
+                                .where('lessonId', isEqualTo: widget.lessonId)
+                                .get();
 
-                      if (querySnapshot.docs.isNotEmpty) {
-                        // 既存のフィードバックが存在してたらそれを更新
-                        final docId = querySnapshot.docs[0].id;
-                        FirebaseFirestore.instance
-                            .collection('feedback')
-                            .doc(docId)
-                            .update({
-                          'score': selectedScore,
-                          'detail': detailController.text,
-                        });
-                      } else {
-                        // 既存のフィードバックが存在しなかったら新しいドキュメントを作成
-                        FirebaseFirestore.instance.collection('feedback').add({
-                          'User': userKey,
-                          'lessonId': widget.lessonId,
-                          'score': selectedScore,
-                          'detail': detailController.text,
-                        });
-                      }
-                    }
+                            if (querySnapshot.docs.isNotEmpty) {
+                              // 既存のフィードバックが存在してたらそれを更新
+                              final docId = querySnapshot.docs[0].id;
+                              FirebaseFirestore.instance
+                                  .collection('feedback')
+                                  .doc(docId)
+                                  .update({
+                                'score': selectedScore,
+                                'detail': detailController.text,
+                              });
+                            } else {
+                              // 既存のフィードバックが存在しなかったら新しいドキュメントを作成
+                              FirebaseFirestore.instance
+                                  .collection('feedback')
+                                  .add({
+                                'User': userKey,
+                                'lessonId': widget.lessonId,
+                                'score': selectedScore,
+                                'detail': detailController.text,
+                              });
+                            }
+                          }
 
-                    // テキストフィールドと選択をクリア
-                    userController.clear();
-                    setState(() {
-                      selectedScore = null;
-                    });
-                    detailController.clear();
-                  },
-                  child: const Text('投稿する'),
-                ),
-              ],
+                          // テキストフィールドと選択をクリア
+                          userController.clear();
+                          setState(() {
+                            selectedScore = null;
+                          });
+                          detailController.clear();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('投稿する'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
