@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_app/components/map_detail.dart';
+import 'package:flutter_app/screens/map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum TileType {
   classroom, // メインの部屋
@@ -89,9 +91,6 @@ class Tile extends StatelessWidget {
       fontSize = 3;
     }
   }
-  StaggeredTile staggeredTile() {
-    return StaggeredTile.count(width, height.toDouble());
-  }
 
   void setColors() {
     switch (ttype) {
@@ -133,8 +132,8 @@ class Tile extends StatelessWidget {
     }
   }
 
-  void setUsing(bool u) {
-    using = u;
+  void setUsing(bool b) {
+    using = b;
   }
 
   void setTileColor(Color c) {
@@ -237,12 +236,23 @@ class Tile extends StatelessWidget {
     );
   }
 
-  BorderSide oneBorderSide(double n) {
-    if (n > 0) {
+  BorderSide oneBorderSide(double n, bool focus) {
+    if (focus) {
+      return const BorderSide(width: 1, color: Colors.red);
+    } else if (n > 0) {
       return BorderSide(width: n, color: Colors.black);
     } else {
       return BorderSide.none;
     }
+  }
+
+  EdgeInsets edgeInsets(bool focus) {
+    return EdgeInsets.only(
+      top: (top > 0 || focus) ? 0 : 1,
+      right: (right > 0 || focus) ? 0 : 1,
+      bottom: (bottom > 0 || focus) ? 0 : 1,
+      left: (left > 0 || focus) ? 0 : 1,
+    );
   }
 
   @override
@@ -254,21 +264,26 @@ class Tile extends StatelessWidget {
         setColors();
       }
     }
+    List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
     List<Widget> widgetList = [];
-    widgetList.add(SizedBox.expand(
-        child: Container(
-            padding: EdgeInsets.only(
-              top: (top > 0) ? 0 : 1,
-              right: (right > 0) ? 0 : 1,
-              bottom: (bottom > 0) ? 0 : 1,
-              left: (left > 0) ? 0 : 1,
-            ),
+    widgetList.add(SizedBox.expand(child: Consumer(
+      builder: (context, ref, child) {
+        final mapFocusMapDetail = ref.watch(mapFocusMapDetailProvider);
+        final mapPage = ref.watch(mapPageProvider);
+        bool focus = false;
+        if (mapFocusMapDetail.floor == floorBarString[mapPage]) {
+          if (mapFocusMapDetail.roomName == txt) {
+            focus = true;
+          }
+        }
+        return Container(
+            padding: edgeInsets(focus),
             decoration: BoxDecoration(
               border: Border(
-                  top: oneBorderSide(top),
-                  right: oneBorderSide(right),
-                  bottom: oneBorderSide(bottom),
-                  left: oneBorderSide(left)),
+                  top: oneBorderSide(top, focus),
+                  right: oneBorderSide(right, focus),
+                  bottom: oneBorderSide(bottom, focus),
+                  left: oneBorderSide(left, focus)),
               color:
                   (tileColor == TileColors.empty) ? tileColor : TileColors.road,
             ),
@@ -277,7 +292,9 @@ class Tile extends StatelessWidget {
                 padding: const EdgeInsets.all(0),
                 color: tileColor,
               ),
-            ))));
+            ));
+      },
+    )));
     widgetList.add(stackTextIcon());
     if (ttype == TileType.stair) {
       if (stairType.up && !stairType.down) {
@@ -316,58 +333,74 @@ class Tile extends StatelessWidget {
         }
       }
     }
-    if ([
-      TileType.classroom,
-      TileType.otherroom,
-      TileType.subroom,
-      TileType.teacherroom
-    ].contains(ttype)) {
-      return GestureDetector(
-          onTap: () {
-            showBottomSheet(
-              context: context,
-              builder: (BuildContext context) {
-                return MapBottomSheet(roomId: txt);
-              },
-            );
-          },
-          child: Stack(
-              alignment: AlignmentDirectional.center,
-              fit: StackFit.loose,
-              children: widgetList));
-    } else {
-      return Stack(
-          alignment: AlignmentDirectional.center,
-          fit: StackFit.loose,
-          children: widgetList);
-    }
+    return Consumer(builder: (context, ref, child) {
+      final mapPage = ref.watch(mapPageProvider);
+      final mapSearchBarFocusNotifier =
+          ref.watch(mapSearchBarFocusProvider.notifier);
+      MapDetail? mapDetail =
+          MapDetailMap.instance.searchOnce(floorBarString[mapPage], txt);
+      if (mapDetail != null) {
+        return GestureDetector(
+            onTap: () {
+              showBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return MapBottomSheet(mapDetail: mapDetail);
+                },
+              );
+              mapSearchBarFocusNotifier.state.unfocus();
+            },
+            child: Stack(
+                alignment: AlignmentDirectional.center,
+                fit: StackFit.loose,
+                children: widgetList));
+      } else {
+        return Stack(
+            alignment: AlignmentDirectional.center,
+            fit: StackFit.loose,
+            children: widgetList);
+      }
+    });
   }
 }
 
 class MapBottomSheet extends StatelessWidget {
-  const MapBottomSheet({Key? key, required this.roomId}) : super(key: key);
-  final String roomId;
+  const MapBottomSheet({Key? key, required this.mapDetail}) : super(key: key);
+  final MapDetail mapDetail;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
-      width: double.infinity,
-      color: Colors.grey.shade100,
-      child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            const SizedBox(height: 10),
-            Text(roomId),
-            ElevatedButton(
-              child: const Text('Close BottomSheet'),
-              onPressed: () => Navigator.pop(context),
+        height: 200,
+        width: double.infinity,
+        color: Colors.blueGrey.shade100,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(mapDetail.header,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: double.infinity, height: 10),
+                  if (mapDetail.detail != null) Text(mapDetail.detail!),
+                  if (mapDetail.mail != null)
+                    Text('${mapDetail.mail}@fun.ac.jp'),
+                ],
+              ),
             ),
-            const SizedBox(height: 200),
+            Padding(
+              padding: const EdgeInsets.only(top: 10, right: 10),
+              child: Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close))),
+            ),
           ],
-        ),
-      ),
-    );
+        ));
   }
 }
 
