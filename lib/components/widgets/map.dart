@@ -136,8 +136,8 @@ class Tile extends StatelessWidget {
     }
   }
 
-  void setUsing(bool u) {
-    using = u;
+  void setUsing(bool b) {
+    using = b;
   }
 
   void setTileColor(Color c) {
@@ -240,12 +240,23 @@ class Tile extends StatelessWidget {
     );
   }
 
-  BorderSide oneBorderSide(double n) {
-    if (n > 0) {
+  BorderSide oneBorderSide(double n, bool focus) {
+    if (focus) {
+      return const BorderSide(width: 1, color: Colors.red);
+    } else if (n > 0) {
       return BorderSide(width: n, color: Colors.black);
     } else {
       return BorderSide.none;
     }
+  }
+
+  EdgeInsets edgeInsets(bool focus) {
+    return EdgeInsets.only(
+      top: (top > 0 || focus) ? 0 : 1,
+      right: (right > 0 || focus) ? 0 : 1,
+      bottom: (bottom > 0 || focus) ? 0 : 1,
+      left: (left > 0 || focus) ? 0 : 1,
+    );
   }
 
   @override
@@ -257,21 +268,26 @@ class Tile extends StatelessWidget {
         setColors();
       }
     }
+    List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
     List<Widget> widgetList = [];
-    widgetList.add(SizedBox.expand(
-        child: Container(
-            padding: EdgeInsets.only(
-              top: (top > 0) ? 0 : 1,
-              right: (right > 0) ? 0 : 1,
-              bottom: (bottom > 0) ? 0 : 1,
-              left: (left > 0) ? 0 : 1,
-            ),
+    widgetList.add(SizedBox.expand(child: Consumer(
+      builder: (context, ref, child) {
+        final mapFocusMapDetail = ref.watch(mapFocusMapDetailProvider);
+        final mapPage = ref.watch(mapPageProvider);
+        bool focus = false;
+        if (mapFocusMapDetail.floor == floorBarString[mapPage]) {
+          if (mapFocusMapDetail.roomName == txt) {
+            focus = true;
+          }
+        }
+        return Container(
+            padding: edgeInsets(focus),
             decoration: BoxDecoration(
               border: Border(
-                  top: oneBorderSide(top),
-                  right: oneBorderSide(right),
-                  bottom: oneBorderSide(bottom),
-                  left: oneBorderSide(left)),
+                  top: oneBorderSide(top, focus),
+                  right: oneBorderSide(right, focus),
+                  bottom: oneBorderSide(bottom, focus),
+                  left: oneBorderSide(left, focus)),
               color:
                   (tileColor == TileColors.empty) ? tileColor : TileColors.road,
             ),
@@ -280,7 +296,9 @@ class Tile extends StatelessWidget {
                 padding: const EdgeInsets.all(0),
                 color: tileColor,
               ),
-            ))));
+            ));
+      },
+    )));
     widgetList.add(stackTextIcon());
     if (ttype == TileType.stair) {
       if (stairType.up && !stairType.down) {
@@ -319,7 +337,6 @@ class Tile extends StatelessWidget {
         }
       }
     }
-    List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
     return Consumer(builder: (context, ref, child) {
       final mapPage = ref.watch(mapPageProvider);
       final mapSearchBarFocusNotifier =

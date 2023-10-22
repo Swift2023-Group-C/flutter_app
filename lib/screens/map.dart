@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/components/map_detail.dart';
+import 'package:flutter_app/components/widgets/map.dart';
 import 'package:flutter_app/screens/map_grid.dart';
 import 'package:flutter_app/components/map_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +13,8 @@ final mapPageProvider = StateProvider((ref) => 2);
 final textEditingControllerProvider =
     StateProvider((ref) => TextEditingController());
 final mapSearchBarFocusProvider = StateProvider((ref) => FocusNode());
+final mapFocusMapDetailProvider = StateProvider(
+    (ref) => const MapDetail('1', '121', null, '121', null, null));
 
 class MapScreen extends StatelessWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -115,6 +118,8 @@ class MapScreen extends StatelessWidget {
         final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
         final mapSearchList = ref.watch(mapSearchListProvider);
         final mapPageNotifier = ref.watch(mapPageProvider.notifier);
+        final mapFocusMapDetailNotifier =
+            ref.watch(mapFocusMapDetailProvider.notifier);
         if (mapSearchList.isNotEmpty) {
           return Padding(
               padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
@@ -133,12 +138,14 @@ class MapScreen extends StatelessWidget {
                           height: 60,
                           child: ListTile(
                             onTap: () {
-                              mapPageNotifier.state =
-                                  floorBarString.indexOf(item.floor);
                               mapSearchListNotifier.state = [];
                               FocusScope.of(context).unfocus();
+                              mapFocusMapDetailNotifier.state = item;
+                              mapPageNotifier.state =
+                                  floorBarString.indexOf(item.floor);
                             },
                             title: Text(item.header),
+                            trailing: Text(item.floor),
                           ));
                     },
                     separatorBuilder: (context, index) => const Divider(

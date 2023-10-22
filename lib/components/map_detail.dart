@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_app/repository/get_firebase_realtime_db.dart';
 
 class MapDetail {
@@ -63,21 +64,30 @@ class MapDetailMap {
     List<MapDetail> results2 = [];
     List<MapDetail> results3 = [];
     mapDetailList!.forEach((_, value) {
-      value.forEach((_, mapDetail) {
+      for (var mapDetail in value.values) {
         if (mapDetail.roomName == searchText) {
           results.add(mapDetail);
-        } else if (mapDetail.header.contains(searchText)) {
-          results2.add(mapDetail);
-        } else if (mapDetail.mail != null) {
-          if (mapDetail.mail!.contains(searchText)) {
+          continue;
+        }
+        if (searchText.length > 1) {
+          if (mapDetail.header.contains(searchText)) {
             results2.add(mapDetail);
+            continue;
           }
-        } else if (mapDetail.detail != null) {
-          if (mapDetail.detail!.contains(searchText)) {
-            results3.add(mapDetail);
+          if (mapDetail.mail != null) {
+            if (mapDetail.mail!.contains(searchText)) {
+              results2.add(mapDetail);
+              continue;
+            }
+          }
+          if (mapDetail.detail != null) {
+            if (mapDetail.detail!.contains(searchText)) {
+              results3.add(mapDetail);
+              continue;
+            }
           }
         }
-      });
+      }
     });
     return [...results, ...results2, ...results3];
   }
