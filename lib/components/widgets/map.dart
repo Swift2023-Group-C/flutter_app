@@ -460,7 +460,7 @@ abstract final class GridMaps {
           left: 1,
           right: 1,
           stairType: const StairType(Axis.vertical, true, false)),
-      Tile(6, 16, TileType.classroom, right: 1, bottom: 1, txt: '食堂'), //食堂
+      Tile(6, 16, TileType.subroom, right: 1, bottom: 1, txt: '食堂'), //食堂
       Tile(42, 1, TileType.road, left: 1),
       Tile(12, 5, TileType.otherroom, left: 1),
       Tile(6, 12, TileType.road, bottom: 1),
@@ -534,7 +534,7 @@ abstract final class GridMaps {
           left: 1,
           stairType: const StairType(Axis.vertical, true, false)), // 購買側階段
       Tile(42, 1, TileType.road, left: 1),
-      Tile(6, 6, TileType.classroom, txt: '購買', right: 1, bottom: 1), //売店
+      Tile(6, 6, TileType.subroom, txt: '購買', right: 1, bottom: 1), //売店
       Tile(12, 5, TileType.otherroom, left: 1, bottom: 1),
       Tile(6, 1, TileType.road),
       Tile(17, 2, TileType.otherroom),
@@ -565,17 +565,18 @@ abstract final class GridMaps {
     "3": [
       Tile(12, 18, TileType.classroom,
           txt: '体育館', top: 1, left: 1, classroomNo: '51'),
-      Tile(6, 6, TileType.road, top: 1),
+      Tile(4, 6, TileType.subroom, top: 1, txt: 'トレーニングルーム'),
+      Tile(2, 6, TileType.road, top: 1),
       Tile(30, 6, TileType.empty, left: 1),
       Tile(4, 4, TileType.wc, wc: 0x1110), // 体育館トイレ
       Tile(2, 4, TileType.road),
       Tile(6, 12, TileType.classroom, txt: '工房', top: 1),
       Tile(6, 12, TileType.classroom, txt: 'エレクトロニクス工房', top: 1),
-      Tile(6, 2, TileType.classroom, txt: '医務室', top: 1),
+      Tile(6, 2, TileType.subroom, txt: '医務室', top: 1),
       Tile(2, 12, TileType.road, top: 1),
       Tile(6, 2, TileType.otherroom, top: 1),
       Tile(4, 3, TileType.otherroom, top: 1, right: 1),
-      Tile(6, 4, TileType.classroom, txt: '音響スタジオ'),
+      Tile(6, 4, TileType.subroom, txt: '映像音響スタジオ'),
       Tile(6, 1, TileType.road),
       Tile(10, 2, TileType.otherroom, right: 1),
       Tile(1, 2, TileType.otherroom),
@@ -592,9 +593,9 @@ abstract final class GridMaps {
           left: 1,
           right: 1,
           stairType: const StairType(Axis.vertical, true, false)), // 事務局行き階段
-      Tile(6, 7, TileType.classroom, txt: 'ミュージアム', right: 1),
+      Tile(6, 7, TileType.subroom, txt: 'ミュージアム', right: 1),
       Tile(6, 2, TileType.road),
-      Tile(6, 6, TileType.classroom),
+      Tile(6, 6, TileType.subroom, txt: '社会連携センター'),
       Tile(4, 4, TileType.otherroom),
       Tile(2, 4, TileType.road),
       Tile(48, 2, TileType.road, left: 1, right: 1), // モール
@@ -617,15 +618,14 @@ abstract final class GridMaps {
       Tile(48, 2, TileType.road, left: 1, right: 1), // モール
       Tile(12, 7, TileType.classroom, txt: '大講義室', left: 1, classroomNo: '2'),
       Tile(1, 7, TileType.otherroom),
-      Tile(3, 5, TileType.otherroom),
+      Tile(3, 5, TileType.subroom, txt: '心理学実験室'),
       Tile(2, 7, TileType.road),
       Tile(6, 7, TileType.classroom, txt: '365', classroomNo: '18'),
       Tile(6, 7, TileType.classroom, txt: '364', classroomNo: '17'),
       Tile(6, 7, TileType.classroom, txt: '363', classroomNo: '16'),
       Tile(4, 2, TileType.otherroom),
       Tile(2, 7, TileType.road),
-      Tile(6, 37, TileType.classroom,
-          txt: 'Library', right: 1, bottom: 1, left: 1),
+      Tile(6, 37, TileType.subroom, txt: 'ライブラリ', right: 1, bottom: 1, left: 1),
       Tile(2, 5, TileType.wc, wc: 0x1000), // 入口側トイレ男
       Tile(2, 5, TileType.otherroom),
       Tile(3, 2, TileType.otherroom),
@@ -724,7 +724,7 @@ abstract final class GridMaps {
       Tile(2, 6, TileType.road, top: 1),
       Tile(2, 6, TileType.road, top: 1, bottom: 1),
       Tile(2, 6, TileType.road, top: 1),
-      Tile(6, 10, TileType.classroom, txt: '事務局', top: 1, right: 1),
+      Tile(6, 10, TileType.subroom, txt: '事務局', top: 1, right: 1),
       Tile(2, 2, TileType.stair,
           top: 1,
           right: 1,
@@ -939,14 +939,14 @@ abstract final class GridMaps {
       Tile(2, 2, TileType.empty, top: 1), //吹き抜け
       Tile(18, 2, TileType.otherroom, left: 1, bottom: 1), //スタジオcenter
       Tile(2, 11, TileType.road),
-      Tile(2, 2, TileType.classroom, right: 1, bottom: 1, txt: 'M502'),
+      Tile(2, 2, TileType.subroom, right: 1, bottom: 1, txt: 'M502'),
       Tile(2, 2, TileType.empty, top: 1, right: 1), //吹き抜け
       Tile(2, 4, TileType.road),
       Tile(12, 12, TileType.empty, right: 1), //empty left
       Tile(2, 12, TileType.road, bottom: 1),
       Tile(22, 10, TileType.empty, left: 1, right: 1), //empty center
       Tile(4, 9, TileType.empty, left: 1, right: 1, bottom: 1), //empty right
-      Tile(4, 2, TileType.classroom, right: 1, txt: 'M502'),
+      Tile(4, 2, TileType.subroom, right: 1, txt: 'M501'),
       Tile(6, 2, TileType.road, right: 1),
       Tile(1, 5, TileType.road),
       Tile(4, 2, TileType.otherroom),
