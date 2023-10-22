@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 enum TileType {
   classroom, // メインの部屋
@@ -67,6 +68,7 @@ class Tile extends StatelessWidget {
   late Color fontColor;
   final StairType stairType;
   DateTime? useEndTime;
+  final Widget? innerWidget;
 
   Tile(
     this.width,
@@ -85,6 +87,7 @@ class Tile extends StatelessWidget {
     this.fontSize = 4,
     this.stairType = const StairType(Axis.horizontal, true, true),
     this.useEndTime,
+    this.innerWidget,
   }) : super(key: key) {
     setColors();
     if (width == 1) {
@@ -104,7 +107,7 @@ class Tile extends StatelessWidget {
         break;
       case TileType.subroom:
         tileColor = TileColors.subRoom;
-        fontColor = Colors.white;
+        fontColor = Colors.black;
         break;
       case TileType.otherroom:
         tileColor = TileColors.room2;
@@ -288,10 +291,12 @@ class Tile extends StatelessWidget {
                   (tileColor == TileColors.empty) ? tileColor : TileColors.road,
             ),
             child: SizedBox.expand(
-              child: Container(
-                padding: const EdgeInsets.all(0),
-                color: tileColor,
-              ),
+              child: (innerWidget == null)
+                  ? Container(
+                      padding: const EdgeInsets.all(0),
+                      color: tileColor,
+                    )
+                  : innerWidget,
             ));
       },
     )));
@@ -846,10 +851,16 @@ abstract final class GridMaps {
       Tile(6, 2, TileType.road, bottom: 1)
     ],
     "5": [
-      Tile(16, 2, TileType.otherroom, top: 1, left: 1, right: 1), //サークル1
+      Tile(14, 2, TileType.otherroom,
+          top: 1,
+          left: 1,
+          innerWidget: subTile(9, mapCircle7To15TileList)), //サークル1
+      Tile(2, 10, TileType.otherroom,
+          right: 1,
+          top: 1,
+          innerWidget: subTile(5, mapCircle6To1TileList)), //サークル3
       Tile(32, 6, TileType.empty), //empty
       Tile(14, 1, TileType.road, left: 1),
-      Tile(2, 8, TileType.otherroom, right: 1), //サークル3
       Tile(1, 14, TileType.road, left: 1),
       Tile(11, 14, TileType.empty,
           top: 1, right: 1, bottom: 1, left: 1), //empty gym
@@ -1057,4 +1068,41 @@ abstract final class GridMaps {
       Tile(1, 1, TileType.wc, bottom: 1),
     ],
   };
+
+  static final List<Tile> mapCircle7To15TileList = [
+    Tile(1, 1, TileType.subroom, txt: 'サークル室15'),
+    Tile(1, 1, TileType.subroom, txt: 'サークル室14'),
+    Tile(1, 1, TileType.subroom, txt: 'サークル室13'),
+    Tile(1, 1, TileType.subroom, txt: 'サークル室12'),
+    Tile(1, 1, TileType.subroom, txt: 'サークル室11'),
+    Tile(1, 1, TileType.subroom, txt: 'サークル室10'),
+    Tile(1, 1, TileType.subroom, txt: 'サークル室9'),
+    Tile(1, 1, TileType.subroom, txt: 'サークル室8'),
+    Tile(1, 1, TileType.subroom, txt: 'サークル室7'),
+  ];
+
+  static final List<Tile> mapCircle6To1TileList = [
+    Tile(5, 8, TileType.subroom, txt: 'サークル室6', fontSize: 3),
+    Tile(5, 4, TileType.subroom, txt: 'サークル室5', fontSize: 3),
+    Tile(5, 4, TileType.subroom, txt: 'サークル室4', fontSize: 3),
+    Tile(5, 4, TileType.subroom, txt: 'サークル室3', fontSize: 3),
+    Tile(5, 4, TileType.subroom, txt: 'サークル室2', fontSize: 3),
+    Tile(5, 4, TileType.subroom, txt: 'サークル室1', fontSize: 3),
+  ];
+
+  static Widget subTile(int count, List<Tile> tileList) {
+    return StaggeredGrid.count(
+      crossAxisCount: count,
+      children: [
+        ...tileList.map(
+          (e) {
+            return StaggeredGridTile.count(
+                crossAxisCellCount: e.width,
+                mainAxisCellCount: e.height,
+                child: e);
+          },
+        )
+      ],
+    );
+  }
 }
