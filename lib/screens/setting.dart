@@ -130,7 +130,8 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: _saveSettings,
+                    onPressed: () =>
+                        _saveSettings(() => FocusScope.of(context).unfocus()),
                     child: const Text("設定保存"),
                   ),
                   const SizedBox(height: 10),
@@ -161,7 +162,8 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   // 設定保存処理
-  void _saveSettings() async {
+  void _saveSettings(void Function() onFunction) async {
+    onFunction();
     await UserPreferences.setGrade(dropdownValue1);
     await UserPreferences.setCourse(dropdownValue2);
     await UserPreferences.setUserKey(_userKeyController.text);
