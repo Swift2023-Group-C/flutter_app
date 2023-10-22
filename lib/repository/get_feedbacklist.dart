@@ -15,6 +15,7 @@ class FeedbackList extends StatefulWidget {
 class _FeedbackListState extends State<FeedbackList> {
   double averageScore = 0.0;
 
+  // 平均満足度の計算
   double _computeAverageScore(
       List<DocumentSnapshot<Map<String, dynamic>>> documents) {
     double totalScore = 0.0;
@@ -25,6 +26,7 @@ class _FeedbackListState extends State<FeedbackList> {
     return documents.isEmpty ? 0.0 : totalScore / documents.length;
   }
 
+  // 各点の満足度の割合を計算
   double _percentageOfRating(
       List<DocumentSnapshot<Map<String, dynamic>>> documents, int rating) {
     int count = 0;
@@ -37,6 +39,7 @@ class _FeedbackListState extends State<FeedbackList> {
     return documents.isEmpty ? 0.0 : count / documents.length;
   }
 
+  // 満足度の分布を表すためのバー
   Widget _buildRatingBar(int rating, Color color, double widthFactor) {
     return Row(
       children: <Widget>[
@@ -156,21 +159,30 @@ class _FeedbackListState extends State<FeedbackList> {
                       final detail = document.get('detail');
                       final score = (document.get('score') ?? 0).toDouble();
 
-                      return ListTile(
-                        leading: RatingBarIndicator(
-                          rating: score,
-                          itemBuilder: (context, index) => const Icon(
-                            Icons.star,
-                            color: Colors.amber,
+                      return Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                                color:
+                                    Color.fromARGB(255, 211, 211, 211)), //区切り線
                           ),
-                          itemCount: 5,
-                          itemSize: 15.0,
                         ),
-                        title: Text(
-                          '$detail',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[800],
+                        child: ListTile(
+                          leading: RatingBarIndicator(
+                            rating: score,
+                            itemBuilder: (context, index) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            itemCount: 5,
+                            itemSize: 15.0,
+                          ),
+                          title: Text(
+                            '$detail',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
                           ),
                         ),
                       );
