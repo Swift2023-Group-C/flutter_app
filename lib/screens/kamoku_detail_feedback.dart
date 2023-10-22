@@ -103,7 +103,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                   Row(
                     children: <Widget>[
                       TextButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.of(context).pop(),
                         child: const Text('Close'),
                       ),
                       ElevatedButton(
@@ -148,7 +148,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                             selectedScore = null;
                           });
                           detailController.clear();
-                          Navigator.pop(context);
+                          if (context.mounted) Navigator.of(context).pop();
                         },
                         child: const Text('投稿する'),
                       ),

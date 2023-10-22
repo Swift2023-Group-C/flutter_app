@@ -35,7 +35,6 @@ class _FeedbackListState extends State<FeedbackList> {
         count += 1;
       }
     }
-    print(count / documents.length);
     return documents.isEmpty ? 0.0 : count / documents.length;
   }
 
@@ -168,6 +167,7 @@ class _FeedbackListState extends State<FeedbackList> {
                           ),
                         ),
                         child: ListTile(
+                          titleAlignment: ListTileTitleAlignment.center,
                           leading: RatingBarIndicator(
                             rating: score,
                             itemBuilder: (context, index) => const Icon(
@@ -175,7 +175,7 @@ class _FeedbackListState extends State<FeedbackList> {
                               color: Colors.amber,
                             ),
                             itemCount: 5,
-                            itemSize: 15.0,
+                            itemSize: 20.0,
                           ),
                           title: Text(
                             '$detail',
