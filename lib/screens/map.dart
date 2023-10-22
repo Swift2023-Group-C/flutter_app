@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/components/map_detail.dart';
-import 'package:flutter_app/components/widgets/map.dart';
 import 'package:flutter_app/screens/map_grid.dart';
 import 'package:flutter_app/components/map_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
