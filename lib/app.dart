@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
@@ -85,6 +86,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState();
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
     initUniLinks();
     SyllabusDBConfig.setDB();
     MapDetailMap.instance.getList();
