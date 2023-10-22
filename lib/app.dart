@@ -86,10 +86,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    FirebaseDatabase.instance.setPersistenceEnabled(true);
     initUniLinks();
     SyllabusDBConfig.setDB();
     MapDetailMap.instance.getList();
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
   }
 
   int _selectedIndex = 0;

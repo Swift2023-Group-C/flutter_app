@@ -12,8 +12,8 @@ final mapPageProvider = StateProvider((ref) => 2);
 final textEditingControllerProvider =
     StateProvider((ref) => TextEditingController());
 final mapSearchBarFocusProvider = StateProvider((ref) => FocusNode());
-final mapFocusMapDetailProvider = StateProvider(
-    (ref) => const MapDetail('1', '121', null, '121', null, null));
+final mapFocusMapDetailProvider =
+    StateProvider((ref) => const MapDetail('1', '0', null, '0', null, null));
 
 class MapScreen extends StatelessWidget {
   const MapScreen({Key? key}) : super(key: key);
