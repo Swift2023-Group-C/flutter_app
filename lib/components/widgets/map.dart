@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 enum TileType {
   classroom, // メインの部屋
@@ -91,9 +90,6 @@ class Tile extends StatelessWidget {
     if (width == 1) {
       fontSize = 3;
     }
-  }
-  StaggeredTile staggeredTile() {
-    return StaggeredTile.count(width, height.toDouble());
   }
 
   void setColors() {
