@@ -507,11 +507,11 @@ abstract final class GridMaps {
       Tile(1, 6, TileType.road),
       Tile(3, 2, TileType.wc, wc: 0x1010), // 購買側トイレ
       Tile(1, 4, TileType.otherroom),
-      Tile(2, 4, TileType.classroom, txt: '235'), //235
-      Tile(2, 4, TileType.classroom, txt: '234'), //234
-      Tile(2, 4, TileType.classroom, txt: '233'), //233
-      Tile(2, 4, TileType.classroom, txt: '232'), //232
-      Tile(2, 4, TileType.classroom, txt: '231'), //231
+      Tile(2, 4, TileType.teacherroom, txt: '235'), //235
+      Tile(2, 4, TileType.teacherroom, txt: '234'), //234
+      Tile(2, 4, TileType.teacherroom, txt: '233'), //233
+      Tile(2, 4, TileType.teacherroom, txt: '232'), //232
+      Tile(2, 4, TileType.teacherroom, txt: '231'), //231
       Tile(2, 4, TileType.stair,
           top: 1,
           right: 1,
