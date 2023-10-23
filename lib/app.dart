@@ -1,16 +1,17 @@
 import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
 import 'package:flutter_app/screens/home.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/screens/setting.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:flutter_app/components/setting_user_info.dart';
-import 'package:flutter_app/components/syllabus_db_config.dart';
+import 'package:flutter_app/components/db_config.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -87,6 +88,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     super.initState();
     initUniLinks();
     SyllabusDBConfig.setDB();
+    MapDetailMap.instance.getList();
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
   }
 
   int _selectedIndex = 0;
@@ -101,38 +104,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Center(child: Text(appBarTitle)),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return const SettingScreen();
-                    },
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const Offset begin = Offset(0.0, 1.0);
-                      const Offset end = Offset.zero;
-                      final Animatable<Offset> tween =
-                          Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: Curves.easeInOut));
-                      final Animation<Offset> offsetAnimation =
-                          animation.drive(tween);
-                      return SlideTransition(
-                        position: offsetAnimation,
-                        child: child,
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        body: _screens[_selectedIndex],
+        resizeToAvoidBottomInset: false,
+        backgroundColor: customFunColor,
+        body: SafeArea(child: _screens[_selectedIndex]),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

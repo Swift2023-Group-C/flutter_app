@@ -1,5 +1,5 @@
 PODS:
-  - cloud_firestore (4.9.2):
+  - cloud_firestore (4.10.0):
     - Firebase/Firestore (= 10.15.0)
     - firebase_core
     - Flutter
@@ -15,14 +15,14 @@ PODS:
   - Firebase/Storage (10.15.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.15.0)
-  - firebase_core (2.17.0):
+  - firebase_core (2.18.0):
     - Firebase/CoreOnly (= 10.15.0)
     - Flutter
-  - firebase_database (10.2.5):
+  - firebase_database (10.3.0):
     - Firebase/Database (= 10.15.0)
     - firebase_core
     - Flutter
-  - firebase_storage (11.2.3):
+  - firebase_storage (11.3.0):
     - Firebase/Storage (= 10.15.0)
     - firebase_core
     - Flutter
@@ -82,6 +82,8 @@ PODS:
     - FMDB (>= 2.7.5)
   - uni_links (0.0.1):
     - Flutter
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
@@ -96,6 +98,7 @@ DEPENDENCIES:
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -140,6 +143,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite/ios"
   uni_links:
     :path: ".symlinks/plugins/uni_links/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 CHECKOUT OPTIONS:
   FirebaseFirestore:
@@ -147,11 +152,11 @@ CHECKOUT OPTIONS:
     :tag: 10.15.0
 
 SPEC CHECKSUMS:
-  cloud_firestore: ac000d8c5a79d57dc69238ea06bb422880fb825e
+  cloud_firestore: 73333503bfb9095d98b0b600b387b5859a72b24d
   Firebase: 66043bd4579e5b73811f96829c694c7af8d67435
-  firebase_core: 28e84c2a4fcf6a50ef83f47b145ded8c1fa331e4
-  firebase_database: a161e78aa8e77aa78b0bb99d9d1e6c5a7047f860
-  firebase_storage: 9896dca1c596b913b04e552bd7fe90a961a49b48
+  firebase_core: 49fd2395e3fbbf63f453888c8e9f42f541f4c11c
+  firebase_database: 442404afd015a8dc52e2debb0fd31c343e844c85
+  firebase_storage: ff0478063d5e8a1cf34c03a778b5ed0638240504
   FirebaseAppCheckInterop: 82358cff9f33452dd44259e88eea5e562500b1cb
   FirebaseAuthInterop: b79fab8ce80e685145eee5f973d9ad5210e19d44
   FirebaseCore: 2cec518b43635f96afe7ac3a9c513e47558abd2e
@@ -169,11 +174,12 @@ SPEC CHECKSUMS:
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
-  share_plus: 599aa54e4ea31d4b4c0e9c911bcc26c55e791028
+  share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
+  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
 
-PODFILE CHECKSUM: 31710df9807aeac08a0e22a0f1cd4738b732be7f
+PODFILE CHECKSUM: 137bc2a58813c8928231944966a300e1f742a4d6
 
 COCOAPODS: 1.13.0

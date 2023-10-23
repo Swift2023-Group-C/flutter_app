@@ -1,7 +1,6 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_app/components/kadai.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
+import 'package:flutter_app/repository/get_firebase_realtime_db.dart';
 
 class FirebaseGetKadai {
   const FirebaseGetKadai();
@@ -9,14 +8,9 @@ class FirebaseGetKadai {
   Future<List<Kadai>> getKadaiFromFirebase() async {
     final String userKey =
         "swift2023c_hope_user_key_${await UserPreferences.getUserKey()}";
-    final FirebaseApp firebaseApp = Firebase.app();
-    final ref = FirebaseDatabase.instanceFor(
-            app: firebaseApp,
-            databaseURL:
-                "https://swift2023groupc-default-rtdb.asia-southeast1.firebasedatabase.app")
-        .ref();
     List<Kadai> returnList = [];
-    final snapshot = await ref.child('hope/users/$userKey/data').get();
+    final snapshot =
+        await GetFirebaseRealtimeDB.getData('hope/users/$userKey/data');
     if (snapshot.exists) {
       final data = snapshot.value as Map;
       data.forEach((key, value) {

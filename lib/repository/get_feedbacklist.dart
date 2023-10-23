@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_app/components/widgets/progress_indicator.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class FeedbackList extends StatefulWidget {
   const FeedbackList({Key? key, required this.lessonId}) : super(key: key);
@@ -12,7 +13,48 @@ class FeedbackList extends StatefulWidget {
 }
 
 class _FeedbackListState extends State<FeedbackList> {
-  double averageScore = 0.0; // 平均値を保持する変数
+  double averageScore = 0.0;
+
+  // 平均満足度の計算
+  double _computeAverageScore(
+      List<DocumentSnapshot<Map<String, dynamic>>> documents) {
+    double totalScore = 0.0;
+    for (final document in documents) {
+      final score = (document.get('score') ?? 0.0).toDouble();
+      totalScore += score;
+    }
+    return documents.isEmpty ? 0.0 : totalScore / documents.length;
+  }
+
+  // 各点の満足度の割合を計算
+  double _percentageOfRating(
+      List<DocumentSnapshot<Map<String, dynamic>>> documents, int rating) {
+    int count = 0;
+    for (final document in documents) {
+      if (document.get('score') == rating) {
+        count += 1;
+      }
+    }
+    return documents.isEmpty ? 0.0 : count / documents.length;
+  }
+
+  // 満足度の分布を表すためのバー
+  Widget _buildRatingBar(int rating, Color color, double widthFactor) {
+    return Row(
+      children: <Widget>[
+        const SizedBox(width: 20),
+        Text('$rating'),
+        const SizedBox(width: 10),
+        Expanded(
+          child: LinearProgressIndicator(
+            value: widthFactor,
+            valueColor: AlwaysStoppedAnimation(color),
+            backgroundColor: Colors.grey[300],
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,53 +68,132 @@ class _FeedbackListState extends State<FeedbackList> {
         if (snapshot.hasError) {
           return Text('エラー: ${snapshot.error}');
         }
-
         if (snapshot.connectionState == ConnectionState.waiting) {
           return createProgressIndicator();
         }
-
         if (snapshot.hasData) {
-          final QuerySnapshot<Map<String, dynamic>> querySnapshot =
-              snapshot.data!;
-          final List<DocumentSnapshot<Map<String, dynamic>>> documents =
-              querySnapshot.docs;
+          final querySnapshot = snapshot.data!;
+          final documents = querySnapshot.docs;
 
           if (documents.isEmpty) {
-            return const Text('データがありません');
+            return const Center(child: Text('データがありません'));
           }
 
-          // scoreの合計を計算
-          double totalScore = 0.0;
-          for (final document in documents) {
-            final score = document.get('score') ?? 0.0;
-            totalScore += score;
-          }
+          averageScore = _computeAverageScore(documents);
 
-          // 平均値を計算
-          averageScore = totalScore / documents.length;
-
-          return Column(
-            children: [
-              Text('平均満足度: ${averageScore.toStringAsFixed(2)}'),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: documents.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final document = documents[index];
-                    final detail = document.get('detail');
-                    final score = document.get('score');
-
-                    return ListTile(
-                      title: Text('満足度:$score, 内容: $detail'),
-                    );
-                  },
+          return Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          averageScore.toStringAsFixed(2),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 50,
+                            color: Colors.black,
+                          ),
+                        ),
+                        RatingBarIndicator(
+                          rating: averageScore,
+                          itemBuilder: (context, index) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          itemCount: 5,
+                          itemSize: 25.0,
+                        ),
+                        Text(
+                          'BASED OF ${documents.length} REVIEWS',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildRatingBar(
+                            5,
+                            Colors.green,
+                            _percentageOfRating(documents, 5),
+                          ),
+                          _buildRatingBar(4, Colors.green,
+                              _percentageOfRating(documents, 4)),
+                          _buildRatingBar(
+                            3,
+                            Colors.yellow,
+                            _percentageOfRating(documents, 3),
+                          ),
+                          _buildRatingBar(
+                            2,
+                            Colors.orange,
+                            _percentageOfRating(documents, 2),
+                          ),
+                          _buildRatingBar(
+                            1,
+                            Colors.red,
+                            _percentageOfRating(documents, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                // フィードバックリスト
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: documents.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final document = documents[index];
+                      final detail = document.get('detail');
+                      final score = (document.get('score') ?? 0).toDouble();
+
+                      return Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                                color:
+                                    Color.fromARGB(255, 211, 211, 211)), //区切り線
+                          ),
+                        ),
+                        child: ListTile(
+                          titleAlignment: ListTileTitleAlignment.center,
+                          leading: RatingBarIndicator(
+                            rating: score,
+                            itemBuilder: (context, index) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            itemCount: 5,
+                            itemSize: 20.0,
+                          ),
+                          title: Text(
+                            '$detail',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           );
         }
-
-        return const Text('データがありません');
+        return const Center(child: Text('データがありません'));
       },
     );
   }

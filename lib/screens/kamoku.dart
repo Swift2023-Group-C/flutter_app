@@ -96,122 +96,124 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 12,
-              horizontal: 36,
-            ),
-            child: TextField(
-              controller: _controller,
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.black,
+      resizeToAvoidBottomInset: false,
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 36,
+                ),
+                child: TextField(
+                  controller: _controller,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: '授業名を検索',
+                  ),
+                  onChanged: (text) {
+                    word = text;
+                  },
+                ),
               ),
-              decoration: const InputDecoration(
-                hintText: '授業名を検索',
+              Visibility(
+                visible: isFiltersVisible,
+                child: Column(
+                  children: [
+                    buildFilterRow(term, termCheckedList),
+                    buildFilterRow(grade, gradeCheckedList),
+                    buildFilterRow(courseStr, courseStrCheckedList),
+                    buildFilterRow(classification, classificationCheckedList),
+                    buildFilterRow(education, educationCheckedList),
+                    Row(children: [
+                      TextButton(
+                          onPressed: () {
+                            trueAll();
+                          },
+                          child: const Text('全選択')),
+                      TextButton(
+                          onPressed: () {
+                            falseAll();
+                          },
+                          child: const Text('リセット')),
+                    ])
+                  ],
+                ),
               ),
-              onChanged: (text) {
-                word = text;
-              },
-            ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isFiltersVisible = !isFiltersVisible;
+                  });
+                },
+                child: Icon(
+                  isFiltersVisible ? Icons.expand_less : Icons.expand_more,
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  termlist.clear();
+                  gradelist.clear();
+                  courseStrlist.clear();
+                  classlist.clear();
+                  educationlist.clear();
+                  for (int i = 0; i < term.length; i++) {
+                    if (termCheckedList[i] == true) {
+                      termlist.add(i);
+                    }
+                  }
+                  for (int i = 0; i < grade.length; i++) {
+                    if (gradeCheckedList[i] == true) {
+                      gradelist.add(i);
+                    }
+                  }
+                  for (int i = 0; i < courseStr.length; i++) {
+                    if (courseStrCheckedList[i] == true) {
+                      courseStrlist.add(i);
+                    }
+                  }
+                  for (int i = 0; i < classification.length; i++) {
+                    if (classificationCheckedList[i] == true) {
+                      classlist.add(i);
+                    }
+                  }
+                  for (int i = 0; i < education.length; i++) {
+                    if (educationCheckedList[i] == true) {
+                      educationlist.add(i);
+                    }
+                  }
+                  List<Map<String, dynamic>> records = await search(
+                      term: termlist,
+                      grade: gradelist,
+                      courseStr: courseStrlist,
+                      classification: classlist,
+                      education: educationlist);
+                  searchClasses(word, records);
+                },
+                child: const Text(
+                  '検索の実行',
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.justify,
+                ),
+              ),
+              const Text(
+                '結果一覧',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              _searchResults == null
+                  ? Container()
+                  : SearchResults(records: _searchResults!),
+            ],
           ),
-          Visibility(
-            visible: isFiltersVisible,
-            child: Column(
-              children: [
-                buildFilterRow(term, termCheckedList),
-                buildFilterRow(grade, gradeCheckedList),
-                buildFilterRow(courseStr, courseStrCheckedList),
-                buildFilterRow(classification, classificationCheckedList),
-                buildFilterRow(education, educationCheckedList),
-                Row(children: [
-                  TextButton(
-                      onPressed: () {
-                        trueAll();
-                      },
-                      child: const Text('全選択')),
-                  TextButton(
-                      onPressed: () {
-                        falseAll();
-                      },
-                      child: const Text('リセット')),
-                ])
-              ],
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                isFiltersVisible = !isFiltersVisible;
-              });
-            },
-            child: Icon(
-              isFiltersVisible ? Icons.expand_less : Icons.expand_more,
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              termlist.clear();
-              gradelist.clear();
-              courseStrlist.clear();
-              classlist.clear();
-              educationlist.clear();
-              for (int i = 0; i < term.length; i++) {
-                if (termCheckedList[i] == true) {
-                  termlist.add(i);
-                }
-              }
-              for (int i = 0; i < grade.length; i++) {
-                if (gradeCheckedList[i] == true) {
-                  gradelist.add(i);
-                }
-              }
-              for (int i = 0; i < courseStr.length; i++) {
-                if (courseStrCheckedList[i] == true) {
-                  courseStrlist.add(i);
-                }
-              }
-              for (int i = 0; i < classification.length; i++) {
-                if (classificationCheckedList[i] == true) {
-                  classlist.add(i);
-                }
-              }
-              for (int i = 0; i < education.length; i++) {
-                if (educationCheckedList[i] == true) {
-                  educationlist.add(i);
-                }
-              }
-              List<Map<String, dynamic>> records = await search(
-                  term: termlist,
-                  grade: gradelist,
-                  courseStr: courseStrlist,
-                  classification: classlist,
-                  education: educationlist);
-              searchClasses(word, records);
-            },
-            child: const Text(
-              '検索の実行',
-              style: TextStyle(fontSize: 20),
-              textAlign: TextAlign.justify,
-            ),
-          ),
-          const Text(
-            '結果一覧',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(
-            child: _searchResults == null
-                ? Container()
-                : SearchResults(records: _searchResults!),
-          ),
-        ],
+        ),
       ),
-    ));
+    );
   }
 
   Widget buildFilterRow(List<String> items, List<bool> checkedList) {

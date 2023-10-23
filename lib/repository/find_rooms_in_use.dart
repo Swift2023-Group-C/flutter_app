@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-Map<String, List<String>> findRoomsInUse(String jsonString) {
+Map<String, DateTime> findRoomsInUse(String jsonString) {
   var decodedData = jsonDecode(jsonString);
 
   // JSONデータがリストでない場合はエラー
@@ -8,23 +8,25 @@ Map<String, List<String>> findRoomsInUse(String jsonString) {
     throw Exception("Expected a list of JSON objects");
   }
 
-  Map<String, List<String>> resourceIds = {};
+  Map<String, DateTime> resourceIds = {};
   DateTime now = DateTime.now();
 
   for (var item in decodedData) {
     if (item is Map<String, dynamic>) {
       // スタート時間・エンド時間をDateTimeにかえる
-      DateTime startTime = DateTime.parse(item['start']);
+      // スタートを10分前から
+      DateTime startTime =
+          DateTime.parse(item['start']).add(const Duration(minutes: -10));
       DateTime endTime = DateTime.parse(item['end']);
 
       //現在時刻が開始時刻と終了時刻の間であればresourceIdを取得
       if (now.isAfter(startTime) && now.isBefore(endTime)) {
         if (resourceIds.containsKey(item['resourceId'])) {
-          resourceIds[item['resourceId']]!.add(item['lessonId']);
+          if (resourceIds[item['resourceId']]!.isBefore(endTime)) {
+            resourceIds[item['resourceId']] = endTime;
+          }
         } else {
-          resourceIds.addAll({
-            item['resourceId']: [item['lessonId']]
-          });
+          resourceIds.addAll({item['resourceId']: endTime});
         }
       }
     }

@@ -1,35 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_app/components/widgets/map.dart';
 
 import 'package:flutter_app/repository/find_rooms_in_use.dart';
-import 'package:flutter_app/repository/get_room_from_firebase.dart';
-import 'package:flutter_app/repository/read_schedule_file.dart';
+import 'package:flutter_app/repository/download_file_from_firebase.dart';
+import 'package:flutter_app/repository/read_json_file.dart';
 
 class MapGridScreen extends StatefulWidget {
-  final int mapIndex;
-  const MapGridScreen({Key? key, this.mapIndex = 2}) : super(key: key);
+  const MapGridScreen({Key? key}) : super(key: key);
 
   @override
   State<MapGridScreen> createState() => _MapGridScreenState();
 }
 
 class _MapGridScreenState extends State<MapGridScreen> {
-  final List<String> gridMapsList = ["5", "4", "3", "2", "1", "r2", "r1"];
+  final List<String> gridMapsList = ["1", "2", "3", "4", "5", "R1", "R2"];
   @override
   Widget build(BuildContext context) {
-    return StaggeredGridView.countBuilder(
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 48,
-      itemCount: GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]!.length,
-      itemBuilder: (BuildContext context, int index) {
-        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index];
-      },
-      staggeredTileBuilder: (int index) {
-        return GridMaps.mapTileListMap[gridMapsList[widget.mapIndex]]![index]
-            .staggeredTile();
-      },
-    );
+    return Consumer(builder: (context, ref, child) {
+      final mapPage = ref.watch(mapPageProvider);
+      return StaggeredGrid.count(
+        crossAxisCount: 48,
+        children: [
+          ...GridMaps.mapTileListMap[gridMapsList[mapPage]]!.map(
+            (e) {
+              return StaggeredGridTile.count(
+                  crossAxisCellCount: e.width,
+                  mainAxisCellCount: e.height,
+                  child: e);
+            },
+          )
+        ],
+      );
+    });
   }
 
   @override
@@ -41,15 +46,15 @@ class _MapGridScreenState extends State<MapGridScreen> {
       "4": ["5"],
       "5": ["5"],
       "6": ["5"],
-      "7": ["r2"],
+      "7": ["R2"],
       "8": ["4"],
       "9": ["4"],
       "10": ["4"],
       "11": ["5"],
       "12": ["5"],
       "13": ["5"],
-      "14": ["r2"],
-      "15": ["r2"],
+      "14": ["R2"],
+      "15": ["R2"],
       "16": ["3"],
       "17": ["3"],
       "18": ["3"],
@@ -61,16 +66,17 @@ class _MapGridScreenState extends State<MapGridScreen> {
     // アプリ起動時に一度だけ実行される
     // initState内で非同期処理を行うための方法
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      String scheduleFilePath = 'map/oneweek_schedule.json';
       // Firebaseからファイルをダウンロード
-      await downloadFileFromFirebase();
+      await downloadFileFromFirebase(scheduleFilePath);
 
       // ダウンロードしたファイルの中身を読み取る
       try {
-        String fileContent = await readScheduleFile();
-        Map<String, List<String>> resourceIds = findRoomsInUse(fileContent);
+        String fileContent = await readJsonFile(scheduleFilePath);
+        Map<String, DateTime> resourceIds = findRoomsInUse(fileContent);
 
         if (resourceIds.isNotEmpty) {
-          resourceIds.forEach((String resourceId, List<String> lessonIds) {
+          resourceIds.forEach((String resourceId, DateTime useEndTime) {
             print(resourceId);
             if (classroomNoFloorMap.containsKey(resourceId)) {
               for (var floor in classroomNoFloorMap[resourceId]!) {
@@ -78,6 +84,12 @@ class _MapGridScreenState extends State<MapGridScreen> {
                     .indexWhere((tile) => tile.classroomNo == resourceId);
                 if (tileIndex != -1) {
                   GridMaps.mapTileListMap[floor]![tileIndex].setUsing(true);
+                  GridMaps.mapTileListMap[floor]![tileIndex]
+                      .setTileColor(TileColors.using);
+                  GridMaps.mapTileListMap[floor]![tileIndex]
+                      .setFontColor(Colors.black);
+                  GridMaps.mapTileListMap[floor]![tileIndex]
+                      .setUseEndTime(useEndTime);
                 }
               }
             }

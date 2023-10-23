@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_app/repository/get_application_path.dart';
 
-Future<String> readScheduleFile() async {
-  final appDocDir = await getApplicationDocumentsDirectory();
-  final filePath = "${appDocDir.path}/oneweek_schedule.json";
+Future<String> readJsonFile(String fileName) async {
+  final filePath = await getApplicationFilePath(fileName);
   final file = File(filePath);
 
   // ファイルの存在確認
