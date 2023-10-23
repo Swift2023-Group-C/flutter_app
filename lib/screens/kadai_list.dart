@@ -181,11 +181,11 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                             children: [
                               SlidableAction(
                                 label: alertList.contains(data[i].id)
-                                    ? '通知on'
-                                    : '通知off',
+                                    ? '通知off'
+                                    : '通知on',
                                 backgroundColor: alertList.contains(data[i].id)
-                                    ? Colors.green
-                                    : Colors.red,
+                                    ? Colors.red
+                                    : Colors.green,
                                 icon: alertList.contains(data[i].id)
                                     ? Icons.notifications_off_outlined
                                     : Icons.notifications_active_outlined,
