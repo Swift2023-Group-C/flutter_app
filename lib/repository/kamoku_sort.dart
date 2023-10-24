@@ -106,93 +106,60 @@ class _SearchResultsState extends State<SearchResults> {
   }
 }
 
+bool isNotAllTrueOrAllFalse(List<bool> list) {
+  if (list.every((element) => element)) {
+    return false;
+  } else if (list.every((element) => !element)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 Future<List<Map<String, dynamic>>> search(
-    {required List<int> term,
-    required List<int> grade,
-    required List<int> courseStr,
-    required List<int> classification,
-    required List<int> education}) async {
+    {required List<bool> term,
+    required List<bool> grade,
+    required bool kyoyo,
+    required List<bool> course,
+    required List<bool> classification,
+    required List<bool> education}) async {
   Database database = await openDatabase(SyllabusDBConfig.dbPath);
+  List<String> sqlWhereList = [];
+  List<String> sqlWhereList2 = [];
+  List<String> sqlWhereListGradeClass = [];
+  List<String> sqlWhereListKyoyo = [];
   String sqlWhere = "";
-  String sqlWhere1 = "";
-  String sqlWhere2 = "";
-  String sqlWhere3 = "";
-  String sqlWhere5 = "";
 
-  List<int> kyoyokubun = [];
+  // 開講時期
+  // ['前期', '後期', '通年']
+  List<String> sqlWhereTerm = [];
+  if (isNotAllTrueOrAllFalse(term)) {
+    List<String> termName = ['10', '20', '0'];
+    for (var i = 0; i < term.length; i++) {
+      if (term[i]) {
+        sqlWhereTerm.add(termName[i]);
+      }
+    }
+    sqlWhereList.add("(sort.開講時期 IN (${sqlWhereTerm.join(", ")}))");
+  }
 
-  if (term.isNotEmpty) {
-    for (int i = 0; i < term.length; i++) {
-      if (term[i] == 0) {
-        sqlWhere1 += "( sort.開講時期=10";
-      }
-      if (term[i] == 1) {
-        if (sqlWhere1 != "") {
-          sqlWhere1 += " OR sort.開講時期=20";
-        } else {
-          sqlWhere1 += "( sort.開講時期=20";
-        }
-      }
-      if (term[i] == 2) {
-        if (sqlWhere1 != "") {
-          sqlWhere1 += " OR sort.開講時期=0";
-        } else {
-          sqlWhere1 += "( sort.開講時期=0";
-        }
+  // 学年
+  // ['1年', '2年', '3年', '4年']
+  List<String> sqlWhereGrade = [];
+  if (isNotAllTrueOrAllFalse(grade)) {
+    List<String> gradeName = ['一年次', '二年次', '三年次', '四年次'];
+    for (var i = 0; i < grade.length; i++) {
+      if (grade[i]) {
+        sqlWhereGrade.add("sort.${gradeName[i]}=1");
       }
     }
-    sqlWhere1 += " )";
+    sqlWhereListGradeClass.add("(${sqlWhereGrade.join(" OR ")})");
   }
-  sqlWhere += sqlWhere1;
-  if (grade.isNotEmpty) {
-    if (sqlWhere != "") {
-      sqlWhere += " AND ";
-    }
-    for (int i = 0; i < grade.length; i++) {
-      if (grade[i] == 0) {
-        sqlWhere2 += "( sort.一年次=1";
-        courseStr.clear();
-      }
-      if (grade[i] == 1) {
-        if (sqlWhere2 != "") {
-          sqlWhere2 += " OR sort.二年次=1";
-        } else {
-          sqlWhere2 += "( sort.二年次=1";
-        }
-      }
-      if (grade[i] == 2) {
-        if (sqlWhere2 != "") {
-          sqlWhere2 += " OR sort.三年次=1";
-        } else {
-          sqlWhere2 += "( sort.三年次=1";
-        }
-      }
-      if (grade[i] == 3) {
-        if (sqlWhere2 != "") {
-          sqlWhere2 += " OR sort.四年次=1";
-        } else {
-          sqlWhere2 += "( sort.四年次=1";
-        }
-      }
-      if (grade[i] == 4) {
-        kyoyokubun = education;
-        if (sqlWhere2 != "") {
-          sqlWhere2 += " OR sort.教養!=0";
-        } else {
-          sqlWhere2 += "( sort.教養!=0";
-        }
-      }
-      if (grade[i] == 5) {
-        if (sqlWhere2 != "") {
-          sqlWhere2 += " OR sort.専門=1";
-        } else {
-          sqlWhere2 += "( sort.専門=1";
-        }
-      }
-    }
-    sqlWhere2 += " )";
-  }
-  sqlWhere += sqlWhere2;
+
+  // コース・専門
+  // ['情シス', 'デザイン', '複雑', '知能', '高度ICT']
+  // ['専門必修', '専門選択', '教養']
+  List<String> sqlWhereCourseClassification = [];
   final List<String> courseName = [
     "情報システムコース",
     "情報デザインコース",
@@ -200,73 +167,69 @@ Future<List<Map<String, dynamic>>> search(
     "知能システムコース",
     "高度ICTコース",
   ];
-  if (courseStr.isNotEmpty) {
-    if (sqlWhere != "") {
-      sqlWhere += " AND ";
-    }
-    for (int i = 0; i < courseStr.length; i++) {
-      if (classification.isNotEmpty) {
-        for (int j = 0; j < classification.length; j++) {
-          if (sqlWhere3 != "") {
-            sqlWhere3 += " OR ";
-          } else {
-            sqlWhere3 += "( ";
+  final List<String> classificationName = ["100", "101"];
+  if (isNotAllTrueOrAllFalse(course)) {
+    for (int i = 0; i < course.length; i++) {
+      if (course[i]) {
+        if (isNotAllTrueOrAllFalse(classification)) {
+          for (int j = 0; j < classification.length; j++) {
+            if (classification[j]) {
+              sqlWhereCourseClassification
+                  .add("sort.${courseName[i]}=${classificationName[j]}");
+            }
           }
-          if (classification[j] == 0) {
-            sqlWhere3 += "sort.${courseName[courseStr[i]]}=101";
-          }
-          if (classification[j] == 1) {
-            sqlWhere3 += "sort.${courseName[courseStr[i]]}=100";
-          }
+        } else {
+          // 必修選択関係なし
+          sqlWhereCourseClassification.add("sort.${courseName[i]}!=0");
         }
-      } else {
-        // 必修選択関係なし
-        sqlWhere3 += "( sort.${courseName[courseStr[i]]}!=0";
       }
     }
-    sqlWhere3 += " )";
+  } else {
+    if (isNotAllTrueOrAllFalse(classification)) {
+      if (isNotAllTrueOrAllFalse(grade)) {
+        sqlWhereCourseClassification.add("sort.専門=1");
+      }
+    }
   }
-  sqlWhere += sqlWhere3;
-  if (kyoyokubun.isNotEmpty) {
-    if (sqlWhere != "") {
-      sqlWhere += " AND ";
-    }
-    for (int i = 0; i < kyoyokubun.length; i++) {
-      if (kyoyokubun[i] == 0) {
-        sqlWhere5 += "( sort.教養=2";
-      }
-      if (kyoyokubun[i] == 1) {
-        if (sqlWhere5 != "") {
-          sqlWhere5 += " OR sort.教養=1";
-        } else {
-          sqlWhere5 += "( sort.教養=1";
-        }
-      }
-      if (kyoyokubun[i] == 2) {
-        if (sqlWhere5 != "") {
-          sqlWhere5 += " OR sort.教養=3";
-        } else {
-          sqlWhere5 += "( sort.教養=3";
-        }
-      }
-      if (kyoyokubun[i] == 3) {
-        if (sqlWhere5 != "") {
-          sqlWhere5 += " OR sort.教養=4";
-        } else {
-          sqlWhere5 += "( sort.教養=4";
-        }
-      }
-      if (kyoyokubun[i] == 4) {
-        if (sqlWhere5 != "") {
-          sqlWhere5 += " OR sort.教養=5";
-        } else {
-          sqlWhere5 += "( sort.教養=5";
-        }
-      }
-    }
-    sqlWhere5 += " )";
+  if (sqlWhereCourseClassification.isNotEmpty) {
+    sqlWhereListGradeClass
+        .add("(${sqlWhereCourseClassification.join(" OR ")})");
   }
-  sqlWhere += sqlWhere5;
+
+  if (sqlWhereListGradeClass.isNotEmpty) {
+    sqlWhereList2.add("(${sqlWhereListGradeClass.join(" AND ")})");
+  }
+
+  List<String> sqlWhereKyoyo = [];
+  if (kyoyo) {
+    sqlWhereListKyoyo.add("(sort.教養!=0)");
+    if (isNotAllTrueOrAllFalse(education)) {
+      List<String> educationNo = ['2', '1', '3', '4', '5'];
+      for (var i = 0; i < education.length; i++) {
+        if (education[i]) {
+          sqlWhereKyoyo.add("sort.教養=${educationNo[i]}");
+        }
+      }
+      sqlWhereListKyoyo.add("(${sqlWhereKyoyo.join(" OR ")})");
+    }
+    if (isNotAllTrueOrAllFalse(classification)) {
+      if (classification[0]) {
+        sqlWhereListKyoyo.add("(sort.教養必修=1)");
+      }
+      if (classification[1]) {
+        sqlWhereListKyoyo.add("(sort.教養必修!=1)");
+      }
+    }
+    sqlWhereList2.add("(${sqlWhereListKyoyo.join(" AND ")})");
+  }
+
+  if (sqlWhereList2.isNotEmpty) {
+    sqlWhereList.add("(${sqlWhereList2.join(" OR ")})");
+  }
+  if (sqlWhereList.isNotEmpty) {
+    sqlWhere = sqlWhereList.join(" AND ");
+  }
+
   print(sqlWhere);
   if (sqlWhere != "") {
     List<Map<String, dynamic>> records = await database.rawQuery(

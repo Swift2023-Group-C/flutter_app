@@ -42,22 +42,16 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   }
 
   List<String> term = ['前期', '後期', '通年'];
-  List<String> grade = ['1年', '2年', '3年', '4年', '教養', '専門'];
+  List<String> grade = ['1年', '2年', '3年', '4年', '教養'];
   List<String> courseStr = ['情報システム', '情報デザイン', '複雑', '知能', '高度ICT'];
-  List<String> classification = ['選択', '必修'];
+  List<String> classification = ['必修', '選択'];
   List<String> education = ['社会', '人間', '科学', '健康', 'コミュ'];
 
   List<bool> termCheckedList = List.generate(3, (index) => false);
-  List<bool> gradeCheckedList = List.generate(6, (index) => false);
+  List<bool> gradeCheckedList = List.generate(5, (index) => false);
   List<bool> courseStrCheckedList = List.generate(5, (index) => false);
   List<bool> classificationCheckedList = List.generate(2, (index) => false);
   List<bool> educationCheckedList = List.generate(5, (index) => false);
-
-  List<int> termlist = [];
-  List<int> gradelist = [];
-  List<int> courseStrlist = [];
-  List<int> classlist = [];
-  List<int> educationlist = [];
 
   bool allSelected = false;
   bool alltrue = true;
@@ -170,7 +164,10 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                     buildFilterRow(grade, gradeCheckedList),
                     buildFilterRow(courseStr, courseStrCheckedList),
                     buildFilterRow(classification, classificationCheckedList),
-                    buildFilterRow(education, educationCheckedList),
+                    Visibility(
+                      visible: gradeCheckedList[4],
+                      child: buildFilterRow(education, educationCheckedList),
+                    ),
                     Row(children: [
                       TextButton(
                           onPressed: () {
@@ -199,42 +196,13 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
               ElevatedButton(
                 onPressed: () async {
                   isFiltersVisible = !isFiltersVisible;
-                  termlist.clear();
-                  gradelist.clear();
-                  courseStrlist.clear();
-                  classlist.clear();
-                  educationlist.clear();
-                  for (int i = 0; i < term.length; i++) {
-                    if (termCheckedList[i] == true) {
-                      termlist.add(i);
-                    }
-                  }
-                  for (int i = 0; i < grade.length; i++) {
-                    if (gradeCheckedList[i] == true) {
-                      gradelist.add(i);
-                    }
-                  }
-                  for (int i = 0; i < courseStr.length; i++) {
-                    if (courseStrCheckedList[i] == true) {
-                      courseStrlist.add(i);
-                    }
-                  }
-                  for (int i = 0; i < classification.length; i++) {
-                    if (classificationCheckedList[i] == true) {
-                      classlist.add(i);
-                    }
-                  }
-                  for (int i = 0; i < education.length; i++) {
-                    if (educationCheckedList[i] == true) {
-                      educationlist.add(i);
-                    }
-                  }
                   List<Map<String, dynamic>> records = await search(
-                      term: termlist,
-                      grade: gradelist,
-                      courseStr: courseStrlist,
-                      classification: classlist,
-                      education: educationlist);
+                      term: termCheckedList,
+                      grade: gradeCheckedList.sublist(0, 4),
+                      kyoyo: gradeCheckedList[4],
+                      course: courseStrCheckedList,
+                      classification: classificationCheckedList,
+                      education: educationCheckedList);
                   searchClasses(word, records);
                 },
                 child: const Text(
