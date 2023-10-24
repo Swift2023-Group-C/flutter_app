@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/repository/kamoku_sort.dart';
+import 'package:flutter_app/components/setting_user_info.dart';
 
 class KamokuSearchScreen extends StatefulWidget {
   const KamokuSearchScreen({Key? key}) : super(key: key);
@@ -14,9 +15,35 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   var word = '';
   final TextEditingController _controller = TextEditingController();
 
+  Future<void> updateGradeCheckedList() async {
+    String? savedGrade = await UserPreferences.getGrade();
+
+    if (savedGrade != null) {
+      int? index = grade.indexOf(savedGrade);
+      if (index != -1 && index < gradeCheckedList.length) {
+        setState(() {
+          gradeCheckedList[index] = true;
+        });
+      }
+    }
+  }
+
+  Future<void> updateCourseStrCheckedList() async {
+    String? savedCourse = await UserPreferences.getCourse();
+
+    if (savedCourse != null) {
+      int? index = courseStr.indexOf(savedCourse);
+      if (index != -1 && index < courseStrCheckedList.length) {
+        setState(() {
+          courseStrCheckedList[index] = true;
+        });
+      }
+    }
+  }
+
   List<String> term = ['前期', '後期', '通年'];
   List<String> grade = ['1年', '2年', '3年', '4年', '教養', '専門'];
-  List<String> courseStr = ['情シス', 'デザイン', '複雑', '知能', '高度ICT'];
+  List<String> courseStr = ['情報システム', '情報デザイン', '複雑', '知能', '高度ICT'];
   List<String> classification = ['選択', '必修'];
   List<String> education = ['社会', '人間', '科学', '健康', 'コミュ'];
 
@@ -44,6 +71,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
     });
   }
 
+  /*
   void toggleAll() {
     setState(() {
       allSelected = !allSelected; // 全選択ボタンの状態を切り替える
@@ -60,6 +88,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
           List.generate(educationCheckedList.length, (index) => allSelected);
     });
   }
+  */
 
   void trueAll() {
     setState(() {
@@ -90,6 +119,17 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
           List.generate(classificationCheckedList.length, (index) => allfalse);
       educationCheckedList =
           List.generate(educationCheckedList.length, (index) => allfalse);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 保存されたgradeとcourseの値に基づいてチェックリストを更新
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      await updateGradeCheckedList();
+      await updateCourseStrCheckedList();
     });
   }
 
