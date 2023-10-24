@@ -158,6 +158,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  isFiltersVisible = !isFiltersVisible;
                   termlist.clear();
                   gradelist.clear();
                   courseStrlist.clear();
