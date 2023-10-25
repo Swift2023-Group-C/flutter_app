@@ -46,13 +46,19 @@ class MapDetailMap {
   }
 
   Future<void> getList() async {
-    mapDetailList = await getMapDetailFromFirebase();
+    try {
+      mapDetailList = await getMapDetailFromFirebase();
+    } catch (e) {
+      mapDetailList = null;
+    }
   }
 
   MapDetail? searchOnce(String floor, String roomName) {
-    if (mapDetailList!.containsKey(floor)) {
-      if (mapDetailList![floor]!.containsKey(roomName)) {
-        return mapDetailList![floor]![roomName]!;
+    if (mapDetailList != null) {
+      if (mapDetailList!.containsKey(floor)) {
+        if (mapDetailList![floor]!.containsKey(roomName)) {
+          return mapDetailList![floor]![roomName]!;
+        }
       }
     }
     return null;
@@ -62,32 +68,34 @@ class MapDetailMap {
     List<MapDetail> results = [];
     List<MapDetail> results2 = [];
     List<MapDetail> results3 = [];
-    mapDetailList!.forEach((_, value) {
-      for (var mapDetail in value.values) {
-        if (mapDetail.roomName == searchText) {
-          results.add(mapDetail);
-          continue;
-        }
-        if (searchText.length > 1) {
-          if (mapDetail.header.contains(searchText)) {
-            results2.add(mapDetail);
+    if (mapDetailList != null) {
+      mapDetailList!.forEach((_, value) {
+        for (var mapDetail in value.values) {
+          if (mapDetail.roomName == searchText) {
+            results.add(mapDetail);
             continue;
           }
-          if (mapDetail.mail != null) {
-            if (mapDetail.mail!.contains(searchText)) {
+          if (searchText.length > 1) {
+            if (mapDetail.header.contains(searchText)) {
               results2.add(mapDetail);
               continue;
             }
-          }
-          if (mapDetail.detail != null) {
-            if (mapDetail.detail!.contains(searchText)) {
-              results3.add(mapDetail);
-              continue;
+            if (mapDetail.mail != null) {
+              if (mapDetail.mail!.contains(searchText)) {
+                results2.add(mapDetail);
+                continue;
+              }
+            }
+            if (mapDetail.detail != null) {
+              if (mapDetail.detail!.contains(searchText)) {
+                results3.add(mapDetail);
+                continue;
+              }
             }
           }
         }
-      }
-    });
+      });
+    }
     return [...results, ...results2, ...results3];
   }
 }

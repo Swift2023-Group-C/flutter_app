@@ -42,16 +42,19 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   }
 
   List<String> term = ['前期', '後期', '通年'];
-  List<String> grade = ['1年', '2年', '3年', '4年', '教養'];
+  List<String> senmonKyoyo = ['専門', '教養'];
+  List<String> grade = ['1年', '2年', '3年', '4年'];
   List<String> courseStr = ['情報システム', '情報デザイン', '複雑', '知能', '高度ICT'];
   List<String> classification = ['必修', '選択'];
   List<String> education = ['社会', '人間', '科学', '健康', 'コミュ'];
 
   List<bool> termCheckedList = List.generate(3, (index) => false);
-  List<bool> gradeCheckedList = List.generate(5, (index) => false);
+  List<bool> gradeCheckedList = List.generate(4, (index) => false);
   List<bool> courseStrCheckedList = List.generate(5, (index) => false);
   List<bool> classificationCheckedList = List.generate(2, (index) => false);
   List<bool> educationCheckedList = List.generate(5, (index) => false);
+
+  int senmonKyoyoStatus = 0;
 
   bool allSelected = false;
   bool alltrue = true;
@@ -161,11 +164,18 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                 child: Column(
                   children: [
                     buildFilterRow(term, termCheckedList),
-                    buildFilterRow(grade, gradeCheckedList),
-                    buildFilterRow(courseStr, courseStrCheckedList),
+                    buildFilterRadioRow(),
+                    Visibility(
+                      visible: senmonKyoyoStatus == 0,
+                      child: buildFilterRow(grade, gradeCheckedList),
+                    ),
+                    Visibility(
+                      visible: senmonKyoyoStatus == 0,
+                      child: buildFilterRow(courseStr, courseStrCheckedList),
+                    ),
                     buildFilterRow(classification, classificationCheckedList),
                     Visibility(
-                      visible: gradeCheckedList[4],
+                      visible: senmonKyoyoStatus == 1,
                       child: buildFilterRow(education, educationCheckedList),
                     ),
                     Row(children: [
@@ -198,8 +208,8 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                   isFiltersVisible = !isFiltersVisible;
                   List<Map<String, dynamic>> records = await search(
                       term: termCheckedList,
-                      grade: gradeCheckedList.sublist(0, 4),
-                      kyoyo: gradeCheckedList[4],
+                      senmon: senmonKyoyoStatus == 0,
+                      grade: gradeCheckedList,
                       course: courseStrCheckedList,
                       classification: classificationCheckedList,
                       education: educationCheckedList);
@@ -245,6 +255,36 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                     },
                   ),
                   Text(items[i]),
+                ],
+              ),
+            const SizedBox(width: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildFilterRadioRow() {
+    return Align(
+      alignment: const AlignmentDirectional(-1.00, 0.00),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            for (int i = 0; i < senmonKyoyo.length; i++)
+              Row(
+                children: [
+                  Radio(
+                    value: i,
+                    onChanged: (value) {
+                      setState(() {
+                        senmonKyoyoStatus = value ?? 0;
+                      });
+                    },
+                    groupValue: senmonKyoyoStatus,
+                  ),
+                  Text(senmonKyoyo[i]),
                 ],
               ),
             const SizedBox(width: 20),
