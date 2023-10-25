@@ -27,6 +27,9 @@ class FirebaseGetKadai {
       if (b.endtime == null) {
         return -1;
       }
+      if (a.endtime!.compareTo(b.endtime!) == 0) {
+        return a.courseId!.compareTo(b.courseId!);
+      }
       return a.endtime!.compareTo(b.endtime!);
     }));
     int? courseId;
