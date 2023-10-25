@@ -38,12 +38,9 @@ class FirebaseGetKadai {
         kadaiListTmp.add(kadai);
       } else {
         if (courseId != null) {
-          if (kadaiListTmp.length == 1) {
-            returnList.add(KadaiList.fromKadai(kadai));
-          } else {
-            returnList.add(KadaiList.fromListKadai(
-                courseId, kadaiListTmp[0].courseName, endtime, kadaiListTmp));
-          }
+          returnList.add(KadaiList(
+              courseId, kadaiListTmp[0].courseName!, endtime!, kadaiListTmp));
+          returnList = [];
         }
         endtime = kadai.endtime;
         courseId = kadai.courseId;

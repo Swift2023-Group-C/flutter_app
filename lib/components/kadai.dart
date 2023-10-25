@@ -32,28 +32,24 @@ class Kadai {
   }
 }
 
-class KadaiList extends Kadai {
+class KadaiList {
   KadaiList(
-    int? id,
-    int? courseId,
-    String? courseName,
-    String? name,
-    String? url,
-    DateTime? starttime,
-    DateTime? endtime,
+    this.courseId,
+    this.courseName,
+    this.endtime,
     this.listKadai,
-  ) : super(id, courseId, courseName, name, url, starttime, endtime);
+  );
 
-  List<Kadai>? listKadai;
+  final int courseId;
+  final String courseName;
+  final DateTime endtime;
+  List<Kadai> listKadai;
 
-  factory KadaiList.fromListKadai(int courseId, String? courseName,
-      DateTime? endtime, List<Kadai> listKadai) {
-    return KadaiList(
-        null, courseId, courseName, null, null, null, endtime, listKadai);
+  bool isListLength1() {
+    return listKadai.length == 1;
   }
 
-  factory KadaiList.fromKadai(Kadai kadai) {
-    return KadaiList(kadai.id, kadai.courseId, kadai.courseName, kadai.name,
-        kadai.url, kadai.starttime, kadai.endtime, null);
+  Kadai getKadaiFirst() {
+    return listKadai.first;
   }
 }
