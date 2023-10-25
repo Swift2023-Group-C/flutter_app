@@ -20,15 +20,6 @@ class FirebaseGetKadai {
       print('No data available.');
       throw Exception();
     }
-    returnList.sort(((a, b) {
-      if (a.endtime == null) {
-        return 1;
-      }
-      if (b.endtime == null) {
-        return -1;
-      }
-      return a.endtime!.compareTo(b.endtime!);
-    }));
     return returnList;
   }
 }

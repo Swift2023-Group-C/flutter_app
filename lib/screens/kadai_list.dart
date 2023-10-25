@@ -235,7 +235,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 },
               );
             } else {
-              return ListTile(
+              return const ListTile(
                 title: Text("削除リストは空です"),
               );
             }
@@ -284,14 +284,14 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                         icon: const Icon(Icons.menu),
                         onPressed: () {
                           for (int i = 0; i < filteredData.length; i++) {
-                            print(filteredData[i].name);
+                            //print(filteredData[i].name);
                           }
                           if (deleteList.isEmpty) {
-                            print("削除リストはない");
+                            //print("削除リストはない");
                           } else {
                             for (int i = 0; i < data.length; i++) {
                               if (deleteList.contains(data[i].id)) {
-                                print(data[i].name);
+                                //print(data[i].name);
                               }
                             }
                           }
