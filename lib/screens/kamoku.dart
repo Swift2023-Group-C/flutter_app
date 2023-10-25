@@ -119,6 +119,11 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
     });
   }
 
+  bool classificationStatus() {
+    return !gradeCheckedList.every((element) => !element) ||
+        !courseStrCheckedList.every((element) => !element);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -173,7 +178,11 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                       visible: senmonKyoyoStatus == 0,
                       child: buildFilterRow(courseStr, courseStrCheckedList),
                     ),
-                    buildFilterRow(classification, classificationCheckedList),
+                    Visibility(
+                      visible: classificationStatus(),
+                      child: buildFilterRow(
+                          classification, classificationCheckedList),
+                    ),
                     Visibility(
                       visible: senmonKyoyoStatus == 1,
                       child: buildFilterRow(education, educationCheckedList),

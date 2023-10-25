@@ -184,9 +184,7 @@ Future<List<Map<String, dynamic>>> search(
         }
       }
     } else {
-      if (isNotAllTrueOrAllFalse(classification)) {
-        sqlWhereCourseClassification.add("sort.専門=1");
-      }
+      sqlWhereCourseClassification.add("sort.専門=1");
     }
     if (sqlWhereCourseClassification.isNotEmpty) {
       sqlWhereList.add("(${sqlWhereCourseClassification.join(" OR ")})");
