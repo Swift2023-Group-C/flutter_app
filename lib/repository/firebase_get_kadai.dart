@@ -5,20 +5,50 @@ import 'package:flutter_app/screens/kadai_list.dart';
 
 class FirebaseGetKadai {
   const FirebaseGetKadai();
-  Future<List<Kadai>> getKadaiFromFirebase() async {
+  Future<List<KadaiList>> getKadaiFromFirebase() async {
     final String userKey =
         "swift2023c_hope_user_key_${await UserPreferences.getUserKey()}";
-    List<Kadai> returnList = [];
+    List<Kadai> kadaiList = [];
     final snapshot =
         await GetFirebaseRealtimeDB.getData('hope/users/$userKey/data');
     if (snapshot.exists) {
       final data = snapshot.value as Map;
       data.forEach((key, value) {
-        returnList.add(Kadai.fromFirebase(key, value));
+        kadaiList.add(Kadai.fromFirebase(key, value));
       });
     } else {
       print('No data available.');
       throw Exception();
+    }
+    kadaiList.sort(((a, b) {
+      if (a.endtime == null) {
+        return 1;
+      }
+      if (b.endtime == null) {
+        return -1;
+      }
+      return a.endtime!.compareTo(b.endtime!);
+    }));
+    int? courseId;
+    DateTime? endtime;
+    List<Kadai> kadaiListTmp = [];
+    List<KadaiList> returnList = [];
+    for (var kadai in kadaiList) {
+      if (endtime == kadai.endtime && courseId == kadai.courseId) {
+        kadaiListTmp.add(kadai);
+      } else {
+        if (courseId != null) {
+          if (kadaiListTmp.length == 1) {
+            returnList.add(KadaiList.fromKadai(kadai));
+          } else {
+            returnList.add(KadaiList.fromListKadai(
+                courseId, kadaiListTmp[0].courseName, endtime, kadaiListTmp));
+          }
+        }
+        endtime = kadai.endtime;
+        courseId = kadai.courseId;
+        kadaiListTmp.add(kadai);
+      }
     }
     return returnList;
   }

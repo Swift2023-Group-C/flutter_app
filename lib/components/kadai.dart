@@ -31,3 +31,29 @@ class Kadai {
             : DateTime.fromMillisecondsSinceEpoch(data["endtime"] * 1000));
   }
 }
+
+class KadaiList extends Kadai {
+  KadaiList(
+    int? id,
+    int? courseId,
+    String? courseName,
+    String? name,
+    String? url,
+    DateTime? starttime,
+    DateTime? endtime,
+    this.listKadai,
+  ) : super(id, courseId, courseName, name, url, starttime, endtime);
+
+  List<Kadai>? listKadai;
+
+  factory KadaiList.fromListKadai(int courseId, String? courseName,
+      DateTime? endtime, List<Kadai> listKadai) {
+    return KadaiList(
+        null, courseId, courseName, null, null, null, endtime, listKadai);
+  }
+
+  factory KadaiList.fromKadai(Kadai kadai) {
+    return KadaiList(kadai.id, kadai.courseId, kadai.courseName, kadai.name,
+        kadai.url, kadai.starttime, kadai.endtime, null);
+  }
+}
