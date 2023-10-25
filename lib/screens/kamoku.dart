@@ -121,7 +121,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
     super.initState();
 
     // 保存されたgradeとcourseの値に基づいてチェックリストを更新
-    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       await updateGradeCheckedList();
       await updateCourseStrCheckedList();
     });
