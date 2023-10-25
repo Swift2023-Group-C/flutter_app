@@ -86,7 +86,10 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                     },
                   ),
                   const Spacer(),
-                  const Text('フィードバック (推奨)'),
+                  const Align(
+                    alignment: Alignment.centerLeft, //任意のプロパティ
+                    child: Text('フィードバック (推奨)'),
+                  ),
                   SizedBox(
                     width: deviceWidth * 0.9,
                     child: TextFormField(
@@ -101,12 +104,23 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                     ),
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       TextButton(
+                        style: TextButton.styleFrom(
+                          fixedSize: const Size(100, 20),
+                          side: const BorderSide(
+                            color: Colors.red, //色//太さ
+                          ),
+                        ),
                         onPressed: () => Navigator.of(context).pop(),
                         child: const Text('Close'),
                       ),
+                      const SizedBox(width: 30),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(150, 20),
+                        ),
                         onPressed: () async {
                           final String? userKey =
                               await UserPreferences.getUserKey();

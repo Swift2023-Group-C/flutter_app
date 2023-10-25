@@ -94,7 +94,7 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
       case 0:
         return 'シラバス';
       case 1:
-        return 'フィードバック';
+        return 'レビュー';
       case 2:
         return '過去問';
       default:
