@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/widgets/progress_indicator.dart';
+import 'package:flutter_app/repository/download_file_from_firebase.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -75,6 +76,8 @@ class _MapGridScreenState extends State<MapGridScreen> {
     };
 
     String scheduleFilePath = 'map/oneweek_schedule.json';
+    // Firebaseからファイルをダウンロード
+    await downloadFileFromFirebase(scheduleFilePath);
     Map<String, DateTime>? resourceIds;
     try {
       String fileContent = await readJsonFile(scheduleFilePath);

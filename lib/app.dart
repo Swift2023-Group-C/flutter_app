@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/map_detail.dart';
-import 'package:flutter_app/repository/download_file_from_firebase.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
 import 'package:flutter_app/screens/home.dart';
@@ -84,12 +83,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     return returnParam;
   }
 
-  Future<void> download() async {
-    String scheduleFilePath = 'map/oneweek_schedule.json';
-    // Firebaseからファイルをダウンロード
-    await downloadFileFromFirebase(scheduleFilePath);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -97,7 +90,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     SyllabusDBConfig.setDB();
     MapDetailMap.instance.getList();
     FirebaseDatabase.instance.setPersistenceEnabled(true);
-    download();
   }
 
   int _selectedIndex = 0;
