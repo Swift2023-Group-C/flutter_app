@@ -31,3 +31,27 @@ class Kadai {
             : DateTime.fromMillisecondsSinceEpoch(data["endtime"] * 1000));
   }
 }
+
+class KadaiList {
+  KadaiList(
+    this.courseId,
+    this.courseName,
+    this.endtime,
+    this.listKadai,
+  );
+
+  final int courseId;
+  final String courseName;
+  final DateTime endtime;
+  List<Kadai> listKadai;
+
+  get kadaiList => null;
+
+  bool isListLength1() {
+    return listKadai.length == 1;
+  }
+
+  Kadai getKadaiFirst() {
+    return listKadai.first;
+  }
+}
