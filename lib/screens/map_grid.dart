@@ -76,44 +76,40 @@ class _MapGridScreenState extends State<MapGridScreen> {
     };
 
     String scheduleFilePath = 'map/oneweek_schedule.json';
-    // Firebaseからファイルをダウンロード
-    await downloadFileFromFirebase(scheduleFilePath);
     Map<String, DateTime>? resourceIds;
     try {
+      // Firebaseからファイルをダウンロード
+      await downloadFileFromFirebase(scheduleFilePath);
       String fileContent = await readJsonFile(scheduleFilePath);
       resourceIds = findRoomsInUse(fileContent);
     } catch (e) {
       print(e);
+      return null;
     }
 
-    if (resourceIds != null) {
-      if (resourceIds.isNotEmpty) {
-        resourceIds.forEach((String resourceId, DateTime useEndTime) {
-          print(resourceId);
-          if (classroomNoFloorMap.containsKey(resourceId)) {
-            setState(() {
-              for (var floor in classroomNoFloorMap[resourceId]!) {
-                final tileIndex = GridMaps.mapTileListMap[floor]!
-                    .indexWhere((tile) => tile.classroomNo == resourceId);
-                if (tileIndex != -1) {
-                  GridMaps.mapTileListMap[floor]![tileIndex].setUsing(true);
-                  GridMaps.mapTileListMap[floor]![tileIndex]
-                      .setTileColor(TileColors.using);
-                  GridMaps.mapTileListMap[floor]![tileIndex]
-                      .setFontColor(Colors.black);
-                  GridMaps.mapTileListMap[floor]![tileIndex]
-                      .setUseEndTime(useEndTime);
-                }
+    if (resourceIds.isNotEmpty) {
+      resourceIds.forEach((String resourceId, DateTime useEndTime) {
+        print(resourceId);
+        if (classroomNoFloorMap.containsKey(resourceId)) {
+          setState(() {
+            for (var floor in classroomNoFloorMap[resourceId]!) {
+              final tileIndex = GridMaps.mapTileListMap[floor]!
+                  .indexWhere((tile) => tile.classroomNo == resourceId);
+              if (tileIndex != -1) {
+                GridMaps.mapTileListMap[floor]![tileIndex].setUsing(true);
+                GridMaps.mapTileListMap[floor]![tileIndex]
+                    .setTileColor(TileColors.using);
+                GridMaps.mapTileListMap[floor]![tileIndex]
+                    .setFontColor(Colors.black);
+                GridMaps.mapTileListMap[floor]![tileIndex]
+                    .setUseEndTime(useEndTime);
               }
-            });
-          }
-        });
-        return 1;
-      }
-    } else {
-      print("No ResourceId exists for the current time.");
+            }
+          });
+        }
+      });
     }
-    return null;
+    return 1;
   }
 
   @override
