@@ -167,37 +167,41 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   return Slidable(
-                    child: ExpansionTile(
-                      title: Text(
-                        "${data[index].courseName},${data[index].listKadai.length}",
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            data[index].courseId.toString(),
-                          ),
-                          if ((data[index].endtime.year != 0))
+                    child: Card(
+                      child: ExpansionTile(
+                        title: Text(
+                          "${data[index].courseName},${data[index].listKadai.length}",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              "終了：${stringFromDateTime(data[index].endtime)}",
+                              data[index].courseId.toString(),
                             ),
-                          if (data[index].endtime.year == 0) Text("期限なし"),
+                            if ((data[index].endtime.year != 0))
+                              Text(
+                                "終了：${stringFromDateTime(data[index].endtime)}",
+                              ),
+                            if (data[index].endtime.year == 0)
+                              const Text("期限なし"),
+                          ],
+                        ),
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: data[index].listKadai.map((kadai) {
+                              return ListTile(
+                                title: Text(kadai.name ?? ""),
+                                onTap: () {
+                                  final url = Uri.parse(kadai.url ?? "");
+                                  launchUrl(url);
+                                },
+                              );
+                            }).toList(),
+                          ),
                         ],
                       ),
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: data[index].listKadai.map((kadai) {
-                            return ListTile(
-                              title: Text(kadai.name ?? ""),
-                              onTap: () {
-                                final url = Uri.parse(kadai.url ?? "");
-                                launchUrl(url);
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ],
                     ),
                   );
                 },
