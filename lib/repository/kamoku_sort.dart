@@ -67,7 +67,7 @@ class SearchResults extends StatefulWidget {
 class _SearchResultsState extends State<SearchResults> {
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: widget.records.length,
@@ -100,8 +100,12 @@ class _SearchResultsState extends State<SearchResults> {
               ),
             );
           },
+          trailing: const Icon(Icons.chevron_right),
         );
       },
+      separatorBuilder: (context, index) => const Divider(
+        height: 0,
+      ),
     );
   }
 }
