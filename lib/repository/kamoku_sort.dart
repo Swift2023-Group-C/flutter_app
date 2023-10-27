@@ -20,7 +20,7 @@ Future<Map<String, dynamic>> fetchDetails(int lessonId) async {
   if (details.isNotEmpty) {
     return details.first;
   } else {
-    return {};
+    throw Exception();
   }
 }
 
