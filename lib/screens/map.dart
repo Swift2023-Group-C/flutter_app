@@ -95,7 +95,7 @@ class MapScreen extends StatelessWidget {
       focusNode: mapSearchBarFocusNotifier.state,
       controller: textEditingControllerNotifier.state,
       decoration: const InputDecoration(
-        hintText: '検索',
+        hintText: '検索(部屋名、教員名、メールアドレスなど)',
       ),
       autofocus: false,
       onChanged: (String text) {
