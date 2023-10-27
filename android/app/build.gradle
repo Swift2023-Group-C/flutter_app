@@ -83,7 +83,7 @@ dependencies {
 
 android {
   defaultConfig {
-    minSdkVersion 28
+    minSdkVersion 30
     multiDexEnabled true // multidexサポートライブラリを使用する
   }
 }

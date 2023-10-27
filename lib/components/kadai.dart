@@ -42,7 +42,7 @@ class KadaiList {
 
   final int courseId;
   final String courseName;
-  final DateTime endtime;
+  final DateTime? endtime;
   List<Kadai> listKadai;
 
   get kadaiList => null;
@@ -53,5 +53,15 @@ class KadaiList {
 
   Kadai getKadaiFirst() {
     return listKadai.first;
+  }
+
+  List<Kadai> hiddenKadai(List<int> deleteList) {
+    List<Kadai> returnList = [];
+    for (var kadai in listKadai) {
+      if (!deleteList.contains(kadai.id)) {
+        returnList.add(kadai);
+      }
+    }
+    return returnList;
   }
 }
