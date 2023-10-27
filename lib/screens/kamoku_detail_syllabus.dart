@@ -18,31 +18,31 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
             itemCount: 1,
             itemBuilder: (context, index) {
               return ListTile(
-                title: const Text(
-                  '詳細情報',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
+                // title: const Text(
+                //   '詳細情報',
+                //   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                // ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildRow('授業名', details['授業名']),
-                    _buildRow('Course', details['Course']),
-                    _buildRow('配当年次', details['配当年次']),
-                    _buildRow('開講時期', details['開講時期']),
-                    _buildRow('単位数', details['単位数']),
-                    _buildRow('担当教員名', details['担当教員名']),
-                    _buildRow('実務家教員区分', details['実務家教員区分']),
-                    _buildRow('授業形態', details['授業形態']),
-                    _buildRow('授業の概要', details['授業の概要']),
-                    _buildRow('授業の到達目標', details['授業の到達目標']),
-                    _buildRow('提出課題等', details['提出課題等']),
-                    _buildRow('成績の評価方法・基準', details['成績の評価方法・基準']),
-                    _buildRow('テキスト', details['テキスト']),
-                    _buildRow('参考書', details['参考書']),
-                    _buildRow('履修条件', details['履修条件']),
-                    _buildRow('事前学習', details['事前学習']),
-                    _buildRow('事後学習', details['事後学習']),
-                    _buildRow('履修上の留意点', details['履修上の留意点']),
+                    _buildRow(context, '授業名', details['授業名']),
+                    _buildRow(context, 'Course', details['Course']),
+                    _buildRow(context, '配当年次', details['配当年次']),
+                    _buildRow(context, '開講時期', details['開講時期']),
+                    _buildRow(context, '単位数', details['単位数']),
+                    _buildRow(context, '担当教員名', details['担当教員名']),
+                    _buildRow(context, '実務家教員区分', details['実務家教員区分']),
+                    _buildRow(context, '授業形態', details['授業形態']),
+                    _buildRow(context, '授業の概要', details['授業の概要']),
+                    _buildRow(context, '授業の到達目標', details['授業の到達目標']),
+                    _buildRow(context, '提出課題等', details['提出課題等']),
+                    _buildRow(context, '成績の評価方法・基準', details['成績の評価方法・基準']),
+                    _buildRow(context, 'テキスト', details['テキスト']),
+                    _buildRow(context, '参考書', details['参考書']),
+                    _buildRow(context, '履修条件', details['履修条件']),
+                    _buildRow(context, '事前学習', details['事前学習']),
+                    _buildRow(context, '事後学習', details['事後学習']),
+                    _buildRow(context, '履修上の留意点', details['履修上の留意点']),
                     // _buildRow('キーワード/keyword', details['キーワード/keyword']),
                     // _buildRow('対象コース・領域', details['対象コース・領域']),
                     // _buildRow('科目群・科目区分', details['科目群・科目区分']),
@@ -76,11 +76,25 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String title, String? value) {
+  Widget _buildRow(BuildContext context, String title, String? value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('$title: ${value ?? '情報がありません'}'),
+        RichText(
+          text: TextSpan(
+            style: DefaultTextStyle.of(context).style,
+            children: <TextSpan>[
+              TextSpan(
+                text: '$title: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(
+                text: value ?? '情報がありません',
+                style: DefaultTextStyle.of(context).style, // 通常のスタイルに戻す
+              ),
+            ],
+          ),
+        ),
         Divider(),
       ],
     );
