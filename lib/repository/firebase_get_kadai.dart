@@ -1,7 +1,6 @@
 import 'package:flutter_app/components/kadai.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 import 'package:flutter_app/repository/get_firebase_realtime_db.dart';
-import 'package:flutter_app/screens/kadai_list.dart';
 
 class FirebaseGetKadai {
   const FirebaseGetKadai();
@@ -28,6 +27,9 @@ class FirebaseGetKadai {
         return -1;
       }
       if (a.endtime!.compareTo(b.endtime!) == 0) {
+        if (a.courseId!.compareTo(b.courseId!) == 0) {
+          return a.name!.compareTo(b.name!);
+        }
         return a.courseId!.compareTo(b.courseId!);
       }
       return a.endtime!.compareTo(b.endtime!);
@@ -43,17 +45,12 @@ class FirebaseGetKadai {
         if (courseId != null) {
           if (kadaiListTmp.isNotEmpty) {
             returnList.add(KadaiList(courseId, kadaiListTmp[0].courseName!,
-                endtime!, List.of(kadaiListTmp)));
+                endtime, List.of(kadaiListTmp)));
             kadaiListTmp.clear();
           }
         }
-        if (kadai.endtime != null) {
-          endtime = kadai.endtime;
-          courseId = kadai.courseId;
-        } else {
-          endtime = DateTime(0);
-          courseId = kadai.courseId;
-        }
+        courseId = kadai.courseId;
+        endtime = kadai.endtime;
         kadaiListTmp.add(kadai);
       }
     }

@@ -5,10 +5,8 @@ import 'package:flutter_app/repository/firebase_get_kadai.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 import 'package:flutter_app/components/widgets/progress_indicator.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_app/components/color_fun.dart';
 
 class KadaiListScreen extends StatefulWidget {
   const KadaiListScreen({Key? key}) : super(key: key);
@@ -25,17 +23,16 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   List<KadaiList> filteredData = [];
   String? userKey;
 
-  void launchUrl(Uri url) async {
-    if (await canLaunch(url.toString())) {
-      await launch(url.toString());
+  void launchUrlInExternal(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       throw 'Could not launch $url';
     }
   }
 
   Future<void> loadFinishList() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('finishListKey');
+    final jsonString = await UserPreferences.getFinishList();
     if (jsonString != null) {
       setState(() {
         finishList = List<int>.from(json.decode(jsonString));
@@ -44,14 +41,11 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> saveFinishList() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = json.encode(finishList);
-    await prefs.setString('finishListKey', jsonString);
+    await UserPreferences.setFinishList(json.encode(finishList));
   }
 
   Future<void> loadAlertList() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('alertListKey');
+    final jsonString = await UserPreferences.getAlertList();
     if (jsonString != null) {
       setState(() {
         alertList = List<int>.from(json.decode(jsonString));
@@ -60,14 +54,11 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> saveAlertList() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = json.encode(alertList);
-    await prefs.setString('alertListKey', jsonString);
+    await UserPreferences.setAlertList(json.encode(alertList));
   }
 
   Future<void> loadDeleteList() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('deleteListKey');
+    final jsonString = await UserPreferences.getDeleteList();
     if (jsonString != null) {
       setState(() {
         deleteList = List<int>.from(json.decode(jsonString));
@@ -76,9 +67,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> saveDeleteList() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = json.encode(deleteList);
-    await prefs.setString('deleteListKey', jsonString);
+    await UserPreferences.setDeleteList(json.encode(deleteList));
   }
 
   void _resetDeleteList() {
@@ -138,6 +127,225 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     getUserKey();
   }
 
+  ActionPane _kadaiStartSlidable(Kadai kadai) {
+    return ActionPane(
+      motion: const StretchMotion(),
+      extentRatio: 0.25,
+      children: [
+        SlidableAction(
+          label: alertList.contains(kadai.id) ? '通知off' : '通知on',
+          backgroundColor:
+              alertList.contains(kadai.id) ? Colors.red : Colors.green,
+          icon: alertList.contains(kadai.id)
+              ? Icons.notifications_off_outlined
+              : Icons.notifications_active_outlined,
+          onPressed: (context) {
+            if (alertList.contains(kadai.id)) {
+              setState(() {
+                alertList.remove(kadai.id!);
+                print(alertList);
+                saveAlertList();
+              });
+            } else {
+              setState(() {
+                alertList.add(kadai.id!);
+                print(alertList);
+                saveAlertList();
+              });
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  ActionPane _kadaiEndSlidable(Kadai kadai) {
+    return ActionPane(
+      motion: const StretchMotion(),
+      extentRatio: 0.5,
+      children: [
+        SlidableAction(
+          label: finishList.contains(kadai.id) ? '未完了' : '完了',
+          backgroundColor:
+              finishList.contains(kadai.id) ? Colors.blue : Colors.green,
+          icon: finishList.contains(kadai.id) ? Icons.check : Icons.check,
+          onPressed: (context) {
+            if (finishList.contains(kadai.id)) {
+              setState(() {
+                finishList.remove(kadai.id!);
+                print(finishList);
+                saveFinishList();
+              });
+            } else {
+              setState(() {
+                finishList.add(kadai.id!);
+                print(finishList);
+                saveFinishList();
+              });
+            }
+          },
+        ),
+        SlidableAction(
+          label: '削除',
+          backgroundColor: Colors.red,
+          icon: Icons.delete,
+          onPressed: (context) {
+            setState(() {
+              deleteList.add(kadai.id!);
+              saveDeleteList();
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  TextStyle _titleTextStyle(bool green) {
+    return TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      color: green ? Colors.green : Colors.black,
+    );
+  }
+
+  Widget _kadaiListView(List<KadaiList> data) {
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        if (data[index].hiddenKadai(deleteList).isEmpty) {
+          return Container();
+        } else if (data[index].hiddenKadai(deleteList).length == 1) {
+          // 1個の場合
+          var kadai = data[index].hiddenKadai(deleteList).first;
+          return Card(
+              child: Slidable(
+            startActionPane: _kadaiStartSlidable(kadai),
+            endActionPane: _kadaiEndSlidable(kadai),
+            child: ListTile(
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              title: Text(
+                kadai.name!,
+                style: _titleTextStyle(finishList.contains(kadai.id)),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    kadai.courseName!,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: finishList.contains(kadai.id)
+                          ? Colors.green
+                          : Colors.black54,
+                    ),
+                  ),
+                  if ((kadai.endtime != null))
+                    Text(
+                      "終了：${stringFromDateTime(kadai.endtime)}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: finishList.contains(kadai.id)
+                            ? Colors.green
+                            : Colors.black45,
+                      ),
+                    ),
+                ],
+              ),
+              leading: Column(
+                children: [
+                  const SizedBox(
+                    height: 8,
+                    width: 5,
+                  ),
+                  Icon(
+                    alertList.contains(kadai.id)
+                        ? Icons.notifications_active_outlined
+                        : Icons.notifications_off_outlined,
+                    size: 30,
+                    color: alertList.contains(kadai.id)
+                        ? Colors.green
+                        : Colors.grey,
+                  ),
+                ],
+              ),
+              onTap: () {
+                final url = Uri.parse(kadai.url!);
+                launchUrlInExternal(url);
+              },
+            ),
+          ));
+        }
+
+        // 2個以上の場合
+        return Card(
+          child: ExpansionTile(
+            title: Text(
+              data[index].courseName,
+              style: _titleTextStyle(false),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${data[index].hiddenKadai(deleteList).length.toString()}個の課題",
+                ),
+                if ((data[index].endtime != null))
+                  Text(
+                    "終了：${stringFromDateTime(data[index].endtime)}",
+                  ),
+                if (data[index].endtime == null) const Text("期限なし"),
+              ],
+            ),
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: data[index].hiddenKadai(deleteList).map((kadai) {
+                  return Column(children: [
+                    const Divider(
+                      height: 0,
+                    ),
+                    Slidable(
+                      startActionPane: _kadaiStartSlidable(kadai),
+                      endActionPane: _kadaiEndSlidable(kadai),
+                      child: ListTile(
+                        minLeadingWidth: 20,
+                        leading: Column(
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Icon(
+                              alertList.contains(kadai.id)
+                                  ? Icons.notifications_active
+                                  : Icons.notifications_off,
+                              size: 20,
+                              color: alertList.contains(kadai.id)
+                                  ? Colors.green
+                                  : Colors.grey,
+                            ),
+                          ],
+                        ),
+                        title: Text(kadai.name ?? ""),
+                        onTap: () {
+                          final url = Uri.parse(kadai.url ?? "");
+                          launchUrlInExternal(url);
+                        },
+                      ),
+                    ),
+                  ]);
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,50 +370,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             AsyncSnapshot<List<KadaiList>>? snapshot,
           ) {
             if (snapshot!.hasData) {
-              data = snapshot.data!;
-              return ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  return Slidable(
-                    child: Card(
-                      child: ExpansionTile(
-                        title: Text(
-                          "${data[index].courseName},${data[index].listKadai.length}",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              data[index].courseId.toString(),
-                            ),
-                            if ((data[index].endtime.year != 0))
-                              Text(
-                                "終了：${stringFromDateTime(data[index].endtime)}",
-                              ),
-                            if (data[index].endtime.year == 0)
-                              const Text("期限なし"),
-                          ],
-                        ),
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: data[index].listKadai.map((kadai) {
-                              return ListTile(
-                                title: Text(kadai.name ?? ""),
-                                onTap: () {
-                                  final url = Uri.parse(kadai.url ?? "");
-                                  launchUrl(url);
-                                },
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
+              return _kadaiListView(snapshot.data!);
             } else if (snapshot.hasError) {
               return const Center(
                 child: Column(
