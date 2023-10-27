@@ -202,7 +202,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                   ],
                 ),
               ),
-              ElevatedButton(
+              TextButton(
                 onPressed: () {
                   setState(() {
                     isFiltersVisible = !isFiltersVisible;
