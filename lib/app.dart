@@ -24,44 +24,73 @@ class MyApp extends StatelessWidget {
         primarySwatch: customFunColor,
         fontFamily: 'Murecho',
       ),
-      home: const MyStatefulWidget(),
+      home: const BasePage(),
     );
   }
 }
 
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({Key? key}) : super(key: key);
+enum TabItem {
+  home(
+    title: 'ホーム',
+    icon: Icons.home_outlined,
+    activeIcon: Icons.home,
+    page: HomeScreen(),
+  ),
+  map(
+    title: 'マップ',
+    icon: Icons.map_outlined,
+    activeIcon: Icons.map,
+    page: MapScreen(),
+  ),
+  kamoku(
+    title: '科目情報',
+    icon: Icons.search_outlined,
+    activeIcon: Icons.search,
+    page: KamokuSearchScreen(),
+  ),
+  kadai(
+    title: '課題',
+    icon: Icons.assignment_outlined,
+    activeIcon: Icons.assignment,
+    page: KadaiListScreen(),
+  );
 
-  @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+  const TabItem({
+    required this.title,
+    required this.icon,
+    required this.activeIcon,
+    required this.page,
+  });
+
+  // タイトル
+  final String title;
+  final IconData icon;
+  final IconData activeIcon;
+  final Widget page;
 }
 
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  static const _screens = [
-    HomeScreen(),
-    MapScreen(),
-    KamokuSearchScreen(),
-    KadaiListScreen()
-  ];
+final Map<TabItem, GlobalKey<NavigatorState>> _navigatorKeys = {
+  TabItem.home: GlobalKey<NavigatorState>(),
+  TabItem.map: GlobalKey<NavigatorState>(),
+  TabItem.kamoku: GlobalKey<NavigatorState>(),
+  TabItem.kadai: GlobalKey<NavigatorState>(),
+};
 
-  static const List<BottomNavigationBarItem> _bottomNavigationBarIcon = [
-    BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'ホーム'),
-    BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: 'マップ'),
-    BottomNavigationBarItem(icon: Icon(Icons.search), label: '科目検索'),
-    BottomNavigationBarItem(icon: Icon(Icons.assignment), label: '課題'),
-  ];
+class BasePage extends StatefulWidget {
+  const BasePage({Key? key}) : super(key: key);
 
-  StreamSubscription? _sub;
+  @override
+  State<BasePage> createState() => _BasePageState();
+}
+
+class _BasePageState extends State<BasePage> {
   late List<String?> parameter;
 
   Future<void> initUniLinks() async {
-    _sub = linkStream.listen((String? link) {
+    linkStream.listen((String? link) {
       //さっき設定したスキームをキャッチしてここが走る。
-      print(link);
       parameter = getQueryParameter(link);
-      print(parameter);
       if (parameter[0] != null && parameter[1] != null) {
-        print("link: ${parameter[0]!}");
         if (parameter[0] == 'config') {
           UserPreferences.setUserKey(parameter[1]!);
           /*setState(() {
@@ -72,7 +101,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         }
       }
     }, onError: (err) {
-      print(err);
+      debugPrint(err);
     });
   }
 
@@ -92,26 +121,60 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     FirebaseDatabase.instance.setPersistenceEnabled(true);
   }
 
-  int _selectedIndex = 0;
+  TabItem currentTab = TabItem.home;
   String appBarTitle = '';
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    final selectedTab = TabItem.values[index];
+    if (currentTab == selectedTab) {
+      _navigatorKeys[selectedTab]!
+          .currentState!
+          .popUntil((route) => route.isFirst);
+    } else {
+      setState(() {
+        currentTab = selectedTab;
+      });
+    }
+  }
+
+  Future<bool> onWillPop() async {
+    return !await _navigatorKeys[currentTab]!.currentState!.maybePop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: customFunColor,
-        body: SafeArea(child: _screens[_selectedIndex]),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: _bottomNavigationBarIcon,
-          type: BottomNavigationBarType.fixed,
-        ));
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: customFunColor,
+          body: SafeArea(
+              child: Stack(
+            children: TabItem.values
+                .map((tabItem) => Offstage(
+                      offstage: currentTab != tabItem,
+                      child: Navigator(
+                        key: _navigatorKeys[tabItem],
+                        onGenerateRoute: (settings) {
+                          return MaterialPageRoute(
+                            builder: (context) => tabItem.page,
+                          );
+                        },
+                      ),
+                    ))
+                .toList(),
+          )),
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: TabItem.values.indexOf(currentTab),
+            items: TabItem.values
+                .map((tabItem) => BottomNavigationBarItem(
+                    icon: Icon(tabItem.icon),
+                    activeIcon: Icon(tabItem.activeIcon),
+                    label: tabItem.title))
+                .toList(),
+            onTap: _onItemTapped,
+          )),
+    );
   }
 }
