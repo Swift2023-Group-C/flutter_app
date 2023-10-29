@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app.dart';
 import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -236,10 +237,20 @@ class Tile extends StatelessWidget {
       );
     }
 
-    return Text(
-      txt,
-      style: TextStyle(color: fontColor, fontSize: fontSize),
-    );
+    return Consumer(builder: (context, ref, child) {
+      final mapUsingMap = ref.watch(mapUsingMapProvider);
+      if (classroomNo != null) {
+        if (mapUsingMap.containsKey(classroomNo)) {
+          if (mapUsingMap[classroomNo]!) {
+            fontColor = Colors.black;
+          }
+        }
+      }
+      return Text(
+        txt,
+        style: TextStyle(color: fontColor, fontSize: fontSize),
+      );
+    });
   }
 
   BorderSide oneBorderSide(double n, bool focus) {
@@ -263,19 +274,24 @@ class Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    if (useEndTime != null) {
-      if (now.isAfter(useEndTime!)) {
-        setUsing(false);
-        setColors();
-      }
-    }
     List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
     List<Widget> widgetList = [];
     widgetList.add(SizedBox.expand(child: Consumer(
       builder: (context, ref, child) {
         final mapFocusMapDetail = ref.watch(mapFocusMapDetailProvider);
         final mapPage = ref.watch(mapPageProvider);
+        final mapUsingMap = ref.watch(mapUsingMapProvider);
+        if (classroomNo != null) {
+          if (mapUsingMap.containsKey(classroomNo)) {
+            if (mapUsingMap[classroomNo]!) {
+              using = true;
+              tileColor = TileColors.using;
+            } else {
+              using = false;
+              setColors();
+            }
+          }
+        }
         bool focus = false;
         if (mapFocusMapDetail.floor == floorBarString[mapPage]) {
           if (mapFocusMapDetail.roomName == txt) {

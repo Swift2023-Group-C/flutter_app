@@ -4,6 +4,7 @@ import 'package:flutter_app/firebase_options.dart';
 import 'package:flutter_app/app.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,5 +13,5 @@ Future<void> main() async {
   // 画面の向きを固定.
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }

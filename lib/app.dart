@@ -3,11 +3,15 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/map_detail.dart';
+import 'package:flutter_app/repository/download_file_from_firebase.dart';
+import 'package:flutter_app/repository/find_rooms_in_use.dart';
+import 'package:flutter_app/repository/read_json_file.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
 import 'package:flutter_app/screens/home.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_app/components/color_fun.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:flutter_app/components/setting_user_info.dart';
@@ -76,14 +80,17 @@ final Map<TabItem, GlobalKey<NavigatorState>> _navigatorKeys = {
   TabItem.kadai: GlobalKey<NavigatorState>(),
 };
 
-class BasePage extends StatefulWidget {
+final StateProvider<Map<String, bool>> mapUsingMapProvider =
+    StateProvider((ref) => {});
+
+class BasePage extends ConsumerStatefulWidget {
   const BasePage({Key? key}) : super(key: key);
 
   @override
-  State<BasePage> createState() => _BasePageState();
+  ConsumerState<BasePage> createState() => _BasePageState();
 }
 
-class _BasePageState extends State<BasePage> {
+class _BasePageState extends ConsumerState<BasePage> {
   late List<String?> parameter;
 
   Future<void> initUniLinks() async {
@@ -124,8 +131,61 @@ class _BasePageState extends State<BasePage> {
   TabItem currentTab = TabItem.home;
   String appBarTitle = '';
 
-  void _onItemTapped(int index) {
+  Future<Map<String, bool>> setUsingColor() async {
+    final Map<String, bool> classroomNoFloorMap = {
+      "1": false,
+      "2": false,
+      "3": false,
+      "4": false,
+      "5": false,
+      "6": false,
+      "7": false,
+      "8": false,
+      "9": false,
+      "10": false,
+      "11": false,
+      "12": false,
+      "13": false,
+      "14": false,
+      "15": false,
+      "16": false,
+      "17": false,
+      "18": false,
+      "19": false,
+      "50": false,
+      "51": false
+    };
+
+    String scheduleFilePath = 'map/oneweek_schedule.json';
+    Map<String, DateTime>? resourceIds;
+    try {
+      // Firebaseからファイルをダウンロード
+      await downloadFileFromFirebase(scheduleFilePath);
+      String fileContent = await readJsonFile(scheduleFilePath);
+      resourceIds = findRoomsInUse(fileContent);
+    } catch (e) {
+      debugPrint(e.toString());
+      return classroomNoFloorMap;
+    }
+
+    if (resourceIds.isNotEmpty) {
+      resourceIds.forEach((String resourceId, DateTime useEndTime) {
+        debugPrint(resourceId);
+        if (classroomNoFloorMap.containsKey(resourceId)) {
+          classroomNoFloorMap[resourceId] = true;
+        }
+      });
+    }
+    return classroomNoFloorMap;
+  }
+
+  void _onItemTapped(int index) async {
     final selectedTab = TabItem.values[index];
+
+    if (selectedTab == TabItem.map) {
+      final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
+      mapUsingMapNotifier.state = await setUsingColor();
+    }
     if (currentTab == selectedTab) {
       _navigatorKeys[selectedTab]!
           .currentState!
