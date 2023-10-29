@@ -7,6 +7,7 @@ import 'package:flutter_app/components/widgets/progress_indicator.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:collection/collection.dart';
 
 class KadaiListScreen extends StatefulWidget {
   const KadaiListScreen({Key? key}) : super(key: key);
@@ -22,6 +23,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   List<KadaiList> data = [];
   List<KadaiList> filteredData = [];
   String? userKey;
+  var deepEq = const DeepCollectionEquality().equals;
 
   void launchUrlInExternal(Uri url) async {
     if (await canLaunchUrl(url)) {
@@ -88,7 +90,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     return DateFormat('yyyy年MM月dd日 hh時mm分ss秒').format(dt);
   }
 
-  void _showDeleteConfirmation(int index, List<Kadai> data) {
+  void _showDeleteConfirmation(Kadai kadai) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -105,7 +107,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  deleteList.add(data[index].id!);
+                  deleteList.add(kadai.id!);
                   saveDeleteList();
                 });
                 Navigator.of(context).pop();
@@ -142,14 +144,12 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           onPressed: (context) {
             if (alertList.contains(kadai.id)) {
               setState(() {
-                alertList.remove(kadai.id!);
-                print(alertList);
+                alertList.removeWhere((item) => item == kadai.id);
                 saveAlertList();
               });
             } else {
               setState(() {
                 alertList.add(kadai.id!);
-                print(alertList);
                 saveAlertList();
               });
             }
@@ -172,14 +172,12 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           onPressed: (context) {
             if (finishList.contains(kadai.id)) {
               setState(() {
-                finishList.remove(kadai.id!);
-                print(finishList);
+                finishList.removeWhere((item) => item == kadai.id);
                 saveFinishList();
               });
             } else {
               setState(() {
                 finishList.add(kadai.id!);
-                print(finishList);
                 saveFinishList();
               });
             }
@@ -190,10 +188,100 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           backgroundColor: Colors.red,
           icon: Icons.delete,
           onPressed: (context) {
-            setState(() {
-              deleteList.add(kadai.id!);
-              saveDeleteList();
-            });
+            _showDeleteConfirmation(kadai);
+          },
+        ),
+      ],
+    );
+  }
+
+  bool listAllCheck(List<int> checklist, KadaiList listKadai) {
+    if (listKadai.hiddenKadai(checklist).isNotEmpty) {
+      for (Kadai kadai in listKadai.hiddenKadai(checklist)) {
+        if (!deleteList.contains(kadai.id)) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      return true;
+    }
+  }
+
+  int unFinishedList(KadaiList listkadai) {
+    int count = 0;
+    if (listkadai.hiddenKadai(finishList).isNotEmpty) {
+      for (Kadai kadai in listkadai.hiddenKadai(finishList)) {
+        if (!deleteList.contains(kadai.id)) {
+          count++;
+        }
+      }
+      return count;
+    } else {
+      return 0;
+    }
+  }
+
+  ActionPane tmpKadaiStartSlidable(KadaiList kadaiList) {
+    return ActionPane(
+      motion: const StretchMotion(),
+      extentRatio: 0.25,
+      children: [
+        SlidableAction(
+          label: listAllCheck(alertList, kadaiList) ? '通知off' : '通知on',
+          backgroundColor:
+              listAllCheck(alertList, kadaiList) ? Colors.red : Colors.green,
+          icon: listAllCheck(alertList, kadaiList)
+              ? Icons.notifications_off_outlined
+              : Icons.notifications_active_outlined,
+          onPressed: (context) {
+            if (listAllCheck(alertList, kadaiList)) {
+              setState(() {
+                for (Kadai kadai in kadaiList.hiddenKadai(deleteList)) {
+                  alertList.removeWhere((item) => item == kadai.id);
+                }
+                saveAlertList();
+              });
+            } else {
+              setState(() {
+                for (Kadai kadai in kadaiList.hiddenKadai(deleteList)) {
+                  alertList.add(kadai.id!);
+                }
+                saveAlertList();
+              });
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  ActionPane tmpKadaiEndSlidable(KadaiList kadaiList) {
+    return ActionPane(
+      motion: const StretchMotion(),
+      extentRatio: 0.5,
+      children: [
+        SlidableAction(
+          label: listAllCheck(finishList, kadaiList) ? '未完了' : '完了',
+          backgroundColor:
+              listAllCheck(finishList, kadaiList) ? Colors.blue : Colors.green,
+          icon: listAllCheck(finishList, kadaiList) ? Icons.check : Icons.check,
+          onPressed: (context) {
+            if (listAllCheck(finishList, kadaiList)) {
+              setState(() {
+                for (Kadai kadai in kadaiList.hiddenKadai(deleteList)) {
+                  finishList.removeWhere((item) => item == kadai.id);
+                }
+                saveFinishList();
+              });
+            } else {
+              setState(() {
+                for (Kadai kadai in kadaiList.hiddenKadai(deleteList)) {
+                  finishList.add(kadai.id!);
+                }
+                saveFinishList();
+              });
+            }
           },
         ),
       ],
@@ -204,6 +292,13 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     return TextStyle(
       fontSize: 18,
       fontWeight: FontWeight.bold,
+      color: green ? Colors.green : Colors.black,
+    );
+  }
+
+  TextStyle _subtitleTextStyle(bool green) {
+    return TextStyle(
+      fontSize: 14,
       color: green ? Colors.green : Colors.black,
     );
   }
@@ -227,9 +322,21 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              title: Text(
-                kadai.name!,
-                style: _titleTextStyle(finishList.contains(kadai.id)),
+              title: Row(
+                children: [
+                  if (finishList.contains(kadai.id))
+                    const Icon(
+                      Icons.military_tech,
+                      size: 30,
+                      color: Colors.yellow,
+                    ),
+                  Expanded(
+                    child: Text(
+                      kadai.name!,
+                      style: _titleTextStyle(finishList.contains(kadai.id)),
+                    ),
+                  ),
+                ],
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -255,21 +362,19 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                     ),
                 ],
               ),
+              minLeadingWidth: 0,
               leading: Column(
                 children: [
                   const SizedBox(
-                    height: 8,
+                    height: 5,
                     width: 5,
                   ),
-                  Icon(
-                    alertList.contains(kadai.id)
-                        ? Icons.notifications_active_outlined
-                        : Icons.notifications_off_outlined,
-                    size: 30,
-                    color: alertList.contains(kadai.id)
-                        ? Colors.green
-                        : Colors.grey,
-                  ),
+                  if (alertList.contains(kadai.id))
+                    const Icon(
+                      Icons.notifications_active,
+                      size: 20,
+                      color: Colors.green,
+                    ),
                 ],
               ),
               onTap: () {
@@ -279,67 +384,107 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             ),
           ));
         }
-
         // 2個以上の場合
         return Card(
-          child: ExpansionTile(
-            title: Text(
-              data[index].courseName,
-              style: _titleTextStyle(false),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${data[index].hiddenKadai(deleteList).length.toString()}個の課題",
-                ),
-                if ((data[index].endtime != null))
-                  Text(
-                    "終了：${stringFromDateTime(data[index].endtime)}",
+          child: Slidable(
+            startActionPane: tmpKadaiStartSlidable(data[index]),
+            endActionPane: tmpKadaiEndSlidable(data[index]),
+            child: ExpansionTile(
+              title: Row(
+                children: [
+                  const SizedBox(width: 20),
+                  if (listAllCheck(finishList, data[index]))
+                    const Icon(
+                      Icons.military_tech,
+                      size: 30,
+                      color: Colors.yellow,
+                    ),
+                  Expanded(
+                    child: Text(
+                      data[index].courseName,
+                      style: _titleTextStyle(
+                          listAllCheck(finishList, data[index])),
+                    ),
                   ),
-                if (data[index].endtime == null) const Text("期限なし"),
+                ],
+              ),
+              subtitle: Row(
+                children: [
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //Text(
+                        //"${data[index].hiddenKadai(deleteList).length.toString()}個の課題",
+                        //),
+                        Text(
+                          "${unFinishedList(data[index])}個の課題",
+                          style: _subtitleTextStyle(
+                              listAllCheck(finishList, data[index])),
+                        ),
+                        if ((data[index].endtime != null))
+                          Text(
+                            "終了：${stringFromDateTime(data[index].endtime)}",
+                            style: _subtitleTextStyle(
+                                listAllCheck(finishList, data[index])),
+                          ),
+                        if (data[index].endtime == null)
+                          Text(
+                            "期限なし",
+                            style: _subtitleTextStyle(
+                                listAllCheck(finishList, data[index])),
+                          ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: data[index].hiddenKadai(deleteList).map((kadai) {
+                    return Column(children: [
+                      const Divider(
+                        height: 0,
+                      ),
+                      Slidable(
+                        startActionPane: _kadaiStartSlidable(kadai),
+                        endActionPane: _kadaiEndSlidable(kadai),
+                        child: ListTile(
+                          minLeadingWidth: 10,
+                          leading: Column(
+                            children: [
+                              const SizedBox(
+                                height: 22,
+                                width: 5,
+                              ),
+                              if (alertList.contains(kadai.id))
+                                const Icon(
+                                  Icons.notifications_active,
+                                  size: 20,
+                                  color: Colors.green,
+                                ),
+                            ],
+                          ),
+                          title: Text(
+                            kadai.name ?? "",
+                            style: TextStyle(
+                                color: finishList.contains(kadai.id)
+                                    ? Colors.green
+                                    : Colors.black),
+                          ),
+                          onTap: () {
+                            final url = Uri.parse(kadai.url ?? "");
+                            launchUrlInExternal(url);
+                          },
+                        ),
+                      ),
+                    ]);
+                  }).toList(),
+                ),
               ],
             ),
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: data[index].hiddenKadai(deleteList).map((kadai) {
-                  return Column(children: [
-                    const Divider(
-                      height: 0,
-                    ),
-                    Slidable(
-                      startActionPane: _kadaiStartSlidable(kadai),
-                      endActionPane: _kadaiEndSlidable(kadai),
-                      child: ListTile(
-                        minLeadingWidth: 20,
-                        leading: Column(
-                          children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Icon(
-                              alertList.contains(kadai.id)
-                                  ? Icons.notifications_active
-                                  : Icons.notifications_off,
-                              size: 20,
-                              color: alertList.contains(kadai.id)
-                                  ? Colors.green
-                                  : Colors.grey,
-                            ),
-                          ],
-                        ),
-                        title: Text(kadai.name ?? ""),
-                        onTap: () {
-                          final url = Uri.parse(kadai.url ?? "");
-                          launchUrlInExternal(url);
-                        },
-                      ),
-                    ),
-                  ]);
-                }).toList(),
-              ),
-            ],
           ),
         );
       },
