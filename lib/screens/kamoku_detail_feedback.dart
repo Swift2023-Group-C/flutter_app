@@ -78,7 +78,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                   ),
                   title: const Text('満足度(必須)'),
                   content: SizedBox(
-                    height: deviceHeight * 0.35,
+                    height: deviceHeight * 0.32,
                     width: deviceWidth,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
