@@ -157,7 +157,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                     color: Colors.black,
                   ),
                   decoration: const InputDecoration(
-                    hintText: '授業名を検索',
+                    hintText: '科目名を検索',
                   ),
                   onChanged: (text) {
                     word = text;
@@ -213,27 +213,42 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  isFiltersVisible = !isFiltersVisible;
-                  List<Map<String, dynamic>> records = await search(
-                      term: termCheckedList,
-                      senmon: senmonKyoyoStatus == 0,
-                      grade: gradeCheckedList,
-                      course: courseStrCheckedList,
-                      classification: classificationCheckedList,
-                      education: educationCheckedList);
-                  searchClasses(word, records);
-                },
-                child: const Text(
-                  '検索の実行',
-                  style: TextStyle(fontSize: 20),
-                  textAlign: TextAlign.justify,
-                ),
-              ),
-              const Text(
-                '結果一覧',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+                  onPressed: () async {
+                    isFiltersVisible = !isFiltersVisible;
+                    List<Map<String, dynamic>> records = await search(
+                        term: termCheckedList,
+                        senmon: senmonKyoyoStatus == 0,
+                        grade: gradeCheckedList,
+                        course: courseStrCheckedList,
+                        classification: classificationCheckedList,
+                        education: educationCheckedList);
+                    searchClasses(word, records);
+                  },
+                  child: const SizedBox(
+                      width: 120,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '科目検索',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Icon(
+                            Icons.search,
+                          )
+                        ],
+                      ))),
+              const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                      child: Text(
+                        '結果一覧',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 24),
+                      ))),
               _searchResults == null
                   ? Container()
                   : SearchResults(records: _searchResults!),

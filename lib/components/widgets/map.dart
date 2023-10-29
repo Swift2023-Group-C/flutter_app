@@ -93,6 +93,9 @@ class Tile extends StatelessWidget {
     if (width == 1) {
       fontSize = 3;
     }
+    if (txt.length <= 6 && width >= 6) {
+      fontSize = 6;
+    }
   }
 
   void setColors() {
@@ -294,7 +297,7 @@ class Tile extends StatelessWidget {
               child: (innerWidget == null)
                   ? Container(
                       padding: const EdgeInsets.all(0),
-                      color: tileColor,
+                      color: focus ? Colors.red : tileColor,
                     )
                   : innerWidget,
             ));
