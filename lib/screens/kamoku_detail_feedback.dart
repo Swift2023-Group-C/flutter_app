@@ -76,13 +76,20 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  title: const Text('満足度(必須)'),
                   content: SizedBox(
-                    height: deviceHeight * 0.32,
+                    height: deviceHeight * 0.35,
                     width: deviceWidth,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '満足度(必須)',
+                            style: TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                         //星のバー
                         RatingBar.builder(
                           minRating: 1,
@@ -96,15 +103,14 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                         ),
                         if (showErrorMessage) // エラーメッセージの表示
                           const Padding(
-                            padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
+                            padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
                             child: Text(
                               '満足度が入力されていません',
                               style: TextStyle(color: Colors.red, fontSize: 10),
                             ),
                           ),
-                        const Spacer(),
                         const Align(
-                          alignment: Alignment.centerLeft, //任意のプロパティ
+                          alignment: Alignment.centerLeft,
                           child: Text('フィードバック (推奨)'),
                         ),
                         SizedBox(
@@ -181,8 +187,9 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                                   setState(() {
                                     selectedScore = null;
                                   });
-                                  if (context.mounted)
+                                  if (context.mounted) {
                                     Navigator.of(context).pop();
+                                  }
                                 } else {
                                   setState(() {
                                     // エラーメッセージを表示するための状態の更新
