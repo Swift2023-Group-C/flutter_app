@@ -104,14 +104,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: customFunColor,
-        body: SafeArea(child: _screens[_selectedIndex]),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: _bottomNavigationBarIcon,
-          type: BottomNavigationBarType.fixed,
-        ));
+      resizeToAvoidBottomInset: false,
+      backgroundColor: customFunColor,
+      body: SafeArea(child: _screens[_selectedIndex]),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: _bottomNavigationBarIcon,
+        type: BottomNavigationBarType.fixed,
+      ),
+    );
   }
 }
