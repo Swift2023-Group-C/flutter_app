@@ -83,13 +83,13 @@ class _MapGridScreenState extends State<MapGridScreen> {
       String fileContent = await readJsonFile(scheduleFilePath);
       resourceIds = findRoomsInUse(fileContent);
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return null;
     }
 
     if (resourceIds.isNotEmpty) {
       resourceIds.forEach((String resourceId, DateTime useEndTime) {
-        print(resourceId);
+        debugPrint(resourceId);
         if (classroomNoFloorMap.containsKey(resourceId)) {
           setState(() {
             for (var floor in classroomNoFloorMap[resourceId]!) {
@@ -114,7 +114,7 @@ class _MapGridScreenState extends State<MapGridScreen> {
 
   @override
   void initState() {
-    super.initState();
     _future = initUsingColor();
+    super.initState();
   }
 }
