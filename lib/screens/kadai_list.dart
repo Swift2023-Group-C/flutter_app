@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/components/kadai.dart';
@@ -95,8 +96,13 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('削除の確認'),
-          content: const Text('このタスクを削除しますか？'),
+          title: Column(
+            children: [
+              const Text('削除の確認'),
+              Text('${kadai.name}'),
+            ],
+          ),
+          content: Text('このタスクを削除しますか？'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -108,6 +114,44 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               onPressed: () {
                 setState(() {
                   deleteList.add(kadai.id!);
+                  saveDeleteList();
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('削除'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void tmpShowDeleteConfirmation(KadaiList listkadai) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Column(
+            children: [
+              const Text('削除の確認'),
+              Text(listkadai.courseName),
+              Text('${listkadai.endtime}'),
+            ],
+          ),
+          content: const Text('このタスクを削除しますか？'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('キャンセル'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  for (Kadai kadai in listkadai.listKadai) {
+                    deleteList.add(kadai.id!);
+                  }
                   saveDeleteList();
                 });
                 Navigator.of(context).pop();
@@ -184,7 +228,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           },
         ),
         SlidableAction(
-          label: '削除',
+          label: '非表示',
           backgroundColor: Colors.red,
           icon: Icons.delete,
           onPressed: (context) {
@@ -284,6 +328,14 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             }
           },
         ),
+        SlidableAction(
+          label: '非表示',
+          backgroundColor: Colors.red,
+          icon: Icons.delete,
+          onPressed: (context) {
+            tmpShowDeleteConfirmation(kadaiList);
+          },
+        ),
       ],
     );
   }
@@ -299,7 +351,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   TextStyle _subtitleTextStyle(bool green) {
     return TextStyle(
       fontSize: 14,
-      color: green ? Colors.green : Colors.black,
+      color: green ? Colors.green : Colors.black54,
     );
   }
 
@@ -312,77 +364,80 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
         } else if (data[index].hiddenKadai(deleteList).length == 1) {
           // 1個の場合
           var kadai = data[index].hiddenKadai(deleteList).first;
-          return Card(
-              child: Slidable(
-            startActionPane: _kadaiStartSlidable(kadai),
-            endActionPane: _kadaiEndSlidable(kadai),
-            child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              title: Row(
-                children: [
-                  if (finishList.contains(kadai.id))
-                    const Icon(
-                      Icons.military_tech,
-                      size: 30,
-                      color: Colors.yellow,
-                    ),
-                  Expanded(
-                    child: Text(
-                      kadai.name!,
-                      style: _titleTextStyle(finishList.contains(kadai.id)),
-                    ),
+          return SlidableAutoCloseBehavior(
+              closeWhenOpened: true,
+              closeWhenTapped: true,
+              child: Card(
+                  child: Slidable(
+                startActionPane: _kadaiStartSlidable(kadai),
+                endActionPane: _kadaiEndSlidable(kadai),
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ],
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    kadai.courseName!,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: finishList.contains(kadai.id)
-                          ? Colors.green
-                          : Colors.black54,
-                    ),
-                  ),
-                  if ((kadai.endtime != null))
-                    Text(
-                      "終了：${stringFromDateTime(kadai.endtime)}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: finishList.contains(kadai.id)
-                            ? Colors.green
-                            : Colors.black45,
+                  title: Row(
+                    children: [
+                      if (finishList.contains(kadai.id))
+                        const Icon(
+                          Icons.military_tech,
+                          size: 30,
+                          color: Colors.yellow,
+                        ),
+                      Expanded(
+                        child: Text(
+                          kadai.name!,
+                          style: _titleTextStyle(finishList.contains(kadai.id)),
+                        ),
                       ),
-                    ),
-                ],
-              ),
-              minLeadingWidth: 0,
-              leading: Column(
-                children: [
-                  const SizedBox(
-                    height: 5,
-                    width: 5,
+                    ],
                   ),
-                  if (alertList.contains(kadai.id))
-                    const Icon(
-                      Icons.notifications_active,
-                      size: 20,
-                      color: Colors.green,
-                    ),
-                ],
-              ),
-              onTap: () {
-                final url = Uri.parse(kadai.url!);
-                launchUrlInExternal(url);
-              },
-            ),
-          ));
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        kadai.courseName!,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: finishList.contains(kadai.id)
+                              ? Colors.green
+                              : Colors.black54,
+                        ),
+                      ),
+                      if ((kadai.endtime != null))
+                        Text(
+                          "終了：${stringFromDateTime(kadai.endtime)}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: finishList.contains(kadai.id)
+                                ? Colors.green
+                                : Colors.black45,
+                          ),
+                        ),
+                    ],
+                  ),
+                  minLeadingWidth: 0,
+                  leading: Column(
+                    children: [
+                      const SizedBox(
+                        height: 5,
+                        width: 5,
+                      ),
+                      if (alertList.contains(kadai.id))
+                        const Icon(
+                          Icons.notifications_active,
+                          size: 20,
+                          color: Colors.green,
+                        ),
+                    ],
+                  ),
+                  onTap: () {
+                    final url = Uri.parse(kadai.url!);
+                    launchUrlInExternal(url);
+                  },
+                ),
+              )));
         }
         // 2個以上の場合
         return Card(
