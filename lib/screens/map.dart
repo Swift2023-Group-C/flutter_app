@@ -20,37 +20,36 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-        child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(kToolbarHeight),
-              child: _mapSearchBar(),
-            ),
-            body: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: Stack(
-                  children: [
-                    SizedBox(
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.height,
-                        child: InteractiveViewer(
-                            maxScale: 10.0,
-                            // 倍率行列Matrix4
-                            transformationController:
-                                MapController.instance.getController(),
-                            child: const Padding(
-                              padding:
-                                  EdgeInsets.only(top: 80, right: 20, left: 20),
-                              // マップ表示
-                              child: MapGridScreen(),
-                            ))),
-                    // 階選択ボタン
-                    _mapFloorButton(context),
-                    _mapSearchListView(),
-                  ],
-                ))));
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: _mapSearchBar(),
+        ),
+        body: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Stack(
+              children: [
+                SizedBox(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height,
+                    child: InteractiveViewer(
+                        maxScale: 10.0,
+                        // 倍率行列Matrix4
+                        transformationController:
+                            MapController.instance.getController(),
+                        child: const Padding(
+                          padding:
+                              EdgeInsets.only(top: 80, right: 20, left: 20),
+                          // マップ表示
+                          child: MapGridScreen(),
+                        ))),
+                // 階選択ボタン
+                _mapFloorButton(context),
+                _mapSearchListView(),
+              ],
+            )));
   }
 
   Widget _mapSearchBar() {

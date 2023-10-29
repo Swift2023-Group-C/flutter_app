@@ -3,11 +3,15 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/map_detail.dart';
+import 'package:flutter_app/repository/download_file_from_firebase.dart';
+import 'package:flutter_app/repository/find_rooms_in_use.dart';
+import 'package:flutter_app/repository/read_json_file.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
 import 'package:flutter_app/screens/home.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_app/components/color_fun.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:flutter_app/components/setting_user_info.dart';
@@ -24,44 +28,76 @@ class MyApp extends StatelessWidget {
         primarySwatch: customFunColor,
         fontFamily: 'Murecho',
       ),
-      home: const MyStatefulWidget(),
+      home: const BasePage(),
     );
   }
 }
 
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({Key? key}) : super(key: key);
+enum TabItem {
+  home(
+    title: 'ホーム',
+    icon: Icons.home_outlined,
+    activeIcon: Icons.home,
+    page: HomeScreen(),
+  ),
+  map(
+    title: 'マップ',
+    icon: Icons.map_outlined,
+    activeIcon: Icons.map,
+    page: MapScreen(),
+  ),
+  kamoku(
+    title: '科目情報',
+    icon: Icons.search_outlined,
+    activeIcon: Icons.search,
+    page: KamokuSearchScreen(),
+  ),
+  kadai(
+    title: '課題',
+    icon: Icons.assignment_outlined,
+    activeIcon: Icons.assignment,
+    page: KadaiListScreen(),
+  );
 
-  @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+  const TabItem({
+    required this.title,
+    required this.icon,
+    required this.activeIcon,
+    required this.page,
+  });
+
+  // タイトル
+  final String title;
+  final IconData icon;
+  final IconData activeIcon;
+  final Widget page;
 }
 
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  static const _screens = [
-    HomeScreen(),
-    MapScreen(),
-    KamokuSearchScreen(),
-    KadaiListScreen()
-  ];
+final Map<TabItem, GlobalKey<NavigatorState>> _navigatorKeys = {
+  TabItem.home: GlobalKey<NavigatorState>(),
+  TabItem.map: GlobalKey<NavigatorState>(),
+  TabItem.kamoku: GlobalKey<NavigatorState>(),
+  TabItem.kadai: GlobalKey<NavigatorState>(),
+};
 
-  static const List<BottomNavigationBarItem> _bottomNavigationBarIcon = [
-    BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'ホーム'),
-    BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: 'マップ'),
-    BottomNavigationBarItem(icon: Icon(Icons.search), label: '科目検索'),
-    BottomNavigationBarItem(icon: Icon(Icons.assignment), label: '課題'),
-  ];
+final StateProvider<Map<String, bool>> mapUsingMapProvider =
+    StateProvider((ref) => {});
 
-  StreamSubscription? _sub;
+class BasePage extends ConsumerStatefulWidget {
+  const BasePage({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<BasePage> createState() => _BasePageState();
+}
+
+class _BasePageState extends ConsumerState<BasePage> {
   late List<String?> parameter;
 
   Future<void> initUniLinks() async {
-    _sub = linkStream.listen((String? link) {
+    linkStream.listen((String? link) {
       //さっき設定したスキームをキャッチしてここが走る。
-      print(link);
       parameter = getQueryParameter(link);
-      print(parameter);
       if (parameter[0] != null && parameter[1] != null) {
-        print("link: ${parameter[0]!}");
         if (parameter[0] == 'config') {
           UserPreferences.setUserKey(parameter[1]!);
           /*setState(() {
@@ -72,7 +108,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         }
       }
     }, onError: (err) {
-      print(err);
+      debugPrint(err);
     });
   }
 
@@ -92,27 +128,113 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     FirebaseDatabase.instance.setPersistenceEnabled(true);
   }
 
-  int _selectedIndex = 0;
+  TabItem currentTab = TabItem.home;
   String appBarTitle = '';
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  Future<Map<String, bool>> setUsingColor() async {
+    final Map<String, bool> classroomNoFloorMap = {
+      "1": false,
+      "2": false,
+      "3": false,
+      "4": false,
+      "5": false,
+      "6": false,
+      "7": false,
+      "8": false,
+      "9": false,
+      "10": false,
+      "11": false,
+      "12": false,
+      "13": false,
+      "14": false,
+      "15": false,
+      "16": false,
+      "17": false,
+      "18": false,
+      "19": false,
+      "50": false,
+      "51": false
+    };
+
+    String scheduleFilePath = 'map/oneweek_schedule.json';
+    Map<String, DateTime>? resourceIds;
+    try {
+      // Firebaseからファイルをダウンロード
+      await downloadFileFromFirebase(scheduleFilePath);
+      String fileContent = await readJsonFile(scheduleFilePath);
+      resourceIds = findRoomsInUse(fileContent);
+    } catch (e) {
+      debugPrint(e.toString());
+      return classroomNoFloorMap;
+    }
+
+    if (resourceIds.isNotEmpty) {
+      resourceIds.forEach((String resourceId, DateTime useEndTime) {
+        debugPrint(resourceId);
+        if (classroomNoFloorMap.containsKey(resourceId)) {
+          classroomNoFloorMap[resourceId] = true;
+        }
+      });
+    }
+    return classroomNoFloorMap;
+  }
+
+  void _onItemTapped(int index) async {
+    final selectedTab = TabItem.values[index];
+
+    if (selectedTab == TabItem.map) {
+      final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
+      mapUsingMapNotifier.state = await setUsingColor();
+    }
+    if (currentTab == selectedTab) {
+      _navigatorKeys[selectedTab]!
+          .currentState!
+          .popUntil((route) => route.isFirst);
+    } else {
+      setState(() {
+        currentTab = selectedTab;
+      });
+    }
+  }
+
+  Future<bool> onWillPop() async {
+    return !await _navigatorKeys[currentTab]!.currentState!.maybePop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: customFunColor,
-      body: SafeArea(child: _screens[_selectedIndex]),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: _bottomNavigationBarIcon,
-        type: BottomNavigationBarType.fixed,
-      ),
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: customFunColor,
+          body: SafeArea(
+              child: Stack(
+            children: TabItem.values
+                .map((tabItem) => Offstage(
+                      offstage: currentTab != tabItem,
+                      child: Navigator(
+                        key: _navigatorKeys[tabItem],
+                        onGenerateRoute: (settings) {
+                          return MaterialPageRoute(
+                            builder: (context) => tabItem.page,
+                          );
+                        },
+                      ),
+                    ))
+                .toList(),
+          )),
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: TabItem.values.indexOf(currentTab),
+            items: TabItem.values
+                .map((tabItem) => BottomNavigationBarItem(
+                    icon: Icon(tabItem.icon),
+                    activeIcon: Icon(tabItem.activeIcon),
+                    label: tabItem.title))
+                .toList(),
+            onTap: _onItemTapped,
+          )),
     );
   }
 }

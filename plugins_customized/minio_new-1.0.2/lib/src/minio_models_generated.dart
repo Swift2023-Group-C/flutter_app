@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:xml/xml.dart';
 
 XmlElement? getProp(XmlElement? xml, String name) {

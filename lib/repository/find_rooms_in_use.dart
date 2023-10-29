@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 Map<String, DateTime> findRoomsInUse(String jsonString) {
   var decodedData = jsonDecode(jsonString);
 
@@ -22,6 +24,7 @@ Map<String, DateTime> findRoomsInUse(String jsonString) {
       //現在時刻が開始時刻と終了時刻の間であればresourceIdを取得
       if (now.isAfter(startTime) && now.isBefore(endTime)) {
         if (resourceIds.containsKey(item['resourceId'])) {
+          debugPrint(item['resourceId']);
           if (resourceIds[item['resourceId']]!.isBefore(endTime)) {
             resourceIds[item['resourceId']] = endTime;
           }

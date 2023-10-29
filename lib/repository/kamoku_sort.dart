@@ -221,7 +221,7 @@ Future<List<Map<String, dynamic>>> search(
     sqlWhere = sqlWhereList.join(" AND ");
   }
 
-  print(sqlWhere);
+  debugPrint(sqlWhere);
   if (sqlWhere != "") {
     List<Map<String, dynamic>> records = await database.rawQuery(
         'SELECT detail.LessonId,detail.授業名 FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId WHERE $sqlWhere ');

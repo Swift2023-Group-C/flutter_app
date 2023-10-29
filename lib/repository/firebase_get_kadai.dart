@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_app/components/kadai.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 import 'package:flutter_app/repository/get_firebase_realtime_db.dart';
@@ -16,7 +17,7 @@ class FirebaseGetKadai {
         kadaiList.add(Kadai.fromFirebase(key, value));
       });
     } else {
-      print('No data available.');
+      debugPrint('No kadai data available.');
       throw Exception();
     }
     kadaiList.sort(((a, b) {

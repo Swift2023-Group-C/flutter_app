@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:minio_new/models.dart';
 import 'package:minio_new/src/minio_errors.dart';
 import 'package:minio_new/src/utils.dart';

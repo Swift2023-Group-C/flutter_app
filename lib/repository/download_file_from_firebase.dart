@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_app/repository/get_application_path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -19,19 +20,17 @@ Future<void> downloadFileFromFirebase(String firebaseFilePath) async {
   downloadTask.snapshotEvents.listen((taskSnapshot) {
     switch (taskSnapshot.state) {
       case TaskState.running:
-        // TODO: Handle this case.
+        debugPrint("$firebaseFilePath downloading...");
         break;
       case TaskState.paused:
-        // TODO: Handle this case.
         break;
       case TaskState.success:
-        print("success");
+        debugPrint("$firebaseFilePath download success");
         break;
       case TaskState.canceled:
-        // TODO: Handle this case.
         break;
       case TaskState.error:
-        print("error");
+        debugPrint("$firebaseFilePath download error");
         break;
     }
   });
