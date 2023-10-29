@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/kamoku.dart';
 import 'package:flutter_app/screens/setting.dart';
 import 'package:flutter_app/screens/app_usage_guide.dart';
 
@@ -14,37 +13,6 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             //const Text('ホーム', style: TextStyle(fontSize: 32.0)),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return const AppGuideScreen();
-                    },
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const Offset begin = Offset(0.0, 1.0);
-                      const Offset end = Offset.zero;
-                      final Animatable<Offset> tween =
-                          Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: Curves.easeInOut));
-                      final Animation<Offset> offsetAnimation =
-                          animation.drive(tween);
-                      return SlideTransition(
-                        position: offsetAnimation,
-                        child: child,
-                      );
-                    },
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-                fixedSize: const Size(250, 100),
-              ),
-              child: const Text('このアプリの使い方'),
-            ),
-            const Spacer(),
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.of(context).push(
@@ -80,13 +48,36 @@ class HomeScreen extends StatelessWidget {
             ),
             const Spacer(),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return const AppGuideScreen();
+                    },
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const Offset begin = Offset(0.0, 1.0);
+                      const Offset end = Offset.zero;
+                      final Animatable<Offset> tween =
+                          Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: Curves.easeInOut));
+                      final Animation<Offset> offsetAnimation =
+                          animation.drive(tween);
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: Colors.amber,
                 fixedSize: const Size(250, 100),
               ),
-              child: const Text('過去問は科目検索画面から'),
+              child: const Text('このアプリの使い方'),
             ),
+            const Spacer(),
           ],
         ),
       ),

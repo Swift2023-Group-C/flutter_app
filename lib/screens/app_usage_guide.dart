@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/setting_user_info.dart';
-import 'package:flutter/services.dart';
 
 class AppGuideScreen extends StatelessWidget {
   const AppGuideScreen({Key? key}) : super(key: key);
