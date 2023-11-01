@@ -214,8 +214,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           deleteList.add(kadai.id!);
           saveDeleteList();
         });
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('課題を非表示にしました')));
       }),
       children: [
         SlidableAction(
@@ -321,8 +319,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           }
           saveDeleteList();
         });
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('課題を非表示にしました')));
       }),
       children: [
         SlidableAction(
@@ -378,7 +374,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   bool endtimeCheck(KadaiList kadailist) {
     var now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day);
-    DateTime tomorrow = today.add(Duration(days: 1));
+    DateTime tomorrow = today.add(const Duration(days: 2));
     for (Kadai kadai in kadailist.listKadai) {
       if (kadai.endtime != null) {
         if (kadai.endtime!.isAfter(today) &&
