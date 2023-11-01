@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/widgets/map.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/components/kadai.dart';
 import 'package:flutter_app/repository/firebase_get_kadai.dart';
@@ -25,6 +26,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   List<KadaiList> filteredData = [];
   String? userKey;
   var deepEq = const DeepCollectionEquality().equals;
+  ScrollController _scrollController = ScrollController();
 
   void launchUrlInExternal(Uri url) async {
     if (await canLaunchUrl(url)) {
@@ -207,6 +209,14 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     return ActionPane(
       motion: const StretchMotion(),
       extentRatio: 0.5,
+      dismissible: DismissiblePane(onDismissed: () {
+        setState(() {
+          deleteList.add(kadai.id!);
+          saveDeleteList();
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('課題を非表示にしました')));
+      }),
       children: [
         SlidableAction(
           label: finishList.contains(kadai.id) ? '未完了' : '完了',
@@ -304,6 +314,16 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     return ActionPane(
       motion: const StretchMotion(),
       extentRatio: 0.5,
+      dismissible: DismissiblePane(onDismissed: () {
+        setState(() {
+          for (Kadai kadai in kadaiList.hiddenKadai(deleteList)) {
+            deleteList.add(kadai.id!);
+          }
+          saveDeleteList();
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('課題を非表示にしました')));
+      }),
       children: [
         SlidableAction(
           label: listAllCheck(finishList, kadaiList) ? '未完了' : '完了',
@@ -355,6 +375,21 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     );
   }
 
+  bool endtimeCheck(KadaiList kadailist) {
+    var now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime tomorrow = today.add(Duration(days: 1));
+    for (Kadai kadai in kadailist.listKadai) {
+      if (kadai.endtime != null) {
+        if (kadai.endtime!.isAfter(today) &&
+            kadai.endtime!.isBefore(tomorrow)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   Widget _kadaiListView(List<KadaiList> data) {
     return ListView.builder(
       itemCount: data.length,
@@ -364,87 +399,87 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
         } else if (data[index].hiddenKadai(deleteList).length == 1) {
           // 1個の場合
           var kadai = data[index].hiddenKadai(deleteList).first;
-          return SlidableAutoCloseBehavior(
-              closeWhenOpened: true,
-              closeWhenTapped: true,
-              child: Card(
-                  child: Slidable(
-                startActionPane: _kadaiStartSlidable(kadai),
-                endActionPane: _kadaiEndSlidable(kadai),
-                child: ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+          return Card(
+              child: Slidable(
+            key: UniqueKey(),
+            startActionPane: _kadaiStartSlidable(kadai),
+            endActionPane: _kadaiEndSlidable(kadai),
+            child: ListTile(
+              tileColor: endtimeCheck(data[index])
+                  ? Color.fromARGB(106, 246, 153, 147)
+                  : Colors.white,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              title: Row(
+                children: [
+                  if (finishList.contains(kadai.id))
+                    const Icon(
+                      Icons.military_tech,
+                      size: 30,
+                      color: Colors.yellow,
+                    ),
+                  Expanded(
+                    child: Text(
+                      kadai.name!,
+                      style: _titleTextStyle(finishList.contains(kadai.id)),
+                    ),
                   ),
-                  title: Row(
-                    children: [
-                      if (finishList.contains(kadai.id))
-                        const Icon(
-                          Icons.military_tech,
-                          size: 30,
-                          color: Colors.yellow,
-                        ),
-                      Expanded(
-                        child: Text(
-                          kadai.name!,
-                          style: _titleTextStyle(finishList.contains(kadai.id)),
-                        ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    kadai.courseName!,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: finishList.contains(kadai.id)
+                          ? Colors.green
+                          : Colors.black54,
+                    ),
+                  ),
+                  if ((kadai.endtime != null))
+                    Text(
+                      "終了：${stringFromDateTime(kadai.endtime)}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: finishList.contains(kadai.id)
+                            ? Colors.green
+                            : Colors.black45,
                       ),
-                    ],
+                    ),
+                ],
+              ),
+              minLeadingWidth: 0,
+              leading: Column(
+                children: [
+                  const SizedBox(
+                    height: 5,
+                    width: 5,
                   ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        kadai.courseName!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: finishList.contains(kadai.id)
-                              ? Colors.green
-                              : Colors.black54,
-                        ),
-                      ),
-                      if ((kadai.endtime != null))
-                        Text(
-                          "終了：${stringFromDateTime(kadai.endtime)}",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: finishList.contains(kadai.id)
-                                ? Colors.green
-                                : Colors.black45,
-                          ),
-                        ),
-                    ],
-                  ),
-                  minLeadingWidth: 0,
-                  leading: Column(
-                    children: [
-                      const SizedBox(
-                        height: 5,
-                        width: 5,
-                      ),
-                      if (alertList.contains(kadai.id))
-                        const Icon(
-                          Icons.notifications_active,
-                          size: 20,
-                          color: Colors.green,
-                        ),
-                    ],
-                  ),
-                  onTap: () {
-                    final url = Uri.parse(kadai.url!);
-                    launchUrlInExternal(url);
-                  },
-                ),
-              )));
+                  if (alertList.contains(kadai.id))
+                    const Icon(
+                      Icons.notifications_active,
+                      size: 20,
+                      color: Colors.green,
+                    ),
+                ],
+              ),
+              onTap: () {
+                final url = Uri.parse(kadai.url!);
+                launchUrlInExternal(url);
+              },
+            ),
+          ));
         }
         // 2個以上の場合
         return Card(
           child: Slidable(
+            key: Key(data[index].toString()),
             startActionPane: tmpKadaiStartSlidable(data[index]),
             endActionPane: tmpKadaiEndSlidable(data[index]),
             child: ExpansionTile(
+              onExpansionChanged: null,
               title: Row(
                 children: [
                   const SizedBox(width: 20),
@@ -504,6 +539,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                         height: 0,
                       ),
                       Slidable(
+                        key: UniqueKey(),
                         startActionPane: _kadaiStartSlidable(kadai),
                         endActionPane: _kadaiEndSlidable(kadai),
                         child: ListTile(
@@ -549,58 +585,67 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        bottomOpacity: 0.0,
-        elevation: 0.0,
-        backgroundColor: Colors.white10,
-        iconTheme: const IconThemeData(
-          color: Color.fromRGBO(34, 34, 34, 1),
+        appBar: AppBar(
+          bottomOpacity: 0.0,
+          elevation: 0.0,
+          backgroundColor: Colors.white10,
+          iconTheme: const IconThemeData(
+            color: Color.fromRGBO(34, 34, 34, 1),
+          ),
+          leading: TextButton(
+            onPressed: _resetDeleteList,
+            child: const Text("リセット"),
+          ),
         ),
-        leading: TextButton(
-          onPressed: _resetDeleteList,
-          child: const Text("リセット"),
-        ),
-      ),
-      body: GestureDetector(
-        onPanDown: (details) => Slidable.of(context)?.close(),
-        child: FutureBuilder(
-          future: const FirebaseGetKadai().getKadaiFromFirebase(),
-          builder: (
-            BuildContext context,
-            AsyncSnapshot<List<KadaiList>>? snapshot,
-          ) {
-            if (snapshot!.hasData) {
-              return _kadaiListView(snapshot.data!);
-            } else if (snapshot.hasError) {
-              return const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "ユーザーキーが設定されていません",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text(
-                      "以下のURLから設定してください",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text(
-                      "パソコンでの設定をおすすめします",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SelectableText(
-                      "https://swift2023groupc.web.app/",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return createProgressIndicator();
-            }
+        body: RefreshIndicator(
+          edgeOffset: 50,
+          onRefresh: () async {
+            //await Future.delayed(const Duration(seconds: 1));
+            setState(() {
+              const FirebaseGetKadai().getKadaiFromFirebase();
+            });
+            await Future.delayed(const Duration(seconds: 1));
           },
-        ),
-      ),
-    );
+          child: GestureDetector(
+            onPanDown: (details) => Slidable.of(context)?.close(),
+            child: FutureBuilder(
+              future: const FirebaseGetKadai().getKadaiFromFirebase(),
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<KadaiList>>? snapshot,
+              ) {
+                if (snapshot!.hasData) {
+                  return _kadaiListView(snapshot.data!);
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "ユーザーキーが設定されていません",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Text(
+                          "以下のURLから設定してください",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Text(
+                          "パソコンでの設定をおすすめします",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        SelectableText(
+                          "https://swift2023groupc.web.app/",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return createProgressIndicator();
+                }
+              },
+            ),
+          ),
+        ));
   }
 }
