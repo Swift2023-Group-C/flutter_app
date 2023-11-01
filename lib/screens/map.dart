@@ -59,6 +59,9 @@ class MapScreen extends StatelessWidget {
       final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
       final textEditingControllerNotifier =
           ref.watch(textEditingControllerProvider.notifier);
+      final mapFocusMapDetailNotifier =
+          ref.watch(mapFocusMapDetailProvider.notifier);
+
       return AppBar(
           title: _mapSearchTextField(ref),
           automaticallyImplyLeading: false,
@@ -138,6 +141,7 @@ class MapScreen extends StatelessWidget {
                             onTap: () {
                               mapSearchListNotifier.state = [];
                               FocusScope.of(context).unfocus();
+                              MapController.instance.reset();
                               mapFocusMapDetailNotifier.state = item;
                               mapPageNotifier.state =
                                   floorBarString.indexOf(item.floor);
@@ -204,6 +208,7 @@ class MapScreen extends StatelessWidget {
                             onPressed: () {
                               mapPageNotifier.state = i;
                               FocusScope.of(context).unfocus();
+                              MapController.instance.reset();
                             },
                             child: Center(
                                 child: Text(

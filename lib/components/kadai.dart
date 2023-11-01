@@ -55,6 +55,7 @@ class KadaiList {
     return listKadai.first;
   }
 
+  //対象のリストに含まれないリスト作成
   List<Kadai> hiddenKadai(List<int> deleteList) {
     List<Kadai> returnList = [];
     for (var kadai in listKadai) {

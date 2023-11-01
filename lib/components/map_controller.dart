@@ -14,4 +14,9 @@ class MapController {
   double getZoomRatio() {
     return viewTransformationController.value.getMaxScaleOnAxis();
   }
+
+  void reset() {
+    viewTransformationController = TransformationController(
+        Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+  }
 }

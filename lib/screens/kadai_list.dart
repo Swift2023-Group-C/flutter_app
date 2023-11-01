@@ -613,28 +613,31 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 if (snapshot!.hasData) {
                   return _kadaiListView(snapshot.data!);
                 } else if (snapshot.hasError) {
-                  return const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "ユーザーキーが設定されていません",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        Text(
-                          "以下のURLから設定してください",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        Text(
-                          "パソコンでの設定をおすすめします",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        SelectableText(
-                          "https://swift2023groupc.web.app/",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ],
-                    ),
+                  return ListView(
+                    children: const [
+                      ListTile(
+                          title: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "ユーザーキーが設定されていません",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                            "以下のURLから設定してください",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                            "パソコンでの設定をおすすめします",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          SelectableText(
+                            "https://swift2023groupc.web.app/",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ],
+                      )),
+                    ],
                   );
                 } else {
                   return createProgressIndicator();

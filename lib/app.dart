@@ -126,6 +126,13 @@ class _BasePageState extends ConsumerState<BasePage> {
     SyllabusDBConfig.setDB();
     MapDetailMap.instance.getList();
     FirebaseDatabase.instance.setPersistenceEnabled(true);
+    mapDownload();
+  }
+
+  Future<void> mapDownload() async {
+    // Firebaseからファイルをダウンロード
+    String scheduleFilePath = 'map/oneweek_schedule.json';
+    await downloadFileFromFirebase(scheduleFilePath);
   }
 
   TabItem currentTab = TabItem.home;
@@ -159,8 +166,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     String scheduleFilePath = 'map/oneweek_schedule.json';
     Map<String, DateTime>? resourceIds;
     try {
-      // Firebaseからファイルをダウンロード
-      await downloadFileFromFirebase(scheduleFilePath);
       String fileContent = await readJsonFile(scheduleFilePath);
       resourceIds = findRoomsInUse(fileContent);
     } catch (e) {
