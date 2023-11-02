@@ -29,8 +29,8 @@ class MapDetailMap {
       '3': {},
       '4': {},
       '5': {},
-      'R1': {},
-      'R2': {}
+      'R6': {},
+      'R7': {}
     };
     if (snapshot.exists) {
       (snapshot.value as Map).forEach((floor, value) {

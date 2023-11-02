@@ -18,6 +18,16 @@ final mapFocusMapDetailProvider =
 class MapScreen extends StatelessWidget {
   const MapScreen({Key? key}) : super(key: key);
 
+  static const List<String> floorBarString = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    'R6',
+    'R7'
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +123,6 @@ class MapScreen extends StatelessWidget {
   }
 
   Widget _mapSearchListView() {
-    List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
     return Consumer(
       builder: (context, ref, child) {
         final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
@@ -164,8 +173,6 @@ class MapScreen extends StatelessWidget {
   }
 
   Widget _mapFloorButton(BuildContext context) {
-    // インデックスに対応した階数
-    List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
     TextStyle floorBarTextStyle =
         const TextStyle(fontSize: 18.0, color: Colors.black87);
     TextStyle floorBarSelectedTextStyle =

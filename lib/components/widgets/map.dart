@@ -274,7 +274,7 @@ class Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> floorBarString = ['1', '2', '3', '4', '5', 'R1', 'R2'];
+    List<String> floorBarString = ['1', '2', '3', '4', '5', 'R6', 'R7'];
     List<Widget> widgetList = [];
     widgetList.add(SizedBox.expand(child: Consumer(
       builder: (context, ref, child) {
@@ -1017,8 +1017,8 @@ abstract final class GridMaps {
       Tile(42, 7, TileType.empty), //empty ev横
       Tile(6, 7, TileType.empty), //empty
     ],
-    "R1": [],
-    "R2": [
+    "R6": [],
+    "R7": [
       Tile(4, 2, TileType.classroom, txt: 'R711', top: 1, left: 1),
       Tile(1, 30, TileType.road, top: 1, bottom: 1),
       Tile(3, 3, TileType.empty, bottom: 1, left: 1),
