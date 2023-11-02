@@ -7,14 +7,14 @@ import 'package:flutter_app/components/widgets/map.dart';
 class MapGridScreen extends StatelessWidget {
   const MapGridScreen({Key? key}) : super(key: key);
 
-  static final List<String> gridMapsList = [
+  static const List<String> gridMapsList = [
     "1",
     "2",
     "3",
     "4",
     "5",
-    "R1",
-    "R2"
+    "R6",
+    "R7"
   ];
 
   @override
