@@ -161,25 +161,24 @@ class MapScreen extends StatelessWidget {
                     itemCount: mapSearchList.length,
                     itemBuilder: (context, int index) {
                       final MapDetail item = mapSearchListNotifier.state[index];
-                      return SizedBox(
-                          height: 60,
-                          child: ListTile(
-                            onTap: () {
-                              mapSearchListNotifier.state = [];
-                              FocusScope.of(context).unfocus();
-                              mapViewTransformationControllerProviderNotifier
-                                  .state.value
-                                  .setIdentity();
-                              mapFocusMapDetailNotifier.state = item;
-                              mapPageNotifier.state =
-                                  floorBarString.indexOf(item.floor);
-                            },
-                            title: Text(item.header),
-                            trailing: Text(item.floor),
-                          ));
+                      return ListTile(
+                        onTap: () {
+                          mapSearchListNotifier.state = [];
+                          FocusScope.of(context).unfocus();
+                          mapViewTransformationControllerProviderNotifier
+                              .state.value
+                              .setIdentity();
+                          mapFocusMapDetailNotifier.state = item;
+                          mapPageNotifier.state =
+                              floorBarString.indexOf(item.floor);
+                        },
+                        title: Text(item.header),
+                        leading: Text('${item.floor}階'),
+                        trailing: const Icon(Icons.chevron_right),
+                      );
                     },
                     separatorBuilder: (context, index) => const Divider(
-                      height: 0,
+                      height: 1,
                     ),
                   ),
                 ),
