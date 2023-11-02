@@ -55,10 +55,9 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
   }
 
   void _showCustomDialog(BuildContext context) {
-    setState(() {
-      // ダイアログを開くたびにエラーメッセージをリセット
-      showErrorMessage = false;
-    });
+    // ダイアログを開くたびにエラーメッセージをリセット
+    showErrorMessage = false;
+
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
 
@@ -155,6 +154,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                                 fixedSize: const Size(150, 20),
                               ),
                               onPressed: () async {
+                                //以下処理
                                 final String? userKey =
                                     await UserPreferences.getUserKey();
                                 if (userKey != "" && selectedScore != null) {
@@ -194,9 +194,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                                   }
                                   // テキストフィールドと選択をクリア
                                   userController.clear();
-                                  setState(() {
-                                    selectedScore = null;
-                                  });
+                                  selectedScore = null;
                                   if (context.mounted) {
                                     Navigator.of(context).pop();
                                   }
