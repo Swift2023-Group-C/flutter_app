@@ -23,7 +23,7 @@ abstract final class TileColors {
   static Color get subRoom => Colors.grey.shade500;
   static Color get room2 => Colors.grey.shade400;
   static Color get road => Colors.grey.shade300;
-  static Color get toilet => Colors.red.shade200;
+  static Color get toilet => Colors.lightGreen.shade400;
   //static Color get stair => Colors.blueGrey.shade600;
   static Color get stair => Colors.grey.shade300;
   static Color get ev => Colors.grey.shade800;
@@ -95,7 +95,11 @@ class Tile extends StatelessWidget {
       fontSize = 3;
     }
     if (txt.length <= 6 && width >= 6) {
-      fontSize = 6;
+      if (txt.length <= 4) {
+        fontSize = 8;
+      } else {
+        fontSize = 6;
+      }
     }
   }
 
@@ -361,6 +365,7 @@ class Tile extends StatelessWidget {
       final mapPage = ref.watch(mapPageProvider);
       final mapSearchBarFocusNotifier =
           ref.watch(mapSearchBarFocusProvider.notifier);
+      ref.watch(mapUsingMapProvider);
       MapDetail? mapDetail =
           MapDetailMap.instance.searchOnce(floorBarString[mapPage], txt);
       if (mapDetail != null) {
@@ -487,7 +492,7 @@ abstract final class GridMaps {
       Tile(6, 16, TileType.subroom, right: 1, bottom: 1, txt: '食堂'), //食堂
       Tile(42, 1, TileType.road, left: 1),
       Tile(12, 6, TileType.otherroom, left: 1),
-      Tile(6, 12, TileType.road, bottom: 1),
+      Tile(6, 10, TileType.road),
       Tile(18, 3, TileType.otherroom, right: 1, left: 1),
       Tile(6, 1, TileType.road),
       Tile(2, 2, TileType.road),
@@ -497,13 +502,19 @@ abstract final class GridMaps {
       Tile(2, 1, TileType.road),
       Tile(2, 1, TileType.road, bottom: 1),
       Tile(2, 1, TileType.road),
-      Tile(6, 8, TileType.road, bottom: 1),
+      Tile(6, 6, TileType.road),
       Tile(12, 6, TileType.otherroom,
           classroomNo: '50', txt: 'アトリエ', left: 1, bottom: 1), //アトリエ
       Tile(18, 1, TileType.road),
       Tile(6, 5, TileType.road, left: 1, bottom: 1, txt: 'プレゼンテーションベイB'),
       Tile(6, 5, TileType.road, bottom: 1, txt: 'プレゼンテーションベイG'),
       Tile(6, 5, TileType.road, right: 1, bottom: 1, txt: 'プレゼンテーションベイR'),
+      Tile(2, 2, TileType.road, bottom: 1),
+      Tile(2, 2, TileType.road),
+      Tile(2, 2, TileType.road, bottom: 1),
+      Tile(2, 2, TileType.road, bottom: 1),
+      Tile(2, 2, TileType.otherroom, txt: '出入口'),
+      Tile(2, 2, TileType.road, bottom: 1),
     ],
     "2": [
       Tile(48, 37, TileType.empty),
@@ -625,7 +636,8 @@ abstract final class GridMaps {
       Tile(2, 4, TileType.road),
       Tile(2, 1, TileType.road),
       Tile(48, 2, TileType.road, left: 1, right: 1), // モール
-      Tile(14, 2, TileType.road, left: 1),
+      Tile(2, 2, TileType.otherroom, txt: '研究棟入口'),
+      Tile(12, 2, TileType.road),
       Tile(2, 2, TileType.stair,
           top: 1,
           right: 1,
@@ -676,7 +688,7 @@ abstract final class GridMaps {
       Tile(2, 2, TileType.teacherroom, txt: '342'),
       Tile(4, 2, TileType.wc, wc: 0x0110), // 入口側トイレ女
       Tile(2, 6, TileType.road),
-      Tile(1, 4, TileType.classroom),
+      Tile(1, 4, TileType.otherroom),
       Tile(2, 4, TileType.teacherroom, txt: '335'),
       Tile(2, 4, TileType.teacherroom, txt: '334'),
       Tile(2, 4, TileType.teacherroom, txt: '333'),
@@ -691,9 +703,9 @@ abstract final class GridMaps {
       Tile(2, 4, TileType.teacherroom, txt: '324'),
       Tile(2, 4, TileType.teacherroom, txt: '323'),
       Tile(2, 4, TileType.teacherroom, txt: '322'),
-      Tile(2, 4, TileType.teacherroom, txt: '321'),
-      Tile(4, 2, TileType.classroom),
-      Tile(2, 4, TileType.classroom),
+      Tile(2, 4, TileType.subroom, txt: '321'),
+      Tile(4, 2, TileType.otherroom),
+      Tile(2, 4, TileType.otherroom),
       Tile(42, 1, TileType.road, left: 1),
       Tile(12, 5, TileType.otherroom, left: 1, bottom: 1),
       Tile(4, 3, TileType.road),
@@ -872,9 +884,8 @@ abstract final class GridMaps {
       Tile(4, 8, TileType.empty, left: 1, right: 1),
       Tile(6, 12, TileType.classroom,
           txt: '講堂', classroomNo: '1', top: 1, right: 1, bottom: 1),
-      Tile(2, 11, TileType.road, bottom: 1),
-      Tile(4, 11, TileType.classroom, txt: 'デルタ', right: 1, bottom: 1),
-      Tile(18, 11, TileType.empty, top: 1, right: 1),
+      Tile(4, 11, TileType.subroom, txt: 'デルタビスタ', right: 1, bottom: 1),
+      Tile(20, 11, TileType.empty, top: 1, right: 1),
       Tile(2, 9, TileType.road),
       Tile(2, 2, TileType.ev, txt: 'ev', left: 1, top: 1, right: 1),
       Tile(2, 2, TileType.empty, right: 1, bottom: 1),
@@ -947,25 +958,25 @@ abstract final class GridMaps {
       Tile(2, 5, TileType.empty, right: 1, bottom: 1), //吹き抜け
       Tile(2, 5, TileType.road, top: 1),
       Tile(4, 8, TileType.otherroom, top: 1, right: 1, txt: '会議室'),
-      Tile(2, 4, TileType.classroom, txt: '536', left: 1),
-      Tile(2, 4, TileType.classroom, txt: '535'),
-      Tile(2, 4, TileType.classroom, txt: '534'),
-      Tile(2, 4, TileType.classroom, txt: '533'),
-      Tile(2, 4, TileType.classroom, txt: '532'),
-      Tile(2, 4, TileType.classroom, txt: '531'),
+      Tile(2, 4, TileType.teacherroom, txt: '536', left: 1),
+      Tile(2, 4, TileType.teacherroom, txt: '535'),
+      Tile(2, 4, TileType.teacherroom, txt: '534'),
+      Tile(2, 4, TileType.teacherroom, txt: '533'),
+      Tile(2, 4, TileType.teacherroom, txt: '532'),
+      Tile(2, 4, TileType.teacherroom, txt: '531'),
       Tile(2, 4, TileType.road),
       Tile(2, 4, TileType.otherroom, right: 1),
       Tile(2, 4, TileType.empty, top: 1, bottom: 1), //吹き抜け
       Tile(1, 4, TileType.wc, left: 1, wc: 0x0001),
       Tile(1, 4, TileType.road),
-      Tile(2, 4, TileType.classroom, txt: '529'),
-      Tile(2, 4, TileType.classroom, txt: '528'),
-      Tile(2, 4, TileType.classroom, txt: '527'),
-      Tile(2, 4, TileType.classroom, txt: '526'),
-      Tile(2, 4, TileType.classroom, txt: '525'),
-      Tile(2, 4, TileType.classroom, txt: '524'),
-      Tile(2, 4, TileType.classroom, txt: '523'),
-      Tile(2, 4, TileType.classroom, txt: '522'),
+      Tile(2, 4, TileType.teacherroom, txt: '529'),
+      Tile(2, 4, TileType.teacherroom, txt: '528'),
+      Tile(2, 4, TileType.teacherroom, txt: '527'),
+      Tile(2, 4, TileType.teacherroom, txt: '526'),
+      Tile(2, 4, TileType.teacherroom, txt: '525'),
+      Tile(2, 4, TileType.teacherroom, txt: '524'),
+      Tile(2, 4, TileType.teacherroom, txt: '523'),
+      Tile(2, 4, TileType.teacherroom, txt: '522'),
       Tile(2, 4, TileType.road),
       Tile(44, 1, TileType.road, left: 1),
       Tile(12, 2, TileType.otherroom, left: 1, bottom: 1), //スタジオleft
