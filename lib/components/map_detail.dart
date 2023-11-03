@@ -8,11 +8,16 @@ class MapDetail {
   final String header;
   final String? detail;
   final String? mail;
+  final List<String>? searchWordList;
   const MapDetail(this.floor, this.roomName, this.classroomNo, this.header,
-      this.detail, this.mail);
+      this.detail, this.mail, this.searchWordList);
   factory MapDetail.fromFirebase(String floor, String roomName, Map value) {
+    List<String>? sWordList;
+    if (value.containsKey('searchWordList')) {
+      sWordList = (value['searchWordList'] as String).split(',');
+    }
     return MapDetail(floor, roomName, value['classroomNo'], value['header'],
-        value['detail'], value['mail']);
+        value['detail'], value['mail'], sWordList);
   }
 }
 
@@ -69,6 +74,7 @@ class MapDetailMap {
     List<MapDetail> results = [];
     List<MapDetail> results2 = [];
     List<MapDetail> results3 = [];
+    List<MapDetail> results4 = [];
     if (mapDetailList != null) {
       mapDetailList!.forEach((_, value) {
         for (var mapDetail in value.values) {
@@ -76,27 +82,36 @@ class MapDetailMap {
             results.add(mapDetail);
             continue;
           }
-          if (searchText.length > 1) {
-            if (mapDetail.header.contains(searchText)) {
-              results2.add(mapDetail);
+          if (mapDetail.searchWordList != null) {
+            bool matchFlag = false;
+            for (var word in mapDetail.searchWordList!) {
+              if (word.contains(searchText)) {
+                results2.add(mapDetail);
+                matchFlag = true;
+                break;
+              }
+            }
+            if (matchFlag) continue;
+          }
+          if (mapDetail.header.contains(searchText)) {
+            results3.add(mapDetail);
+            continue;
+          }
+          if (mapDetail.mail != null) {
+            if (mapDetail.mail!.contains(searchText)) {
+              results3.add(mapDetail);
               continue;
             }
-            if (mapDetail.mail != null) {
-              if (mapDetail.mail!.contains(searchText)) {
-                results2.add(mapDetail);
-                continue;
-              }
-            }
-            if (mapDetail.detail != null) {
-              if (mapDetail.detail!.contains(searchText)) {
-                results3.add(mapDetail);
-                continue;
-              }
+          }
+          if (mapDetail.detail != null) {
+            if (mapDetail.detail!.contains(searchText)) {
+              results4.add(mapDetail);
+              continue;
             }
           }
         }
       });
     }
-    return [...results, ...results2, ...results3];
+    return [...results, ...results2, ...results3, ...results4];
   }
 }

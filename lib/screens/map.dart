@@ -12,8 +12,8 @@ final mapPageProvider = StateProvider((ref) => 2);
 final textEditingControllerProvider =
     StateProvider((ref) => TextEditingController());
 final mapSearchBarFocusProvider = StateProvider((ref) => FocusNode());
-final mapFocusMapDetailProvider =
-    StateProvider((ref) => const MapDetail('1', '0', null, '0', null, null));
+final mapFocusMapDetailProvider = StateProvider(
+    (ref) => const MapDetail('1', '0', null, '0', null, null, null));
 final mapViewTransformationControllerProvider =
     StateProvider((ref) => TransformationController(Matrix4.identity()));
 
@@ -288,7 +288,7 @@ class MapScreen extends StatelessWidget {
                                       0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
                               mapPageNotifier.state = i;
                               mapFocusMapDetailNotifier.state = const MapDetail(
-                                  '1', '0', null, '0', null, null);
+                                  '1', '0', null, '0', null, null, null);
                               FocusScope.of(context).unfocus();
                             },
                             child: Center(
