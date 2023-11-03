@@ -86,22 +86,6 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   }
   */
 
-  void trueAll() {
-    setState(() {
-      // boolListのすべての要素をallSelectedの値に合わせて設定
-      termCheckedList =
-          List.generate(termCheckedList.length, (index) => alltrue);
-      gradeCheckedList =
-          List.generate(gradeCheckedList.length, (index) => alltrue);
-      courseStrCheckedList =
-          List.generate(courseStrCheckedList.length, (index) => alltrue);
-      classificationCheckedList =
-          List.generate(classificationCheckedList.length, (index) => alltrue);
-      educationCheckedList =
-          List.generate(educationCheckedList.length, (index) => alltrue);
-    });
-  }
-
   void falseAll() {
     setState(() {
       // boolListのすべての要素をallSelectedの値に合わせて設定
@@ -185,11 +169,6 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                     child: buildFilterRow(education, educationCheckedList),
                   ),
                   Row(children: [
-                    TextButton(
-                        onPressed: () {
-                          trueAll();
-                        },
-                        child: const Text('全選択')),
                     TextButton(
                         onPressed: () {
                           falseAll();
