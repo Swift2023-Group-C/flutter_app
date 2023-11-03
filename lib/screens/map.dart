@@ -84,6 +84,7 @@ class MapScreen extends StatelessWidget {
           return Container(
             color: Colors.grey.withOpacity(0.5),
             child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
               child: const SizedBox.expand(),
               onTap: () {
                 mapSearchListNotifier.state = [];
@@ -101,39 +102,44 @@ class MapScreen extends StatelessWidget {
     return Consumer(builder: (context, ref, child) {
       final onMapSearch = ref.watch(onMapSearchProvider);
       final onMapSearchNotifier = ref.watch(onMapSearchProvider.notifier);
+      final mapSearchList = ref.watch(mapSearchListProvider);
       final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
       final textEditingControllerNotifier =
           ref.watch(textEditingControllerProvider.notifier);
       return Container(
-        margin: const EdgeInsets.only(top: 15, right: 5, left: 5),
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: AppBar(
-            shape: RoundedRectangleBorder(
-              side: const BorderSide(),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 5,
-            title: _mapSearchTextField(ref),
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.grey.shade100,
-            foregroundColor: Colors.black87,
-            actions: onMapSearch
-                ? [
-                    IconButton(
-                        onPressed: () {
-                          mapSearchListNotifier.state = [];
-                          onMapSearchNotifier.state = false;
-                          textEditingControllerNotifier.state.clear();
-                        },
-                        icon: const Icon(Icons.clear)),
-                  ]
-                : [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.search),
-                    )
-                  ]),
-      );
+          color: (mapSearchList.isNotEmpty)
+              ? Colors.grey.withOpacity(0.5)
+              : Colors.transparent,
+          child: Container(
+            margin: const EdgeInsets.only(top: 15, right: 5, left: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: AppBar(
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                elevation: 5,
+                title: _mapSearchTextField(ref),
+                automaticallyImplyLeading: false,
+                backgroundColor: Colors.grey.shade100,
+                foregroundColor: Colors.black87,
+                actions: onMapSearch
+                    ? [
+                        IconButton(
+                            onPressed: () {
+                              mapSearchListNotifier.state = [];
+                              onMapSearchNotifier.state = false;
+                              textEditingControllerNotifier.state.clear();
+                            },
+                            icon: const Icon(Icons.clear)),
+                      ]
+                    : [
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.search),
+                        )
+                      ]),
+          ));
     });
   }
 
