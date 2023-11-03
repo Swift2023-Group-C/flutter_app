@@ -10,7 +10,6 @@ class KamokuSearchScreen extends StatefulWidget {
 }
 
 class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
-  bool isFiltersVisible = true;
   List<Map<String, dynamic>>? _searchResults;
   var word = '';
   final TextEditingController _controller = TextEditingController();
@@ -164,57 +163,43 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                   },
                 ),
               ),
-              Visibility(
-                visible: isFiltersVisible,
-                child: Column(
-                  children: [
-                    buildFilterRow(term, termCheckedList),
-                    buildFilterRadioRow(),
-                    Visibility(
-                      visible: senmonKyoyoStatus == 0,
-                      child: buildFilterRow(grade, gradeCheckedList),
-                    ),
-                    Visibility(
-                      visible: senmonKyoyoStatus == 0,
-                      child: buildFilterRow(courseStr, courseStrCheckedList),
-                    ),
-                    Visibility(
-                      visible: classificationStatus(),
-                      child: buildFilterRow(
-                          classification, classificationCheckedList),
-                    ),
-                    Visibility(
-                      visible: senmonKyoyoStatus == 1,
-                      child: buildFilterRow(education, educationCheckedList),
-                    ),
-                    Row(children: [
-                      TextButton(
-                          onPressed: () {
-                            trueAll();
-                          },
-                          child: const Text('全選択')),
-                      TextButton(
-                          onPressed: () {
-                            falseAll();
-                          },
-                          child: const Text('リセット')),
-                    ])
-                  ],
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    isFiltersVisible = !isFiltersVisible;
-                  });
-                },
-                child: Icon(
-                  isFiltersVisible ? Icons.expand_less : Icons.expand_more,
-                ),
+              Column(
+                children: [
+                  buildFilterRow(term, termCheckedList),
+                  buildFilterRadioRow(),
+                  Visibility(
+                    visible: senmonKyoyoStatus == 0,
+                    child: buildFilterRow(grade, gradeCheckedList),
+                  ),
+                  Visibility(
+                    visible: senmonKyoyoStatus == 0,
+                    child: buildFilterRow(courseStr, courseStrCheckedList),
+                  ),
+                  Visibility(
+                    visible: classificationStatus(),
+                    child: buildFilterRow(
+                        classification, classificationCheckedList),
+                  ),
+                  Visibility(
+                    visible: senmonKyoyoStatus == 1,
+                    child: buildFilterRow(education, educationCheckedList),
+                  ),
+                  Row(children: [
+                    TextButton(
+                        onPressed: () {
+                          trueAll();
+                        },
+                        child: const Text('全選択')),
+                    TextButton(
+                        onPressed: () {
+                          falseAll();
+                        },
+                        child: const Text('リセット')),
+                  ])
+                ],
               ),
               ElevatedButton(
                   onPressed: () async {
-                    isFiltersVisible = !isFiltersVisible;
                     List<Map<String, dynamic>> records = await search(
                         term: termCheckedList,
                         senmon: senmonKyoyoStatus == 0,
