@@ -53,7 +53,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   List<bool> classificationCheckedList = List.generate(2, (index) => false);
   List<bool> educationCheckedList = List.generate(5, (index) => false);
 
-  int senmonKyoyoStatus = 0;
+  int senmonKyoyoStatus = -1;
 
   bool allSelected = false;
   bool alltrue = true;
@@ -88,6 +88,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
 
   void falseAll() {
     setState(() {
+      senmonKyoyoStatus = -1;
       // boolListのすべての要素をallSelectedの値に合わせて設定
       termCheckedList =
           List.generate(termCheckedList.length, (index) => allfalse);
@@ -182,7 +183,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                     FocusScope.of(context).unfocus();
                     List<Map<String, dynamic>> records = await search(
                         term: termCheckedList,
-                        senmon: senmonKyoyoStatus == 0,
+                        senmon: senmonKyoyoStatus,
                         grade: gradeCheckedList,
                         course: courseStrCheckedList,
                         classification: classificationCheckedList,
@@ -268,7 +269,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                     value: i,
                     onChanged: (value) {
                       setState(() {
-                        senmonKyoyoStatus = value ?? 0;
+                        senmonKyoyoStatus = value ?? -1;
                       });
                     },
                     groupValue: senmonKyoyoStatus,

@@ -122,7 +122,7 @@ bool isNotAllTrueOrAllFalse(List<bool> list) {
 
 Future<List<Map<String, dynamic>>> search(
     {required List<bool> term,
-    required bool senmon,
+    required int senmon,
     required List<bool> grade,
     required List<bool> course,
     required List<bool> classification,
@@ -145,7 +145,7 @@ Future<List<Map<String, dynamic>>> search(
     sqlWhereList.add("(sort.開講時期 IN (${sqlWhereTerm.join(", ")}))");
   }
 
-  if (senmon) {
+  if (senmon == 0) {
     // 学年
     // ['1年', '2年', '3年', '4年']
     if (isNotAllTrueOrAllFalse(grade)) {
@@ -193,7 +193,7 @@ Future<List<Map<String, dynamic>>> search(
     if (sqlWhereCourseClassification.isNotEmpty) {
       sqlWhereList.add("(${sqlWhereCourseClassification.join(" OR ")})");
     }
-  } else {
+  } else if (senmon == 1) {
     // 教養
     List<String> sqlWhereKyoyo = [];
     sqlWhereListKyoyo.add("(sort.教養!=0)");
