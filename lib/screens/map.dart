@@ -35,7 +35,7 @@ class MapScreen extends StatelessWidget {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
+          preferredSize: const Size.fromHeight(kToolbarHeight + 5),
           child: _mapSearchBar(),
         ),
         body: GestureDetector(
@@ -49,8 +49,9 @@ class MapScreen extends StatelessWidget {
                     child: _mapView()),
                 // 階選択ボタン
                 _mapFloorButton(context),
-                _mapSearchListView(),
                 _mapInfo(),
+                _mapBackonSearch(),
+                _mapSearchListView(),
               ],
             )));
   }
@@ -61,14 +62,37 @@ class MapScreen extends StatelessWidget {
         final mapViewTransformationController =
             ref.watch(mapViewTransformationControllerProvider);
         return InteractiveViewer(
-            maxScale: 10.0,
-            // 倍率行列Matrix4
-            transformationController: mapViewTransformationController,
-            child: const Padding(
-              padding: EdgeInsets.only(top: 80, right: 20, left: 20),
-              // マップ表示
-              child: MapGridScreen(),
-            ));
+          maxScale: 10.0,
+          // 倍率行列Matrix4
+          transformationController: mapViewTransformationController,
+          child: const Padding(
+            padding: EdgeInsets.only(top: 80, right: 20, left: 20),
+            // マップ表示
+            child: MapGridScreen(),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _mapBackonSearch() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final mapSearchList = ref.watch(mapSearchListProvider);
+        final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
+        if (mapSearchList.isNotEmpty) {
+          return Container(
+            color: Colors.grey.withOpacity(0.5),
+            child: GestureDetector(
+              child: const SizedBox.expand(),
+              onTap: () {
+                mapSearchListNotifier.state = [];
+              },
+            ),
+          );
+        } else {
+          return Container();
+        }
       },
     );
   }
@@ -80,27 +104,36 @@ class MapScreen extends StatelessWidget {
       final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
       final textEditingControllerNotifier =
           ref.watch(textEditingControllerProvider.notifier);
-      return AppBar(
-          title: _mapSearchTextField(ref),
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white70,
-          foregroundColor: Colors.black87,
-          actions: onMapSearch
-              ? [
-                  IconButton(
-                      onPressed: () {
-                        mapSearchListNotifier.state = [];
-                        onMapSearchNotifier.state = false;
-                        textEditingControllerNotifier.state.clear();
-                      },
-                      icon: const Icon(Icons.clear)),
-                ]
-              : [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.search),
-                  )
-                ]);
+      return Container(
+        margin: const EdgeInsets.only(top: 15, right: 5, left: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: AppBar(
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 5,
+            title: _mapSearchTextField(ref),
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.grey.shade100,
+            foregroundColor: Colors.black87,
+            actions: onMapSearch
+                ? [
+                    IconButton(
+                        onPressed: () {
+                          mapSearchListNotifier.state = [];
+                          onMapSearchNotifier.state = false;
+                          textEditingControllerNotifier.state.clear();
+                        },
+                        icon: const Icon(Icons.clear)),
+                  ]
+                : [
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.search),
+                    )
+                  ]),
+      );
     });
   }
 
@@ -149,40 +182,48 @@ class MapScreen extends StatelessWidget {
             ref.watch(mapViewTransformationControllerProvider.notifier);
         if (mapSearchList.isNotEmpty) {
           return Padding(
-              padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
-              child: Container(
-                color: Colors.white,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: (mapSearchList.length * 60 < 200)
-                      ? mapSearchList.length * 60
-                      : 200,
-                  child: ListView.separated(
-                    itemCount: mapSearchList.length,
-                    itemBuilder: (context, int index) {
-                      final MapDetail item = mapSearchListNotifier.state[index];
-                      return ListTile(
-                        onTap: () {
-                          mapSearchListNotifier.state = [];
-                          FocusScope.of(context).unfocus();
-                          mapViewTransformationControllerProviderNotifier
-                              .state.value
-                              .setIdentity();
-                          mapFocusMapDetailNotifier.state = item;
-                          mapPageNotifier.state =
-                              floorBarString.indexOf(item.floor);
-                        },
-                        title: Text(item.header),
-                        leading: Text('${item.floor}階'),
-                        trailing: const Icon(Icons.chevron_right),
-                      );
+            padding: const EdgeInsets.only(top: 5, right: 15, left: 15),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.grey,
+                    blurRadius: 2,
+                    offset: Offset(2, 2),
+                  )
+                ],
+              ),
+              width: double.infinity,
+              height: (mapSearchList.length * 60 < 200)
+                  ? mapSearchList.length * 60
+                  : 200,
+              child: ListView.separated(
+                itemCount: mapSearchList.length,
+                itemBuilder: (context, int index) {
+                  final MapDetail item = mapSearchListNotifier.state[index];
+                  return ListTile(
+                    onTap: () {
+                      mapSearchListNotifier.state = [];
+                      FocusScope.of(context).unfocus();
+                      mapViewTransformationControllerProviderNotifier
+                          .state.value
+                          .setIdentity();
+                      mapFocusMapDetailNotifier.state = item;
+                      mapPageNotifier.state =
+                          floorBarString.indexOf(item.floor);
                     },
-                    separatorBuilder: (context, index) => const Divider(
-                      height: 1,
-                    ),
-                  ),
+                    title: Text(item.header),
+                    leading: Text('${item.floor}階'),
+                    trailing: const Icon(Icons.chevron_right),
+                  );
+                },
+                separatorBuilder: (context, index) => const Divider(
+                  height: 1,
                 ),
-              ));
+              ),
+            ),
+          );
         } else {
           return Container();
         }
@@ -262,26 +303,36 @@ class MapScreen extends StatelessWidget {
   }
 
   Widget _mapInfo() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20, bottom: 20),
-      child: Align(
-        alignment: Alignment.bottomLeft,
-        child: Container(
-          height: 80,
-          width: 200,
-          color: Colors.grey.shade400.withOpacity(0.8),
-          padding: const EdgeInsets.all(10),
-          alignment: Alignment.centerLeft,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _mapInfoTile(TileColors.using, "授業等で使用中の部屋"),
-              _mapInfoTile(TileColors.toilet, 'トイレ及び給湯室'),
-              _mapInfoTile(Colors.red, '検索結果'),
-            ],
-          ),
-        ),
-      ),
+    return Consumer(
+      builder: (context, ref, child) {
+        final mapViewTransformationController =
+            ref.watch(mapViewTransformationControllerProvider);
+        return Visibility(
+            visible:
+                mapViewTransformationController.value.getMaxScaleOnAxis() <=
+                    1.5,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20, bottom: 20),
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+                  height: 80,
+                  width: 200,
+                  color: Colors.grey.shade400.withOpacity(0.8),
+                  padding: const EdgeInsets.all(10),
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _mapInfoTile(TileColors.using, "授業等で使用中の部屋"),
+                      _mapInfoTile(TileColors.toilet, 'トイレ及び給湯室'),
+                      _mapInfoTile(Colors.red, '検索結果'),
+                    ],
+                  ),
+                ),
+              ),
+            ));
+      },
     );
   }
 
