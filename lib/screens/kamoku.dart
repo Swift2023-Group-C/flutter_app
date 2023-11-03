@@ -179,6 +179,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
               ),
               ElevatedButton(
                   onPressed: () async {
+                    FocusScope.of(context).unfocus();
                     List<Map<String, dynamic>> records = await search(
                         term: termCheckedList,
                         senmon: senmonKyoyoStatus == 0,
