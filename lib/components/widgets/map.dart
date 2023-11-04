@@ -503,7 +503,7 @@ abstract final class GridMaps {
       Tile(2, 1, TileType.road, bottom: 1),
       Tile(2, 1, TileType.road),
       Tile(6, 6, TileType.road),
-      Tile(12, 6, TileType.otherroom,
+      Tile(12, 6, TileType.classroom,
           classroomNo: '50', txt: 'アトリエ', left: 1, bottom: 1), //アトリエ
       Tile(18, 1, TileType.road),
       Tile(6, 5, TileType.road, left: 1, bottom: 1, txt: 'プレゼンテーションベイB'),
