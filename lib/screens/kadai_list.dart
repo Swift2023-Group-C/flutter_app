@@ -449,16 +449,13 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               minLeadingWidth: 0,
               leading: Column(
                 children: [
-                  const SizedBox(
-                    height: 5,
-                    width: 5,
+                  Icon(
+                    alertList.contains(kadai.id)
+                        ? Icons.notifications_active
+                        : null,
+                    size: 20,
+                    color: Colors.green,
                   ),
-                  if (alertList.contains(kadai.id))
-                    const Icon(
-                      Icons.notifications_active,
-                      size: 20,
-                      color: Colors.green,
-                    ),
                 ],
               ),
               onTap: () {
@@ -475,10 +472,11 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             startActionPane: tmpKadaiStartSlidable(data[index]),
             endActionPane: tmpKadaiEndSlidable(data[index]),
             child: ExpansionTile(
+              childrenPadding: const EdgeInsets.all(0),
               onExpansionChanged: null,
               title: Row(
                 children: [
-                  const SizedBox(width: 20),
+                  const SizedBox(width: 36),
                   if (listAllCheck(finishList, data[index]))
                     const Icon(
                       Icons.military_tech,
@@ -496,7 +494,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               ),
               subtitle: Row(
                 children: [
-                  const SizedBox(width: 20),
+                  const SizedBox(width: 36),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,19 +537,18 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                         startActionPane: _kadaiStartSlidable(kadai),
                         endActionPane: _kadaiEndSlidable(kadai),
                         child: ListTile(
-                          minLeadingWidth: 10,
+                          minLeadingWidth: 0,
                           leading: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const SizedBox(
-                                height: 22,
-                                width: 5,
+                              Icon(
+                                alertList.contains(kadai.id)
+                                    ? Icons.notifications_active
+                                    : null,
+                                size: 20,
+                                color: Colors.green,
                               ),
-                              if (alertList.contains(kadai.id))
-                                const Icon(
-                                  Icons.notifications_active,
-                                  size: 20,
-                                  color: Colors.green,
-                                ),
                             ],
                           ),
                           title: Text(
