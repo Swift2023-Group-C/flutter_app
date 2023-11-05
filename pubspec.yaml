@@ -54,6 +54,7 @@ dependencies:
   path: ^1.8.3
   flutter_slidable: ^3.0.0
   flutter_rating_bar: ^4.0.1
+  flutter_datetime_picker_plus: ^2.1.0
 
 dev_dependencies:
   flutter_test:
