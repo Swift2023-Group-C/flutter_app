@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/repository/download_file_from_firebase.dart';
+import 'package:flutter_app/repository/get_application_path.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_app/components/s3.dart';
@@ -9,12 +11,18 @@ import 'dart:typed_data';
 import 'package:flutter_app/components/widgets/progress_indicator.dart';
 import 'package:share_plus/share_plus.dart';
 
+enum StorageService { cloudflare, firebase }
+
 class KakomonObjectScreen extends StatefulWidget {
   const KakomonObjectScreen(
-      {Key? key, required this.url, required this.filename})
+      {Key? key,
+      required this.url,
+      required this.filename,
+      required this.storage})
       : super(key: key);
   final String url;
   final String filename;
+  final StorageService storage;
 
   @override
   State<KakomonObjectScreen> createState() => _KakomonObjectScreenState();
@@ -33,8 +41,13 @@ class _KakomonObjectScreenState extends State<KakomonObjectScreen> {
             icon: const Icon(Icons.share),
             onPressed: () async {
               if (dataUint != null) {
-                final temp = await getTemporaryDirectory();
-                final path = '${temp.path}/${widget.filename}';
+                String path = '';
+                if (widget.storage == StorageService.cloudflare) {
+                  final temp = await getTemporaryDirectory();
+                  path = '${temp.path}/${widget.filename}';
+                } else {
+                  path = await getApplicationFilePath(widget.url);
+                }
                 File(path).writeAsBytesSync(dataUint as List<int>);
                 await Share.shareXFiles([XFile(path)]);
               }
@@ -55,14 +68,22 @@ class _KakomonObjectScreenState extends State<KakomonObjectScreen> {
   }
 
   Future<Uint8List> getListObjectsString() async {
-    final stream = await S3.instance.getObject(url: widget.url);
-    List<int> memory = [];
+    if (widget.storage == StorageService.cloudflare) {
+      final stream = await S3.instance.getObject(url: widget.url);
+      List<int> memory = [];
 
-    await for (var value in stream) {
-      memory.addAll(value);
+      await for (var value in stream) {
+        memory.addAll(value);
+      }
+      dataUint = Uint8List.fromList(memory);
+      return Uint8List.fromList(memory);
+    } else {
+      String filePath = '';
+      await downloadFileFromFirebase(widget.url).then((value) async =>
+          {filePath = await getApplicationFilePath(widget.url)});
+      dataUint = await File(filePath).readAsBytes();
+      return await File(filePath).readAsBytes();
     }
-    dataUint = Uint8List.fromList(memory);
-    return Uint8List.fromList(memory);
   }
 }
 
