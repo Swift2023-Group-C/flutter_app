@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
       '前期時間割': 'home/timetable_first.pdf',
       '後期時間割': 'home/timetable_second.pdf',
       '学年歴': 'home/academic_calendar.pdf',
-      'バス時刻表': 'home/hakodatebus.pdf'
+      'バス時刻表': 'home/hakodatebus55.pdf'
     };
     return Scaffold(
       body: Center(
