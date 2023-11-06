@@ -126,8 +126,11 @@ class _FeedbackListState extends State<FeedbackList> {
                             Colors.green,
                             _percentageOfRating(documents, 5),
                           ),
-                          _buildRatingBar(4, Colors.green,
-                              _percentageOfRating(documents, 4)),
+                          _buildRatingBar(
+                            4,
+                            Colors.green,
+                            _percentageOfRating(documents, 4),
+                          ),
                           _buildRatingBar(
                             3,
                             Colors.yellow,
@@ -158,12 +161,17 @@ class _FeedbackListState extends State<FeedbackList> {
                       final detail = document.get('detail');
                       final score = (document.get('score') ?? 0).toDouble();
 
+                      if (detail == null || detail.toString().trim().isEmpty) {
+                        return const SizedBox
+                            .shrink(); // detailがnullまたは空の場合は何も表示しない
+                      }
+
                       return Container(
                         decoration: const BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                                color:
-                                    Color.fromARGB(255, 211, 211, 211)), //区切り線
+                              color: Color.fromARGB(255, 211, 211, 211), // 区切り線
+                            ),
                           ),
                         ),
                         child: ListTile(
