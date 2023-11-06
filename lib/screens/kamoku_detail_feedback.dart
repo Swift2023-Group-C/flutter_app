@@ -61,7 +61,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
 
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
-    final dialogHeight = deviceHeight * 0.32;
+    final dialogHeight = deviceHeight * 0.33;
     final dialogWidth = deviceWidth;
     print(deviceHeight);
     print(deviceWidth);
@@ -96,7 +96,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               child: Text(
                                 '満足度(必須)',
                                 style: TextStyle(
-                                    fontSize: dialogWidth * 0.05,
+                                    fontSize: dialogWidth * 0.045,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -111,7 +111,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               onRatingUpdate: (rating) {
                                 selectedScore = rating;
                               },
-                              itemSize: dialogWidth * 0.1,
+                              itemSize: dialogWidth * 0.09,
                             ),
                           ],
                         ),
