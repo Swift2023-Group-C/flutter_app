@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/components/kadai.dart';
 import 'package:flutter_app/repository/firebase_get_kadai.dart';
@@ -9,6 +12,7 @@ import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_app/screens/kadai_hidden_list.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class KadaiListScreen extends StatefulWidget {
   const KadaiListScreen({Key? key}) : super(key: key);
@@ -28,6 +32,91 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   String? userKey;
   var deepEq = const DeepCollectionEquality().equals;
   //ScrollController _scrollController = ScrollController();
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  void _requestIOSPermission() {
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+  }
+
+  void _requestAndroidPermission() {
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!
+        .requestNotificationsPermission();
+  }
+
+  Future<void> initNotification() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    final DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      onDidReceiveLocalNotification: (id, title, body, payload) async {},
+    );
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) {
+        debugPrint('payload:${details.payload}');
+      },
+    );
+  }
+
+  Future<int> _getPendingNotificationCount() async {
+    List<PendingNotificationRequest> p =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    return p.length;
+  }
+
+  Future<void> _zonedScheduleNotification(Kadai kadai) async {
+    DateTime t = kadai.endtime!;
+    // iは通知のID 同じ数字を使うと上書きされる
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate =
+        tz.TZDateTime(tz.local, now.year, t.month, t.day, t.hour, t.minute)
+            .subtract(const Duration(days: 1));
+    debugPrint(scheduledDate.toString());
+    if (scheduledDate.isBefore(now)) {
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+          kadai.id!,
+          '${kadai.courseName}「${kadai.name}」',
+          '締切1日前です',
+          scheduledDate,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'your channel id',
+              'your channel name',
+              importance: Importance.max,
+              priority: Priority.high,
+            ),
+            iOS: DarwinNotificationDetails(),
+          ),
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime);
+    }
+  }
+
+  Future<void> _cancelNotification(int i) async {
+    //IDを指定して通知をキャンセル
+    await flutterLocalNotificationsPlugin.cancel(i);
+  }
 
   void launchUrlInExternal(Uri url) async {
     if (await canLaunchUrl(url)) {
@@ -177,6 +266,12 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   @override
   void initState() {
     super.initState();
+    if (Platform.isIOS) {
+      _requestIOSPermission();
+    } else if (Platform.isAndroid) {
+      _requestAndroidPermission();
+    }
+    initNotification();
     loadFinishList();
     loadAlertList();
     loadDeleteList();
@@ -201,11 +296,17 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 alertList.removeWhere((item) => item == kadai.id);
                 saveAlertList();
               });
+              if (kadai.id != null) {
+                _cancelNotification(kadai.id!);
+              }
             } else {
               setState(() {
                 alertList.add(kadai.id!);
                 saveAlertList();
               });
+              if (kadai.endtime != null && kadai.id != null) {
+                _zonedScheduleNotification(kadai);
+              }
             }
           },
         ),
