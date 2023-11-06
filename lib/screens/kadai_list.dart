@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/widgets/map.dart';
+import 'dart:io';
+
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/components/kadai.dart';
 import 'package:flutter_app/repository/firebase_get_kadai.dart';
@@ -10,6 +11,8 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter_app/screens/kadai_hidden_list.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class KadaiListScreen extends StatefulWidget {
   const KadaiListScreen({Key? key}) : super(key: key);
@@ -23,10 +26,97 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   List<int> alertList = [];
   List<int> deleteList = [];
   List<KadaiList> data = [];
+  List<KadaiList> delete = [];
   List<KadaiList> filteredData = [];
+  List<Kadai> deletedKadai = [];
   String? userKey;
   var deepEq = const DeepCollectionEquality().equals;
-  ScrollController _scrollController = ScrollController();
+  //ScrollController _scrollController = ScrollController();
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  void _requestIOSPermission() {
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+  }
+
+  void _requestAndroidPermission() {
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!
+        .requestNotificationsPermission();
+  }
+
+  Future<void> initNotification() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    final DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      onDidReceiveLocalNotification: (id, title, body, payload) async {},
+    );
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) {
+        debugPrint('payload:${details.payload}');
+      },
+    );
+  }
+
+  Future<int> _getPendingNotificationCount() async {
+    List<PendingNotificationRequest> p =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    return p.length;
+  }
+
+  Future<void> _zonedScheduleNotification(Kadai kadai) async {
+    DateTime t = kadai.endtime!;
+    // iは通知のID 同じ数字を使うと上書きされる
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate =
+        tz.TZDateTime(tz.local, now.year, t.month, t.day, t.hour, t.minute)
+            .subtract(const Duration(days: 1));
+    debugPrint(scheduledDate.toString());
+    if (scheduledDate.isBefore(now)) {
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+          kadai.id!,
+          '${kadai.courseName}「${kadai.name}」',
+          '締切1日前です',
+          scheduledDate,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'your channel id',
+              'your channel name',
+              importance: Importance.max,
+              priority: Priority.high,
+            ),
+            iOS: DarwinNotificationDetails(),
+          ),
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime);
+    }
+  }
+
+  Future<void> _cancelNotification(int i) async {
+    //IDを指定して通知をキャンセル
+    await flutterLocalNotificationsPlugin.cancel(i);
+  }
 
   void launchUrlInExternal(Uri url) async {
     if (await canLaunchUrl(url)) {
@@ -75,12 +165,17 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     await UserPreferences.setDeleteList(json.encode(deleteList));
   }
 
-  void _resetDeleteList() {
+  /*void _resetDeleteList() {
     setState(() {
+      finishList.clear();
+      alertList.clear();
       deleteList.clear();
+      delete.clear();
       saveDeleteList();
+      saveAlertList();
+      saveFinishList();
     });
-  }
+  }*/
 
   Future<void> getUserKey() async {
     userKey = await UserPreferences.getUserKey();
@@ -104,7 +199,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               Text('${kadai.name}'),
             ],
           ),
-          content: Text('このタスクを削除しますか？'),
+          content: const Text('このタスクを削除しますか？'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -115,7 +210,9 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  deleteList.add(kadai.id!);
+                  if (!deleteList.contains(kadai.id)) {
+                    deleteList.add(kadai.id!);
+                  }
                   saveDeleteList();
                 });
                 Navigator.of(context).pop();
@@ -169,6 +266,12 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   @override
   void initState() {
     super.initState();
+    if (Platform.isIOS) {
+      _requestIOSPermission();
+    } else if (Platform.isAndroid) {
+      _requestAndroidPermission();
+    }
+    initNotification();
     loadFinishList();
     loadAlertList();
     loadDeleteList();
@@ -193,11 +296,17 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 alertList.removeWhere((item) => item == kadai.id);
                 saveAlertList();
               });
+              if (kadai.id != null) {
+                _cancelNotification(kadai.id!);
+              }
             } else {
               setState(() {
                 alertList.add(kadai.id!);
                 saveAlertList();
               });
+              if (kadai.endtime != null && kadai.id != null) {
+                _zonedScheduleNotification(kadai);
+              }
             }
           },
         ),
@@ -401,19 +510,10 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             startActionPane: _kadaiStartSlidable(kadai),
             endActionPane: _kadaiEndSlidable(kadai),
             child: ListTile(
-              tileColor: endtimeCheck(data[index])
-                  ? Color.fromARGB(106, 246, 153, 147)
-                  : Colors.white,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               title: Row(
                 children: [
-                  if (finishList.contains(kadai.id))
-                    const Icon(
-                      Icons.military_tech,
-                      size: 30,
-                      color: Colors.yellow,
-                    ),
                   Expanded(
                     child: Text(
                       kadai.name!,
@@ -441,7 +541,9 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                         fontSize: 12,
                         color: finishList.contains(kadai.id)
                             ? Colors.green
-                            : Colors.black45,
+                            : endtimeCheck(data[index])
+                                ? Colors.red
+                                : Colors.black54,
                       ),
                     ),
                 ],
@@ -477,12 +579,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               title: Row(
                 children: [
                   const SizedBox(width: 36),
-                  if (listAllCheck(finishList, data[index]))
-                    const Icon(
-                      Icons.military_tech,
-                      size: 30,
-                      color: Colors.yellow,
-                    ),
                   Expanded(
                     child: Text(
                       data[index].courseName,
@@ -575,6 +671,26 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     );
   }
 
+  Widget animation(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    const Offset begin = Offset(1.0, 0.0); // 開始位置（画面外から）
+    const Offset end = Offset.zero; // 終了位置（画面内へ）
+    final Animatable<Offset> tween = Tween(begin: begin, end: end)
+        .chain(CurveTween(curve: Curves.easeInOut));
+    final Animation<Offset> offsetAnimation = animation.drive(tween);
+
+    // お洒落なアニメーションの追加例
+    return FadeTransition(
+      // フェードインしながらスライド
+      opacity: animation, // フェード用のアニメーション
+      child: SlideTransition(
+        // スライド
+        position: offsetAnimation, // スライド用のアニメーション
+        child: child, // 子ウィジェット
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -585,10 +701,34 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           iconTheme: const IconThemeData(
             color: Color.fromRGBO(34, 34, 34, 1),
           ),
-          leading: TextButton(
+          /*leading: TextButton(
             onPressed: _resetDeleteList,
             child: const Text("リセット"),
-          ),
+          ),*/
+          actions: [
+            TextButton(
+              onPressed: () async {
+                final result = await Navigator.of(context).push(
+                  PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          KadaiHiddenScreen(deletedKadaiLists: delete),
+                      transitionsBuilder: animation),
+                );
+
+                // 画面遷移から戻ってきた際の処理
+                if (result == "back") {
+                  setState(() {
+                    loadDeleteList();
+                    const FirebaseGetKadai().getKadaiFromFirebase();
+                  });
+                }
+              },
+              child: const Text(
+                "非表示リスト →",
+                style: TextStyle(fontSize: 20),
+              ),
+            )
+          ],
         ),
         body: RefreshIndicator(
           edgeOffset: 50,
@@ -608,6 +748,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 AsyncSnapshot<List<KadaiList>>? snapshot,
               ) {
                 if (snapshot!.hasData) {
+                  delete = snapshot.data!;
                   return _kadaiListView(snapshot.data!);
                 } else if (snapshot.hasError) {
                   return ListView(

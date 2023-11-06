@@ -55,6 +55,9 @@ dependencies:
   flutter_slidable: ^3.0.0
   flutter_rating_bar: ^4.0.1
   flutter_datetime_picker_plus: ^2.1.0
+  collection: ^1.17.2
+  flutter_local_notifications: ^16.1.0
+  timezone: ^0.9.2
 
 dev_dependencies:
   flutter_test:
