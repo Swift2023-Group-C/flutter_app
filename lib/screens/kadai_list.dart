@@ -92,7 +92,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
         tz.TZDateTime(tz.local, now.year, t.month, t.day, t.hour, t.minute)
             .subtract(const Duration(days: 1));
     debugPrint(scheduledDate.toString());
-    if (scheduledDate.isBefore(now)) {
+    if (scheduledDate.isAfter(now)) {
       await flutterLocalNotificationsPlugin.zonedSchedule(
           kadai.id!,
           '${kadai.courseName}「${kadai.name}」',
@@ -185,7 +185,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     if (dt == null) {
       return "";
     }
-    return DateFormat('yyyy年MM月dd日 hh時mm分ss秒').format(dt);
+    return DateFormat('yyyy年MM月dd日 HH時mm分ss秒').format(dt);
   }
 
   void _showDeleteConfirmation(Kadai kadai) {
