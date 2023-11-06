@@ -115,13 +115,17 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                           padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
                           child: Text(
                             showErrorMessage ? '満足度が入力されていません' : '',
-                            style: const TextStyle(
-                                color: Colors.red, fontSize: 10),
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontSize: deviceHeight * 0.01),
                           ),
                         ),
-                        const Align(
+                        Align(
                           alignment: Alignment.centerLeft,
-                          child: Text('フィードバック (推奨)'),
+                          child: Text(
+                            'フィードバック (推奨)',
+                            style: TextStyle(fontSize: deviceHeight * 0.02),
+                          ),
                         ),
                         SizedBox(
                           width: deviceWidth * 0.9,
@@ -129,9 +133,11 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                             maxLines: 3,
                             maxLength: 30,
                             keyboardType: TextInputType.multiline,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
                               hintText: '単位、出席、テストの情報など...',
+                              hintStyle:
+                                  TextStyle(fontSize: deviceHeight * 0.02),
                             ),
                             controller: detailController,
                           ),
