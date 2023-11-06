@@ -61,6 +61,8 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
 
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
+    print(deviceHeight);
+    print(deviceWidth);
 
     showDialog(
         barrierDismissible: false,
@@ -85,12 +87,12 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            const Align(
+                            Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 '満足度(必須)',
                                 style: TextStyle(
-                                    fontSize: 16.0,
+                                    fontSize: deviceWidth / 20,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -105,6 +107,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               onRatingUpdate: (rating) {
                                 selectedScore = rating;
                               },
+                              itemSize: deviceWidth / 10,
                             ),
                           ],
                         ),
@@ -138,9 +141,10 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                           children: <Widget>[
                             TextButton(
                               style: TextButton.styleFrom(
-                                fixedSize: const Size(100, 20),
+                                fixedSize: Size(
+                                    deviceWidth * 0.25, deviceHeight * 0.02),
                                 side: const BorderSide(
-                                  color: Colors.red, // 色// 太さ
+                                  color: Colors.red, // 色 // 太さ
                                 ),
                               ),
                               onPressed: () {
@@ -149,10 +153,11 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               },
                               child: const Text('閉じる'),
                             ),
-                            const SizedBox(width: 30),
+                            SizedBox(width: deviceWidth * 0.1),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                fixedSize: const Size(150, 20),
+                                fixedSize: Size(
+                                    deviceWidth * 0.37, deviceHeight * 0.02),
                               ),
                               onPressed: () async {
                                 //以下処理
