@@ -27,6 +27,7 @@ class _KakomonListObjectsState extends State<KakomonListObjects> {
                   return KakomonObjectScreen(
                     url: widget.url,
                     filename: filename,
+                    storage: StorageService.cloudflare,
                   );
                 },
                 transitionsBuilder:

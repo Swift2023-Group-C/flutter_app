@@ -67,25 +67,6 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
     });
   }
 
-  /*
-  void toggleAll() {
-    setState(() {
-      allSelected = !allSelected; // 全選択ボタンの状態を切り替える
-      // boolListのすべての要素をallSelectedの値に合わせて設定
-      termCheckedList =
-          List.generate(termCheckedList.length, (index) => allSelected);
-      gradeCheckedList =
-          List.generate(gradeCheckedList.length, (index) => allSelected);
-      courseStrCheckedList =
-          List.generate(courseStrCheckedList.length, (index) => allSelected);
-      classificationCheckedList = List.generate(
-          classificationCheckedList.length, (index) => allSelected);
-      educationCheckedList =
-          List.generate(educationCheckedList.length, (index) => allSelected);
-    });
-  }
-  */
-
   void falseAll() {
     setState(() {
       senmonKyoyoStatus = -1;
@@ -173,6 +154,8 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                     TextButton(
                         onPressed: () {
                           falseAll();
+                          _controller.clear();
+                          word = '';
                         },
                         child: const Text('リセット')),
                   ])
@@ -215,9 +198,13 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 24),
                       ))),
-              _searchResults == null
-                  ? Container()
-                  : SearchResults(records: _searchResults!),
+              if (_searchResults != null)
+                if (_searchResults!.isNotEmpty)
+                  SearchResults(records: _searchResults!)
+                else
+                  const Center(
+                    child: Text('検索結果は見つかりませんでした'),
+                  ),
             ],
           ),
         ),
@@ -283,37 +270,4 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
       ),
     );
   }
-  /*チェックボックスが枠内に収まるバージョン
-  Widget buildFilterRow(List<String> items, List<bool> checkedList) {
-  return Align(
-    alignment: const AlignmentDirectional(-1.00, 0.00),
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          for (int i = 0; i < items.length; i++)
-            Row(
-              children: [
-                Checkbox(
-                  value: checkedList[i],
-                  onChanged: (bool? value) {
-                    setState(() {
-                      checkedList[i] = value ?? false;
-                    });
-                  },
-                  visualDensity: VisualDensity(
-                    horizontal: -4, // チェックボックスの幅を小さく調整
-                    vertical: -4, // チェックボックスの高さを小さく調整
-                  ),
-                ),
-                Text(items[i]),
-              ],
-            ),
-          const SizedBox(width: 20),
-        ],
-      ),
-    ),
-  );
-}*/
 }

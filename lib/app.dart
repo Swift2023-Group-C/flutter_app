@@ -138,7 +138,7 @@ class _BasePageState extends ConsumerState<BasePage> {
   TabItem currentTab = TabItem.home;
   String appBarTitle = '';
 
-  Future<Map<String, bool>> setUsingColor() async {
+  Future<Map<String, bool>> setUsingColor(DateTime dateTime) async {
     final Map<String, bool> classroomNoFloorMap = {
       "1": false,
       "2": false,
@@ -167,7 +167,7 @@ class _BasePageState extends ConsumerState<BasePage> {
     Map<String, DateTime>? resourceIds;
     try {
       String fileContent = await readJsonFile(scheduleFilePath);
-      resourceIds = findRoomsInUse(fileContent);
+      resourceIds = findRoomsInUse(fileContent, dateTime);
     } catch (e) {
       debugPrint(e.toString());
       return classroomNoFloorMap;
@@ -189,7 +189,9 @@ class _BasePageState extends ConsumerState<BasePage> {
 
     if (selectedTab == TabItem.map) {
       final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
-      mapUsingMapNotifier.state = await setUsingColor();
+      final searchDatetimeNotifier = ref.watch(searchDatetimeProvider.notifier);
+      searchDatetimeNotifier.state = DateTime.now();
+      mapUsingMapNotifier.state = await setUsingColor(DateTime.now());
     }
     if (currentTab == selectedTab) {
       _navigatorKeys[selectedTab]!
