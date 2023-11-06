@@ -61,8 +61,12 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
 
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
+    final dialogHeight = deviceHeight * 0.32;
+    final dialogWidth = deviceWidth;
     print(deviceHeight);
     print(deviceWidth);
+    print(dialogHeight);
+    print(dialogWidth);
 
     showDialog(
         barrierDismissible: false,
@@ -80,8 +84,8 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   content: SizedBox(
-                    height: deviceHeight * 0.35,
-                    width: deviceWidth,
+                    height: dialogHeight,
+                    width: dialogWidth,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
@@ -92,7 +96,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               child: Text(
                                 '満足度(必須)',
                                 style: TextStyle(
-                                    fontSize: deviceWidth / 20,
+                                    fontSize: dialogWidth * 0.05,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -107,7 +111,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               onRatingUpdate: (rating) {
                                 selectedScore = rating;
                               },
-                              itemSize: deviceWidth / 10,
+                              itemSize: dialogWidth * 0.1,
                             ),
                           ],
                         ),
@@ -117,27 +121,27 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                             showErrorMessage ? '満足度が入力されていません' : '',
                             style: TextStyle(
                                 color: Colors.red,
-                                fontSize: deviceHeight * 0.01),
+                                fontSize: dialogHeight * 0.05),
                           ),
                         ),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'フィードバック (推奨)',
-                            style: TextStyle(fontSize: deviceHeight * 0.02),
+                            style: TextStyle(fontSize: dialogHeight * 0.05),
                           ),
                         ),
                         SizedBox(
                           width: deviceWidth * 0.9,
                           child: TextFormField(
-                            maxLines: 3,
+                            maxLines: 2,
                             maxLength: 30,
                             keyboardType: TextInputType.multiline,
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
                               hintText: '単位、出席、テストの情報など...',
                               hintStyle:
-                                  TextStyle(fontSize: deviceHeight * 0.02),
+                                  TextStyle(fontSize: dialogHeight * 0.05),
                             ),
                             controller: detailController,
                           ),
@@ -148,7 +152,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                             TextButton(
                               style: TextButton.styleFrom(
                                 fixedSize: Size(
-                                    deviceWidth * 0.25, deviceHeight * 0.02),
+                                    dialogWidth * 0.25, dialogHeight * 0.05),
                                 side: const BorderSide(
                                   color: Colors.red, // 色 // 太さ
                                 ),
@@ -163,7 +167,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 fixedSize: Size(
-                                    deviceWidth * 0.37, deviceHeight * 0.02),
+                                    dialogWidth * 0.37, dialogHeight * 0.05),
                               ),
                               onPressed: () async {
                                 //以下処理
