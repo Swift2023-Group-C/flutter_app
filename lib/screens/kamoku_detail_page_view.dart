@@ -21,6 +21,8 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
+    final deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.lessonName),
@@ -28,7 +30,7 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
       body: Column(
         children: [
           SizedBox(
-            height: 50.0,
+            height: deviceHeight * 0.06,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(
@@ -42,7 +44,7 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
                     );
                   },
                   child: Container(
-                    width: 120.0,
+                    width: deviceWidth * 0.3,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       border: Border(
@@ -50,14 +52,14 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
                           color: index == _currentPageIndex
                               ? customFunColor.shade400
                               : Colors.transparent, // 非選択時は透明
-                          width: 2.0,
+                          width: deviceWidth * 0.005,
                         ),
                       ),
                     ),
                     child: Text(
                       _getPageName(index),
                       style: TextStyle(
-                        fontSize: 16.0,
+                        fontSize: deviceWidth / 25,
                         fontWeight: FontWeight.bold,
                         color: index == _currentPageIndex
                             ? customFunColor.shade400
