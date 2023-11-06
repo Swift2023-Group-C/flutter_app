@@ -5,6 +5,8 @@ import 'package:flutter_app/app.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,5 +15,12 @@ Future<void> main() async {
   // 画面の向きを固定.
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  await _configureLocalTimeZone();
+
   runApp(const ProviderScope(child: MyApp()));
+}
+
+Future<void> _configureLocalTimeZone() async {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Asia/Tokyo'));
 }
