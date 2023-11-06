@@ -57,6 +57,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
   void _showCustomDialog(BuildContext context) {
     // ダイアログを開くたびにエラーメッセージをリセット
     showErrorMessage = false;
+    detailController.clear();
 
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
@@ -139,14 +140,14 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               style: TextButton.styleFrom(
                                 fixedSize: const Size(100, 20),
                                 side: const BorderSide(
-                                  color: Colors.red, //色//太さ
+                                  color: Colors.red, // 色// 太さ
                                 ),
                               ),
                               onPressed: () {
-                                selectedScore = null; // これを追加します
+                                selectedScore = null;
                                 Navigator.of(context).pop();
                               },
-                              child: const Text('Close'),
+                              child: const Text('閉じる'),
                             ),
                             const SizedBox(width: 30),
                             ElevatedButton(
@@ -204,7 +205,6 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                                     showErrorMessage = true;
                                   });
                                 }
-                                detailController.clear();
                               },
                               child: const Text('投稿する'),
                             ),
