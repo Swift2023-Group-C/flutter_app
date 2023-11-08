@@ -7,6 +7,7 @@ import 'package:flutter_app/components/setting_user_info.dart';
 import 'dart:convert';
 import 'package:flutter_app/repository/firebase_get_kadai.dart';
 import 'package:flutter_app/components/color_fun.dart';
+import 'package:flutter_app/components/color_fun.dart';
 
 class KadaiHiddenScreen extends StatefulWidget {
   const KadaiHiddenScreen({
@@ -78,11 +79,7 @@ class _KadaiHiddenScreenState extends State<KadaiHiddenScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        bottomOpacity: 0.0,
-        elevation: 0.0,
-        backgroundColor: Colors.white10,
-        title: const Text('非表示リスト'),
-        actions: [
+        /*actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop("back"); // 画面遷移から戻り値を指定
@@ -90,18 +87,16 @@ class _KadaiHiddenScreenState extends State<KadaiHiddenScreen> {
             child: const Text("← 一覧に戻る",
                 style: TextStyle(fontSize: 20, color: customFunColor)),
           ),
-        ],
-
-        /*actions: [
-          TextButton(
-            onPressed: () {
-              print(hiddenKadai);
-              setState(() {});
-              ///print(widget.deletedKadaiLists);
-            },
-            child: Text("data"),
-          )
         ],*/
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop("back"); // 画面遷移から戻り値を指定
+          },
+          icon: const Icon(
+            Icons.arrow_back,
+            size: 20,
+          ),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -117,7 +112,7 @@ class _KadaiHiddenScreenState extends State<KadaiHiddenScreen> {
             ? const Center(
                 child: Text(
                   "非表示なし",
-                  style: TextStyle(fontSize: 50),
+                  style: TextStyle(fontSize: 30),
                 ),
               )
             : ListView.builder(

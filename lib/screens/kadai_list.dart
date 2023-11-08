@@ -85,6 +85,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> _zonedScheduleNotification(Kadai kadai) async {
+    print("${kadai.id}を通知します");
     DateTime t = kadai.endtime!;
     // iは通知のID 同じ数字を使うと上書きされる
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
@@ -114,6 +115,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> _cancelNotification(int i) async {
+    print("${i}の通知キャンセルします");
     //IDを指定して通知をキャンセル
     await flutterLocalNotificationsPlugin.cancel(i);
   }
@@ -213,6 +215,15 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                   if (!deleteList.contains(kadai.id)) {
                     deleteList.add(kadai.id!);
                   }
+                  if (alertList.contains(kadai.id)) {
+                    setState(() {
+                      alertList.removeWhere((item) => item == kadai.id);
+                      saveAlertList();
+                    });
+                    if (kadai.id != null) {
+                      _cancelNotification(kadai.id!);
+                    }
+                  }
                   saveDeleteList();
                 });
                 Navigator.of(context).pop();
@@ -250,6 +261,15 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 setState(() {
                   for (Kadai kadai in listkadai.listKadai) {
                     deleteList.add(kadai.id!);
+                    if (alertList.contains(kadai.id)) {
+                      setState(() {
+                        alertList.removeWhere((item) => item == kadai.id);
+                        saveAlertList();
+                      });
+                      if (kadai.id != null) {
+                        _cancelNotification(kadai.id!);
+                      }
+                    }
                   }
                   saveDeleteList();
                 });
@@ -321,6 +341,15 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
       dismissible: DismissiblePane(onDismissed: () {
         setState(() {
           deleteList.add(kadai.id!);
+          if (alertList.contains(kadai.id)) {
+            setState(() {
+              alertList.removeWhere((item) => item == kadai.id);
+              saveAlertList();
+            });
+            if (kadai.id != null) {
+              _cancelNotification(kadai.id!);
+            }
+          }
           saveDeleteList();
         });
       }),
@@ -400,6 +429,9 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               setState(() {
                 for (Kadai kadai in kadaiList.hiddenKadai(deleteList)) {
                   alertList.removeWhere((item) => item == kadai.id);
+                  if (kadai.id != null) {
+                    _cancelNotification(kadai.id!);
+                  }
                 }
                 saveAlertList();
               });
@@ -407,6 +439,9 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               setState(() {
                 for (Kadai kadai in kadaiList.hiddenKadai(deleteList)) {
                   alertList.add(kadai.id!);
+                  if (kadai.endtime != null && kadai.id != null) {
+                    _zonedScheduleNotification(kadai);
+                  }
                 }
                 saveAlertList();
               });
@@ -425,6 +460,15 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
         setState(() {
           for (Kadai kadai in kadaiList.hiddenKadai(deleteList)) {
             deleteList.add(kadai.id!);
+            if (alertList.contains(kadai.id)) {
+              setState(() {
+                alertList.removeWhere((item) => item == kadai.id);
+                saveAlertList();
+              });
+              if (kadai.id != null) {
+                _cancelNotification(kadai.id!);
+              }
+            }
           }
           saveDeleteList();
         });
@@ -695,17 +739,28 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          bottomOpacity: 0.0,
-          elevation: 0.0,
-          backgroundColor: Colors.white10,
-          iconTheme: const IconThemeData(
-            color: Color.fromRGBO(34, 34, 34, 1),
-          ),
           /*leading: TextButton(
             onPressed: _resetDeleteList,
             child: const Text("リセット"),
           ),*/
           actions: [
+            /*IconButton(
+                onPressed: () async {
+                  final result = await Navigator.of(context).push(
+                    PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            KadaiHiddenScreen(deletedKadaiLists: delete),
+                        transitionsBuilder: animation),
+                  );
+                  // 画面遷移から戻ってきた際の処理
+                  if (result == "back") {
+                    setState(() {
+                      loadDeleteList();
+                      const FirebaseGetKadai().getKadaiFromFirebase();
+                    });
+                  }
+                },
+                icon: const Icon(Icons.arrow_forward))*/
             TextButton(
               onPressed: () async {
                 final result = await Navigator.of(context).push(
@@ -725,7 +780,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
               },
               child: const Text(
                 "非表示リスト →",
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20, color: Colors.white),
               ),
             )
           ],
