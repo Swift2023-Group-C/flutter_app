@@ -5,6 +5,7 @@ import 'package:flutter_app/firebase_options.dart';
 import 'package:flutter_app/repository/get_feedbacklist.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_app/components/color_fun.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -99,7 +100,8 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                                   '満足度(必須)',
                                   style: TextStyle(
                                       fontSize: dialogHeight * 0.06,
-                                      fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                      color: customFunColor),
                                 ),
                               ),
                               SizedBox(width: dialogWidth * 0.1),
@@ -157,10 +159,12 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               SizedBox(
                                 width: dialogWidth * 0.3,
                                 height: dialogHeight * 0.15,
-                                child: TextButton(
+                                child: ElevatedButton(
                                   style: TextButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: customFunColor,
                                     side: const BorderSide(
-                                      color: Colors.red, // 色 // 太さ
+                                      color: customFunColor, // 色 // 太さ
                                     ),
                                   ),
                                   onPressed: () {
@@ -175,12 +179,6 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                                 width: dialogWidth * 0.3,
                                 height: dialogHeight * 0.15,
                                 child: ElevatedButton(
-                                  /*
-                                style: ElevatedButton.styleFrom(
-                                  fixedSize: Size(
-                                      dialogWidth * 0.37, dialogHeight * 0.01),
-                                ),
-                                */
                                   onPressed: () async {
                                     //以下処理
                                     final String? userKey =
