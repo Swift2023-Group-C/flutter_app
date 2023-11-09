@@ -739,28 +739,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          /*leading: TextButton(
-            onPressed: _resetDeleteList,
-            child: const Text("リセット"),
-          ),*/
           actions: [
-            /*IconButton(
-                onPressed: () async {
-                  final result = await Navigator.of(context).push(
-                    PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            KadaiHiddenScreen(deletedKadaiLists: delete),
-                        transitionsBuilder: animation),
-                  );
-                  // 画面遷移から戻ってきた際の処理
-                  if (result == "back") {
-                    setState(() {
-                      loadDeleteList();
-                      const FirebaseGetKadai().getKadaiFromFirebase();
-                    });
-                  }
-                },
-                icon: const Icon(Icons.arrow_forward))*/
             TextButton(
               onPressed: () async {
                 final result = await Navigator.of(context).push(

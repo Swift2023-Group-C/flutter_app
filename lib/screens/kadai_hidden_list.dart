@@ -6,8 +6,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 import 'dart:convert';
 import 'package:flutter_app/repository/firebase_get_kadai.dart';
-import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/components/color_fun.dart';
 
 class KadaiHiddenScreen extends StatefulWidget {
   const KadaiHiddenScreen({
@@ -77,17 +75,9 @@ class _KadaiHiddenScreenState extends State<KadaiHiddenScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        /*actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop("back"); // 画面遷移から戻り値を指定
-            },
-            child: const Text("← 一覧に戻る",
-                style: TextStyle(fontSize: 20, color: customFunColor)),
-          ),
-        ],*/
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop("back"); // 画面遷移から戻り値を指定
@@ -109,10 +99,10 @@ class _KadaiHiddenScreenState extends State<KadaiHiddenScreen> {
           });
         },
         child: hiddenKadai.isEmpty
-            ? const Center(
+            ? Center(
                 child: Text(
                   "非表示なし",
-                  style: TextStyle(fontSize: 30),
+                  style: TextStyle(fontSize: deviceWidth * 0.1),
                 ),
               )
             : ListView.builder(
