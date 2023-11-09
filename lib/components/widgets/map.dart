@@ -243,6 +243,7 @@ class Tile extends StatelessWidget {
 
     return Consumer(builder: (context, ref, child) {
       final mapUsingMap = ref.watch(mapUsingMapProvider);
+      setColors();
       if (classroomNo != null) {
         if (mapUsingMap.containsKey(classroomNo)) {
           if (mapUsingMap[classroomNo]!) {
