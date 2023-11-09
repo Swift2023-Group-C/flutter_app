@@ -6,8 +6,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 import 'dart:convert';
 import 'package:flutter_app/repository/firebase_get_kadai.dart';
-import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/components/color_fun.dart';
 
 class KadaiHiddenScreen extends StatefulWidget {
   const KadaiHiddenScreen({
