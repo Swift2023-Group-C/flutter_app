@@ -136,14 +136,14 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    "ユーザーキーを設定する方法(PCで開くこと推奨)",
+                    "ユーザーキーを設定する方法は下記リンク(PCで開くこと推奨)",
                     style: TextStyle(
                       fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    "https://swift2023groupc.web.app/",
+                    "https://dotto.web.app/",
                     style: TextStyle(
                       fontSize: 16,
                     ),

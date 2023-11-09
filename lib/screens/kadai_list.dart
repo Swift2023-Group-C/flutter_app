@@ -804,7 +804,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                             style: TextStyle(fontSize: 20),
                           ),
                           SelectableText(
-                            "https://swift2023groupc.web.app/",
+                            "https://dotto.web.app/",
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
