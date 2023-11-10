@@ -91,7 +91,7 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
             children: <TextSpan>[
               TextSpan(
                 text: '$title: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               TextSpan(
                 text: value ?? '情報がありません',
@@ -100,7 +100,7 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
             ],
           ),
         ),
-        Divider(),
+        const Divider(),
       ],
     );
   }
