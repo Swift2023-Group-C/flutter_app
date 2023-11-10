@@ -99,6 +99,7 @@ class HomeScreen extends StatelessWidget {
       'バス時刻表': 'home/hakodatebus55.pdf'
     };
     return Scaffold(
+      appBar: AppBar(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
