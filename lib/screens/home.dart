@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
 import 'package:flutter_app/screens/app_usage_guide.dart';
@@ -20,6 +21,75 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget infoTile(List<Widget> children) {
+    final length = children.length;
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: Column(
+        children: [
+          for (int i = 0; i < length; i += 3) ...{
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (int j = i; j < i + 3 && j < length; j++) ...{
+                  children[j],
+                }
+              ],
+            ),
+          },
+        ],
+      ),
+    );
+  }
+
+  Widget infoButton(BuildContext context, void Function() onPressed,
+      IconData icon, String title,
+      {String? subtitle}) {
+    final double width = MediaQuery.sizeOf(context).width * 0.26;
+    debugPrint(width.toString());
+    const double height = 100;
+    return Container(
+        margin: const EdgeInsets.all(5),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            fixedSize: Size(width, height),
+          ),
+          onPressed: onPressed,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            width: width,
+            height: height,
+            child: Column(
+              children: [
+                ClipOval(
+                    child: Container(
+                  width: 50,
+                  height: 50,
+                  color: customFunColor,
+                  child: Center(
+                      child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 40,
+                  )),
+                )),
+                Text(
+                  title,
+                  style: const TextStyle(fontSize: 12),
+                ),
+                if (subtitle != null)
+                  Text(
+                    subtitle,
+                    style: TextStyle(color: Colors.grey.shade800),
+                  )
+              ],
+            ),
+          ),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     const Map<String, String> fileNamePath = {
@@ -31,7 +101,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             //const Text('ホーム', style: TextStyle(fontSize: 32.0)),
             ElevatedButton.icon(
@@ -88,9 +158,9 @@ class HomeScreen extends StatelessWidget {
               ),
               child: const Text('休講情報'),
             ),
-            ...fileNamePath.entries
-                .map((item) => ElevatedButton(
-                    onPressed: () {
+            const Spacer(),
+            infoTile(fileNamePath.entries
+                .map((item) => infoButton(context, () {
                       Navigator.of(context).push(PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) {
                           return FileViewerScreen(
@@ -100,9 +170,9 @@ class HomeScreen extends StatelessWidget {
                         },
                         transitionsBuilder: animation,
                       ));
-                    },
-                    child: Text(item.key)))
-                .toList(),
+                    }, Icons.abc, item.key))
+                .toList()),
+            const Spacer(),
           ],
         ),
       ),
