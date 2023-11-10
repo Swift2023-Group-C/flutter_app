@@ -127,6 +127,13 @@ class _BasePageState extends ConsumerState<BasePage> {
     MapDetailMap.instance.getList();
     FirebaseDatabase.instance.setPersistenceEnabled(true);
     mapDownload();
+    downloadcourseCancellation();
+  }
+
+  Future<void> downloadcourseCancellation() async {
+    // Firebaseからファイルをダウンロード
+    String courseCancellationSchedulePath = 'home/cancel_lecture.json';
+    await downloadFileFromFirebase(courseCancellationSchedulePath);
   }
 
   Future<void> mapDownload() async {
