@@ -72,7 +72,7 @@ class HomeScreen extends StatelessWidget {
                       child: Icon(
                     icon,
                     color: Colors.white,
-                    size: 40,
+                    size: 30,
                   )),
                 )),
                 Text(
@@ -98,33 +98,50 @@ class HomeScreen extends StatelessWidget {
       '学年歴': 'home/academic_calendar.pdf',
       'バス時刻表': 'home/hakodatebus55.pdf'
     };
+    List<Widget> infoTiles = fileNamePath.entries
+        .map((item) => infoButton(context, () {
+              Navigator.of(context).push(PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) {
+                  return FileViewerScreen(
+                      filename: item.key,
+                      url: item.value,
+                      storage: StorageService.firebase);
+                },
+                transitionsBuilder: animation,
+              ));
+            }, Icons.picture_as_pdf, item.key))
+        .toList();
+    infoTiles.add(infoButton(context, () {
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return const CourseCancellationScreen();
+          },
+          transitionsBuilder: animation,
+        ),
+      );
+    }, Icons.event_busy, '休講情報'));
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(actions: [
+        IconButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) {
+                  return const SettingScreen();
+                },
+                transitionsBuilder: animation,
+              ),
+            );
+          },
+          icon: const Icon(Icons.settings),
+        ),
+      ]),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            //const Text('ホーム', style: TextStyle(fontSize: 32.0)),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return const SettingScreen();
-                    },
-                    transitionsBuilder: animation,
-                  ),
-                );
-              },
-              icon: const Icon(Icons.settings),
-              label: const Text(
-                '設定',
-                style: TextStyle(fontSize: 20),
-              ),
-              style: ElevatedButton.styleFrom(
-                fixedSize: const Size(100, 50),
-              ),
-            ),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -142,38 +159,8 @@ class HomeScreen extends StatelessWidget {
               ),
               child: const Text('このアプリの使い方'),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return const CourseCancellationScreen();
-                    },
-                    transitionsBuilder: animation,
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                fixedSize: const Size(250, 100),
-              ),
-              child: const Text('休講情報'),
-            ),
-            const Spacer(),
-            infoTile(fileNamePath.entries
-                .map((item) => infoButton(context, () {
-                      Navigator.of(context).push(PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) {
-                          return FileViewerScreen(
-                              filename: item.key,
-                              url: item.value,
-                              storage: StorageService.firebase);
-                        },
-                        transitionsBuilder: animation,
-                      ));
-                    }, Icons.abc, item.key))
-                .toList()),
-            const Spacer(),
+            const SizedBox(height: 20),
+            infoTile(infoTiles),
           ],
         ),
       ),
