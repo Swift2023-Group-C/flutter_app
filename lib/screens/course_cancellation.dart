@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:flutter_app/repository/download_file_from_firebase.dart';
 import 'package:flutter_app/repository/read_json_file.dart';
 import 'package:flutter_app/components/widgets/progress_indicator.dart';
 
@@ -19,18 +18,17 @@ class _CourseCancellationScreenState extends State<CourseCancellationScreen> {
   @override
   void initState() {
     super.initState();
-    // ファイルダウンロードと読み込みの処理を開始
-    _jsonContent = downloadAndReadJson('home/cancel_lecture.json');
-  }
-
-  Future<String> downloadAndReadJson(String firebaseFilePath) async {
-    await downloadFileFromFirebase(firebaseFilePath); // Firebaseからファイルをダウンロード
-    return readJsonFile(firebaseFilePath); // ファイルの内容を読む
+    // JSONファイルのダウンロード
+    _jsonContent = readJsonFile('home/cancel_lecture.json');
+    print(_jsonContent);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('休講情報'),
+      ),
       body: FutureBuilder<String>(
         future: _jsonContent,
         builder: (context, snapshot) {
@@ -39,6 +37,7 @@ class _CourseCancellationScreenState extends State<CourseCancellationScreen> {
               return Center(child: Text('エラー: ${snapshot.error}'));
             } else if (snapshot.hasData) {
               dynamic jsonData = jsonDecode(snapshot.data!);
+              print(jsonData);
               return SingleChildScrollView(
                 child: Text(jsonData.toString()),
               );

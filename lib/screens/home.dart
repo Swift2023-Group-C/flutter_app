@@ -3,7 +3,7 @@ import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
 import 'package:flutter_app/screens/app_usage_guide.dart';
-import 'package:flutter_app/screens/substitute_lecturer.dart';
+import 'package:flutter_app/screens/course_cancellation.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -146,7 +146,7 @@ class HomeScreen extends StatelessWidget {
                 Navigator.of(context).push(
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) {
-                      return const SubstituteLecturerScreen();
+                      return const CourseCancellationScreen();
                     },
                     transitionsBuilder: animation,
                   ),
