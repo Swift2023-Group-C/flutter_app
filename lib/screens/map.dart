@@ -381,7 +381,7 @@ class MapScreen extends StatelessWidget {
           Container(
             height: 80,
             width: 180,
-            color: Colors.grey.shade400.withOpacity(0.8),
+            color: Colors.grey.shade400.withOpacity(0.6),
             padding: const EdgeInsets.all(10),
             alignment: Alignment.centerLeft,
             child: Column(
