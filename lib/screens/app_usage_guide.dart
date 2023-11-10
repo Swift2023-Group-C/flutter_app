@@ -31,7 +31,7 @@ class AppGuideScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Center(
               child: Text(
-                "https://swift2023groupc.web.app/",
+                "https://dotto.web.app/",
                 style: TextStyle(
                   fontSize: 18,
                 ),

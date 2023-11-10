@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/kakomon_object.dart';
+import 'package:flutter_app/screens/file_viewer.dart';
 
 class KakomonListObjects extends StatefulWidget {
   const KakomonListObjects({Key? key, required this.url}) : super(key: key);
@@ -24,7 +24,7 @@ class _KakomonListObjectsState extends State<KakomonListObjects> {
             Navigator.of(context).push(
               PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) {
-                  return KakomonObjectScreen(
+                  return FileViewerScreen(
                     url: widget.url,
                     filename: filename,
                     storage: StorageService.cloudflare,

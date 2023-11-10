@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/kakomon_object.dart';
+import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
 import 'package:flutter_app/screens/app_usage_guide.dart';
+import 'package:flutter_app/screens/substitute_lecturer.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -70,12 +71,29 @@ class HomeScreen extends StatelessWidget {
               ),
               child: const Text('このアプリの使い方'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return const SubstituteLecturerScreen();
+                    },
+                    transitionsBuilder: animation,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                fixedSize: const Size(250, 100),
+              ),
+              child: const Text('休講情報'),
+            ),
             ...fileNamePath.entries
                 .map((item) => ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) {
-                          return KakomonObjectScreen(
+                          return FileViewerScreen(
                               filename: item.key,
                               url: item.value,
                               storage: StorageService.firebase);
