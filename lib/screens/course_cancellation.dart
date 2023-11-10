@@ -20,7 +20,6 @@ class _CourseCancellationScreenState extends State<CourseCancellationScreen> {
     super.initState();
     // JSONファイルのダウンロード
     _jsonContent = readJsonFile('home/cancel_lecture.json');
-    print(_jsonContent);
   }
 
   @override

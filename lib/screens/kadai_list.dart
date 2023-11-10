@@ -85,7 +85,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> _zonedScheduleNotification(Kadai kadai) async {
-    print("${kadai.id}を通知します");
     DateTime t = kadai.endtime!;
     // iは通知のID 同じ数字を使うと上書きされる
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
@@ -115,7 +114,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> _cancelNotification(int i) async {
-    print("${i}の通知キャンセルします");
     //IDを指定して通知をキャンセル
     await flutterLocalNotificationsPlugin.cancel(i);
   }

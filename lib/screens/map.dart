@@ -448,7 +448,6 @@ class MapScreen extends StatelessWidget {
                                 showTitleActions: true,
                                 showSecondsColumn: false,
                                 onConfirm: (date) async {
-                                  print('confirm $date');
                                   searchDatetimeNotifier.state = date;
                                   mapUsingMapNotifier.state =
                                       await setUsingColor(date);
