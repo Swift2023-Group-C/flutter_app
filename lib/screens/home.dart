@@ -4,9 +4,18 @@ import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
 import 'package:flutter_app/screens/app_usage_guide.dart';
 import 'package:flutter_app/screens/course_cancellation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  void launchUrlInExternal(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   Widget animation(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
@@ -158,6 +167,19 @@ class HomeScreen extends StatelessWidget {
                 fixedSize: const Size(250, 100),
               ),
               child: const Text('このアプリの使い方'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                const formUrl = 'https://forms.gle/ruo8iBxLMmvScNMFA';
+                final url = Uri.parse(formUrl);
+                launchUrlInExternal(url);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                fixedSize: const Size(250, 100),
+              ),
+              child: const Text('意見要望お聞かせください!'),
             ),
             const SizedBox(height: 20),
             infoTile(infoTiles),
