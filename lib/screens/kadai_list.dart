@@ -790,15 +790,15 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "ユーザーキーが設定されていません",
+                            "ユーザーキーを設定すると課題が表示されます",
                             style: TextStyle(fontSize: 20),
                           ),
                           Text(
-                            "以下のURLから設定してください",
+                            "以下のURLからユーザーキーを設定してください",
                             style: TextStyle(fontSize: 20),
                           ),
                           Text(
-                            "パソコンでの設定をおすすめします",
+                            "パソコンで以下のリンクを開くことをおすすめします",
                             style: TextStyle(fontSize: 20),
                           ),
                           SelectableText(

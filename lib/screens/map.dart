@@ -361,7 +361,7 @@ class MapScreen extends StatelessWidget {
   }
 
   Widget _mapBottomInfo() {
-    double floorButtonHeight = 50;
+    double floorButtonHeight = 45;
     DateTime now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day);
     Map<String, DateTime> timeMap = {
@@ -379,15 +379,15 @@ class MapScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 80,
-            width: 180,
+            height: 75,
+            width: 245,
             color: Colors.grey.shade400.withOpacity(0.6),
             padding: const EdgeInsets.all(10),
             alignment: Alignment.centerLeft,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _mapInfoTile(TileColors.using, "授業等で使用中の部屋"),
+                _mapInfoTile(TileColors.using, "下記設定時間に授業等で使用中の部屋"),
                 _mapInfoTile(TileColors.toilet, 'トイレ及び給湯室'),
                 _mapInfoTile(Colors.red, '検索結果'),
               ],
@@ -416,6 +416,7 @@ class MapScreen extends StatelessWidget {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(0),
                                       ),
+                                      textStyle: TextStyle(fontSize: 12),
                                     ),
                                     onPressed: () async {
                                       DateTime setDate = item.value;
@@ -478,11 +479,14 @@ class MapScreen extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(color: color, border: Border.all()),
-          width: 12,
-          height: 12,
+          width: 11,
+          height: 11,
         ),
         const SizedBox(width: 5),
-        Text(text)
+        Text(
+          text,
+          style: TextStyle(fontSize: 12),
+        )
       ],
     );
   }
