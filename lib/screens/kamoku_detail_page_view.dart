@@ -6,10 +6,14 @@ import 'package:flutter_app/screens/kamoku_detail_feedback.dart';
 
 class KamokuDetailPageScreen extends StatefulWidget {
   const KamokuDetailPageScreen(
-      {Key? key, required this.lessonId, required this.lessonName})
+      {Key? key,
+      required this.lessonId,
+      required this.lessonName,
+      this.kakomonLessonId})
       : super(key: key);
   final int lessonId;
   final String lessonName;
+  final int? kakomonLessonId;
 
   @override
   State<KamokuDetailPageScreen> createState() => _KamokuDetailPageScreenState();
@@ -82,7 +86,8 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
               children: [
                 KamokuDetailSyllabusScreen(lessonId: widget.lessonId),
                 KamokuFeedbackScreen(lessonId: widget.lessonId),
-                KakomonListScreen(url: widget.lessonId),
+                KakomonListScreen(
+                    url: widget.kakomonLessonId ?? widget.lessonId),
               ],
             ),
           ),

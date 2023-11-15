@@ -82,6 +82,7 @@ class _SearchResultsState extends State<SearchResults> {
                   return KamokuDetailPageScreen(
                     lessonId: record['LessonId'],
                     lessonName: record['授業名'],
+                    kakomonLessonId: record['過去問'],
                   );
                 },
                 transitionsBuilder:
