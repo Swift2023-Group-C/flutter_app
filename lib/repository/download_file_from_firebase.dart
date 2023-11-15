@@ -15,23 +15,5 @@ Future<void> downloadFileFromFirebase(String firebaseFilePath) async {
     file.create();
   }
 
-  final downloadTask = gsReference.writeToFile(file);
-
-  downloadTask.snapshotEvents.listen((taskSnapshot) {
-    switch (taskSnapshot.state) {
-      case TaskState.running:
-        debugPrint("$firebaseFilePath downloading...");
-        break;
-      case TaskState.paused:
-        break;
-      case TaskState.success:
-        debugPrint("$firebaseFilePath download success");
-        break;
-      case TaskState.canceled:
-        break;
-      case TaskState.error:
-        debugPrint("$firebaseFilePath download error");
-        break;
-    }
-  });
+  await gsReference.writeToFile(file);
 }

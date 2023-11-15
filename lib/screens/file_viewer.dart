@@ -46,10 +46,10 @@ class _FileViewerScreenState extends State<FileViewerScreen> {
                   if (widget.storage == StorageService.cloudflare) {
                     final temp = await getTemporaryDirectory();
                     path = '${temp.path}/${widget.filename}';
+                    File(path).writeAsBytesSync(dataUint as List<int>);
                   } else {
                     path = await getApplicationFilePath(widget.url);
                   }
-                  File(path).writeAsBytesSync(dataUint as List<int>);
                   await Share.shareXFiles([XFile(path)]);
                 }
               },
@@ -98,6 +98,7 @@ class _FileViewerScreenState extends State<FileViewerScreen> {
   }
 
   Future<String> getFilePathFirebase() async {
+    // downloadTask
     await downloadFileFromFirebase(widget.url);
     return await getApplicationFilePath(widget.url);
   }

@@ -10,7 +10,7 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  final url = Uri.parse('https://swift2023groupc.web.app/');
+  final url = Uri.parse('https://dotto.web.app/');
 
   TextEditingController _userKeyController = TextEditingController();
 
@@ -116,7 +116,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       maxLength: 16,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'ユーザーキー',
+                        labelText: '課題のユーザーキー',
                         hintText: '半角英数字16桁',
                       ),
                       inputFormatters: [
@@ -136,22 +136,18 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    "ユーザーキーを設定する方法は下記リンク(PCで開くこと推奨)",
+                    "ユーザーキーを設定する方法は下記リンクから（PCで開くこと推奨）",
                     style: TextStyle(
                       fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  const SelectableText(
                     "https://dotto.web.app/",
                     style: TextStyle(
                       fontSize: 16,
                     ),
                   ),
-                  /*ElevatedButton(
-                        onPressed: _checkSettings,
-                        child: const Text("保存設定を確認"),
-                      )*/
                 ],
               ),
             ),

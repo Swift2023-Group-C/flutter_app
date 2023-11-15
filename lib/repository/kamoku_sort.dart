@@ -82,6 +82,7 @@ class _SearchResultsState extends State<SearchResults> {
                   return KamokuDetailPageScreen(
                     lessonId: record['LessonId'],
                     lessonName: record['授業名'],
+                    kakomonLessonId: record['過去問'],
                   );
                 },
                 transitionsBuilder:
@@ -224,11 +225,11 @@ Future<List<Map<String, dynamic>>> search(
   debugPrint(sqlWhere);
   if (sqlWhere != "") {
     List<Map<String, dynamic>> records = await database.rawQuery(
-        'SELECT detail.LessonId,detail.授業名 FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId WHERE $sqlWhere ');
+        'SELECT * FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId WHERE $sqlWhere ');
     return records;
   } else {
     List<Map<String, dynamic>> records = await database.rawQuery(
-        'SELECT detail.LessonId,detail.授業名 FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId');
+        'SELECT * FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId');
     return records;
   }
 }
