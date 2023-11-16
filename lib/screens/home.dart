@@ -1,13 +1,22 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
 import 'package:flutter_app/screens/app_usage_guide.dart';
 import 'package:flutter_app/screens/course_cancellation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
   void launchUrlInExternal(Uri url) async {
     if (await canLaunchUrl(url)) {
@@ -15,6 +24,35 @@ class HomeScreen extends StatelessWidget {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  Future<UserCredential?> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    try {
+      // Once signed in, return the UserCredential
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        return null;
+      } else if (e.code == 'invalid-credential') {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+    return null;
   }
 
   Widget animation(BuildContext context, Animation<double> animation,
@@ -164,7 +202,7 @@ class HomeScreen extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
-                fixedSize: const Size(250, 100),
+                fixedSize: const Size(250, 80),
               ),
               child: const Text('このアプリの使い方'),
             ),
@@ -177,9 +215,60 @@ class HomeScreen extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                fixedSize: const Size(250, 100),
+                fixedSize: const Size(250, 80),
               ),
               child: const Text('意見要望お聞かせください!'),
+            ),
+            const SizedBox(height: 20),
+            // ログインボタン
+            ElevatedButton(
+              onPressed: () async {
+                // ログインしていないなら
+                if (currentUser == null) {
+                  final userCredential = await signInWithGoogle();
+                  if (userCredential != null) {
+                    final user = userCredential.user;
+                    if (user != null) {
+                      debugPrint(user.uid);
+                      if (user.email != null) {
+                        if (user.email!.endsWith('@fun.ac.jp')) {
+                          setState(() {
+                            currentUser = user;
+                          });
+                        } else {
+                          await user.delete();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('このユーザーではログインできません。')),
+                            );
+                          }
+                        }
+                      } else {
+                        await user.delete();
+                      }
+                    } else {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('ログインに失敗しました。')),
+                        );
+                      }
+                    }
+                  }
+                } else {
+                  await FirebaseAuth.instance.signOut();
+                  setState(() {
+                    currentUser = null;
+                  });
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                fixedSize: const Size(250, 80),
+              ),
+              child: Text((currentUser == null)
+                  ? '未来大Googleアカウントでサインイン'
+                  : '${currentUser!.email}からログアウト'),
             ),
             const SizedBox(height: 20),
             infoTile(infoTiles),

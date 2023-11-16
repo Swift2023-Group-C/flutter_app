@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/repository/download_file_from_firebase.dart';
@@ -125,7 +124,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     initUniLinks();
     SyllabusDBConfig.setDB();
     MapDetailMap.instance.getList();
-    FirebaseDatabase.instance.setPersistenceEnabled(true);
     mapDownload();
     downloadcourseCancellation();
   }

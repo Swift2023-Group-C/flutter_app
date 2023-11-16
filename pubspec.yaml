@@ -40,6 +40,8 @@ dependencies:
   cloud_firestore: ^4.9.3
   firebase_storage: ^11.2.8
   firebase_database: ^10.2.7
+  firebase_auth: ^4.10.1
+  google_sign_in: ^6.1.6
   flutter_dotenv: ^5.1.0
   minio_new:
     path: ./plugins_customized/minio_new-1.0.2

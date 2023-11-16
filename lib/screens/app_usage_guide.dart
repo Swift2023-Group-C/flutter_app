@@ -28,6 +28,11 @@ class AppGuideScreen extends StatelessWidget {
               icon: Icons.assignment,
               text: '課題に関する機能は下記のサイトから設定を行うことで使用できるようになるよ!',
             ),
+            const SizedBox(height: 15),
+            _buildGuideItem(
+              icon: Icons.login,
+              text: '未来大のGoogleアカウントでログインするとレビューの書き込みができるようになるよ!',
+            ),
             const SizedBox(height: 20),
             const Center(
               child: Text(
