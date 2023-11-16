@@ -34,13 +34,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
     try {
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
       // Once signed in, return the UserCredential
       return await FirebaseAuth.instance.signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
