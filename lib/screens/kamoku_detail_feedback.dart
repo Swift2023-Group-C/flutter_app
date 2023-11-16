@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,7 +49,13 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showCustomDialog(context);
+          if (FirebaseAuth.instance.currentUser != null) {
+            _showCustomDialog(context);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('未来大Googleアカウントでログインが必要です')),
+            );
+          }
         },
         child: const Icon(Icons.add),
       ),
@@ -177,7 +184,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                                 onPressed: () async {
                                   //以下処理
                                   final String? userKey =
-                                      await UserPreferences.getUserKey();
+                                      FirebaseAuth.instance.currentUser?.uid;
                                   if (userKey != "" && selectedScore != null) {
                                     // Firestoreで同じUserKeyとlessonIdを持つフィードバックを検索
                                     final querySnapshot =

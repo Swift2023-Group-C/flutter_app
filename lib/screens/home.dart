@@ -266,8 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 fixedSize: const Size(250, 80),
               ),
               child: Text((currentUser == null)
-                  ? '未来大Googleアカウントでサインイン'
-                  : '${currentUser!.email}からログアウト'),
+                  ? '未来大Googleアカウントで\nサインイン'
+                  : '${currentUser!.email}\nからログアウト'),
             ),
             const SizedBox(height: 20),
             infoTile(infoTiles),
