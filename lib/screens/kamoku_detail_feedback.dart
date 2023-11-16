@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_app/firebase_options.dart';
 import 'package:flutter_app/repository/get_feedbacklist.dart';
-import 'package:flutter_app/components/setting_user_info.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_app/components/color_fun.dart';
 

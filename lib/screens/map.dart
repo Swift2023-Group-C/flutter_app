@@ -416,7 +416,7 @@ class MapScreen extends StatelessWidget {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(0),
                                       ),
-                                      textStyle: TextStyle(fontSize: 12),
+                                      textStyle: const TextStyle(fontSize: 12),
                                     ),
                                     onPressed: () async {
                                       DateTime setDate = item.value;
@@ -485,7 +485,7 @@ class MapScreen extends StatelessWidget {
         const SizedBox(width: 5),
         Text(
           text,
-          style: TextStyle(fontSize: 12),
+          style: const TextStyle(fontSize: 12),
         )
       ],
     );
