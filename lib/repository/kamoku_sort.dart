@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_app/screens/kamoku_detail_page_view.dart';
 import 'package:flutter_app/components/db_config.dart';
+import 'package:flutter_app/components/setting_user_info.dart';
+import 'dart:convert';
 
 //sort用のDB取得
 Future<List<Map<String, dynamic>>> fetchRecords() async {
@@ -65,6 +67,20 @@ class SearchResults extends StatefulWidget {
 
 //授業名を検索するときのシステム
 class _SearchResultsState extends State<SearchResults> {
+  List<int> personalTimeTableList = [];
+  Future<void> loadPersonalTimeTableList() async {
+    final jsonString = await UserPreferences.getFinishList();
+    if (jsonString != null) {
+      setState(() {
+        personalTimeTableList = List<int>.from(json.decode(jsonString));
+      });
+    }
+  }
+
+  Future<void> savePersonalTimeTableList() async {
+    await UserPreferences.setFinishList(json.encode(personalTimeTableList));
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
@@ -102,6 +118,24 @@ class _SearchResultsState extends State<SearchResults> {
             );
           },
           trailing: const Icon(Icons.chevron_right),
+          leading: IconButton(
+              onPressed: () {
+                setState(() {
+                  if (!personalTimeTableList.contains(record['LessonId'])) {
+                    personalTimeTableList.add(record['LessonId']);
+                    savePersonalTimeTableList();
+                  } else {
+                    personalTimeTableList
+                        .removeWhere((item) => item == record['LessonId']);
+                    savePersonalTimeTableList();
+                  }
+                });
+                print(personalTimeTableList);
+              },
+              icon: Icon(Icons.playlist_add,
+                  color: personalTimeTableList.contains(record['LessonId'])
+                      ? Colors.green
+                      : Colors.black)),
         );
       },
       separatorBuilder: (context, index) => const Divider(
