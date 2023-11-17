@@ -7,6 +7,7 @@ import 'package:flutter_app/screens/app_usage_guide.dart';
 import 'package:flutter_app/screens/course_cancellation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_app/screens/personal_time_table.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -168,21 +169,37 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }, Icons.event_busy, '休講情報'));
     return Scaffold(
-      appBar: AppBar(actions: [
-        IconButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) {
-                  return const SettingScreen();
-                },
-                transitionsBuilder: animation,
-              ),
-            );
-          },
-          icon: const Icon(Icons.settings),
-        ),
-      ]),
+      appBar: AppBar(
+          leading: TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return PersonalTimeTableScreen();
+                    },
+                    transitionsBuilder: animation,
+                  ),
+                );
+              },
+              child: const Text(
+                "時間割",
+                style: TextStyle(color: Colors.white),
+              )),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return const SettingScreen();
+                    },
+                    transitionsBuilder: animation,
+                  ),
+                );
+              },
+              icon: const Icon(Icons.settings),
+            ),
+          ]),
       body: SingleChildScrollView(
         child: Center(
           child: Column(

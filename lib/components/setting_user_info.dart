@@ -7,6 +7,7 @@ class UserPreferences {
   static const _keyKadaiFinishListKey = 'finishListKey';
   static const _keyKadaiAlertListKey = 'alertListKey';
   static const _keyKadaiDeleteListKey = 'deleteListKey';
+  static const _keyPersonalTimeTableListKey = 'personalTimeTableListKey';
 
   static Future<void> setGrade(String grade) async {
     final prefs = await SharedPreferences.getInstance();
@@ -56,6 +57,18 @@ class UserPreferences {
   static Future<String?> getDeleteList() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyKadaiDeleteListKey);
+  }
+
+  static Future<void> setPersonalTimeTableList(
+      String PersonalTimeTableString) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        _keyPersonalTimeTableListKey, PersonalTimeTableString);
+  }
+
+  static Future<String?> getPersonalTimeTableList() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyPersonalTimeTableListKey);
   }
 
   // 半角英数16桁の正規表現パターン
