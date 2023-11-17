@@ -364,6 +364,8 @@ class MapScreen extends StatelessWidget {
     double floorButtonHeight = 45;
     DateTime now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime monday = today.subtract(Duration(days: today.weekday - 1));
+    DateTime nextSunday = monday.add(const Duration(days: 14, minutes: -1));
     Map<String, DateTime> timeMap = {
       '1限': today.add(const Duration(hours: 9)),
       '2限': today.add(const Duration(hours: 10, minutes: 40)),
@@ -439,15 +441,17 @@ class MapScreen extends StatelessWidget {
                         child: Center(
                           child: TextButton(
                             style: TextButton.styleFrom(
+                              padding: const EdgeInsets.all(0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(0),
                               ),
                             ),
                             onPressed: () {
-                              DatePicker.showTimePicker(
+                              DatePicker.showDateTimePicker(
                                 context,
+                                minTime: monday,
+                                maxTime: nextSunday,
                                 showTitleActions: true,
-                                showSecondsColumn: false,
                                 onConfirm: (date) async {
                                   searchDatetimeNotifier.state = date;
                                   mapUsingMapNotifier.state =
@@ -458,9 +462,15 @@ class MapScreen extends StatelessWidget {
                               );
                             },
                             child: Center(
-                              child: Text(
-                                  DateFormat('HH:mm').format(searchDatetime)),
-                            ),
+                                child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(DateFormat('MM月dd日')
+                                    .format(searchDatetime)),
+                                Text(
+                                    DateFormat('HH:mm').format(searchDatetime)),
+                              ],
+                            )),
                           ),
                         ),
                       ),
