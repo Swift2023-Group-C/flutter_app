@@ -183,95 +183,97 @@ class _HomeScreenState extends State<HomeScreen> {
           icon: const Icon(Icons.settings),
         ),
       ]),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return const AppGuideScreen();
-                    },
-                    transitionsBuilder: animation,
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-                fixedSize: const Size(250, 80),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return const AppGuideScreen();
+                      },
+                      transitionsBuilder: animation,
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  fixedSize: const Size(250, 80),
+                ),
+                child: const Text('このアプリの使い方'),
               ),
-              child: const Text('このアプリの使い方'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                const formUrl = 'https://forms.gle/ruo8iBxLMmvScNMFA';
-                final url = Uri.parse(formUrl);
-                launchUrlInExternal(url);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                fixedSize: const Size(250, 80),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  const formUrl = 'https://forms.gle/ruo8iBxLMmvScNMFA';
+                  final url = Uri.parse(formUrl);
+                  launchUrlInExternal(url);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  fixedSize: const Size(250, 80),
+                ),
+                child: const Text('意見要望お聞かせください!'),
               ),
-              child: const Text('意見要望お聞かせください!'),
-            ),
-            const SizedBox(height: 20),
-            // ログインボタン
-            ElevatedButton(
-              onPressed: () async {
-                // ログインしていないなら
-                if (currentUser == null) {
-                  final userCredential = await signInWithGoogle();
-                  if (userCredential != null) {
-                    final user = userCredential.user;
-                    if (user != null) {
-                      debugPrint(user.uid);
-                      if (user.email != null) {
-                        if (user.email!.endsWith('@fun.ac.jp')) {
-                          setState(() {
-                            currentUser = user;
-                          });
+              const SizedBox(height: 20),
+              // ログインボタン
+              ElevatedButton(
+                onPressed: () async {
+                  // ログインしていないなら
+                  if (currentUser == null) {
+                    final userCredential = await signInWithGoogle();
+                    if (userCredential != null) {
+                      final user = userCredential.user;
+                      if (user != null) {
+                        debugPrint(user.uid);
+                        if (user.email != null) {
+                          if (user.email!.endsWith('@fun.ac.jp')) {
+                            setState(() {
+                              currentUser = user;
+                            });
+                          } else {
+                            await user.delete();
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('このユーザーではログインできません。')),
+                              );
+                            }
+                          }
                         } else {
                           await user.delete();
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('このユーザーではログインできません。')),
-                            );
-                          }
                         }
                       } else {
-                        await user.delete();
-                      }
-                    } else {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('ログインに失敗しました。')),
-                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('ログインに失敗しました。')),
+                          );
+                        }
                       }
                     }
+                  } else {
+                    await FirebaseAuth.instance.signOut();
+                    setState(() {
+                      currentUser = null;
+                    });
                   }
-                } else {
-                  await FirebaseAuth.instance.signOut();
-                  setState(() {
-                    currentUser = null;
-                  });
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                fixedSize: const Size(250, 80),
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  fixedSize: const Size(250, 80),
+                ),
+                child: Text((currentUser == null)
+                    ? '未来大Googleアカウントで\nサインイン'
+                    : '${currentUser!.email}\nからログアウト'),
               ),
-              child: Text((currentUser == null)
-                  ? '未来大Googleアカウントで\nサインイン'
-                  : '${currentUser!.email}\nからログアウト'),
-            ),
-            const SizedBox(height: 20),
-            infoTile(infoTiles),
-          ],
+              const SizedBox(height: 20),
+              infoTile(infoTiles),
+            ],
+          ),
         ),
       ),
     );
