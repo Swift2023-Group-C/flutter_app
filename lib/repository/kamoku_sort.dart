@@ -77,6 +77,12 @@ class _SearchResultsState extends State<SearchResults> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    loadPersonalTimeTableList();
+  }
+
   Future<void> savePersonalTimeTableList() async {
     await UserPreferences.setFinishList(json.encode(personalTimeTableList));
   }
@@ -130,7 +136,6 @@ class _SearchResultsState extends State<SearchResults> {
                     savePersonalTimeTableList();
                   }
                 });
-                print(personalTimeTableList);
               },
               icon: Icon(Icons.playlist_add,
                   color: personalTimeTableList.contains(record['LessonId'])
