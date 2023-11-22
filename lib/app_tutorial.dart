@@ -13,6 +13,7 @@ class AppTutorial extends StatelessWidget {
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
             color: backgroundColor,
             image: DecorationImage(
               image: AssetImage(imagePath),
