@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/app_tutorial.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_app/screens/course_cancellation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_app/screens/personal_time_table.dart';
+import 'package:flutter_app/components/setting_user_info.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,12 +21,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   User? currentUser = FirebaseAuth.instance.currentUser;
+  List<int> personalTimeTableList = [];
 
   void launchUrlInExternal(Uri url) async {
     if (await canLaunchUrl(url)) {
       launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> loadPersonalTimeTableList() async {
+    final jsonString = await UserPreferences.getFinishList();
+    if (jsonString != null) {
+      setState(() {
+        personalTimeTableList = List<int>.from(json.decode(jsonString));
+      });
     }
   }
 
@@ -176,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.of(context).push(
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) {
-                      return PersonalTimeTableScreen();
+                      return const PersonalTimeTableScreen();
                     },
                     transitionsBuilder: animation,
                   ),
