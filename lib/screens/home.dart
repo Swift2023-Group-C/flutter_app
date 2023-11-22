@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app_tutorial.dart';
+import 'package:flutter_app/screens/app_tutorial.dart';
 import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
@@ -102,8 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget infoButton(BuildContext context, void Function() onPressed,
-      IconData icon, String title,
-      {String? subtitle}) {
+      IconData icon, String title) {
     final double width = MediaQuery.sizeOf(context).width * 0.26;
     debugPrint(width.toString());
     const double height = 100;
@@ -121,28 +120,25 @@ class _HomeScreenState extends State<HomeScreen> {
             width: width,
             height: height,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ClipOval(
                     child: Container(
-                  width: 50,
-                  height: 50,
+                  width: 45,
+                  height: 45,
                   color: customFunColor,
                   child: Center(
                       child: Icon(
                     icon,
                     color: Colors.white,
-                    size: 30,
+                    size: 25,
                   )),
                 )),
+                const SizedBox(height: 5),
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 11),
                 ),
-                if (subtitle != null)
-                  Text(
-                    subtitle,
-                    style: TextStyle(color: Colors.grey.shade800),
-                  )
               ],
             ),
           ),
@@ -151,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double infoBoxWidth = MediaQuery.sizeOf(context).width * 0.4;
     const Map<String, String> fileNamePath = {
       '前期時間割': 'home/timetable_first.pdf',
       '後期時間割': 'home/timetable_second.pdf',
@@ -180,6 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }, Icons.event_busy, '休講情報'));
+
     return Scaffold(
       appBar: AppBar(
           leading: TextButton(
@@ -218,35 +216,46 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        return const AppTutorial();
-                      },
-                      transitionsBuilder: animation,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) {
+                            return const AppTutorial();
+                          },
+                          transitionsBuilder: animation,
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber.shade700,
+                      fixedSize: Size(infoBoxWidth, 80),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  fixedSize: const Size(250, 80),
-                ),
-                child: const Text('このアプリの使い方'),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  const formUrl = 'https://forms.gle/ruo8iBxLMmvScNMFA';
-                  final url = Uri.parse(formUrl);
-                  launchUrlInExternal(url);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  fixedSize: const Size(250, 80),
-                ),
-                child: const Text('意見要望お聞かせください!'),
+                    child: const Text(
+                      'アプリの使い方',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      const formUrl = 'https://forms.gle/ruo8iBxLMmvScNMFA';
+                      final url = Uri.parse(formUrl);
+                      launchUrlInExternal(url);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      fixedSize: Size(infoBoxWidth, 80),
+                    ),
+                    child: const Text(
+                      '意見要望\nお聞かせください！',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               // ログインボタン
@@ -293,11 +302,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  fixedSize: const Size(250, 80),
+                  fixedSize: Size(infoBoxWidth + 20, 80),
                 ),
-                child: Text((currentUser == null)
-                    ? '未来大Googleアカウントで\nサインイン'
-                    : '${currentUser!.email}\nからログアウト'),
+                child: Text(
+                  (currentUser == null)
+                      ? '未来大Googleアカウントで\nサインイン'
+                      : '${currentUser!.email}\nからログアウト',
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(height: 20),
               infoTile(infoTiles),

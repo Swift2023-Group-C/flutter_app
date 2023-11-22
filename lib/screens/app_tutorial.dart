@@ -61,7 +61,7 @@ class AppTutorial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double topMargin = MediaQuery.of(context).size.height / 2;
-    final Color backgroundColor = customFunColor.shade100;
+    final Color backgroundColor = customFunColor.shade50;
     final pages = [
       PageModel.withChild(
         child: _withImage(
@@ -94,18 +94,19 @@ class AppTutorial extends StatelessWidget {
         color: backgroundColor,
       ),
       PageModel.withChild(
-          child: const Padding(
-              padding: EdgeInsets.only(bottom: 25.0),
-              child: Text(
-                "さあ、始めましょう！",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 32,
-                ),
-              )),
-          color: const Color(0xFFE0B3B3),
-          doAnimateChild: true)
+        child: const Padding(
+            padding: EdgeInsets.only(bottom: 25.0),
+            child: Text(
+              "さあ、始めましょう！",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 32,
+              ),
+            )),
+        color: const Color(0xFFE0B3B3),
+        doAnimateChild: true,
+      ),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -115,6 +116,9 @@ class AppTutorial extends StatelessWidget {
         buttonColor: Colors.black,
         activeBulletColor: Colors.black,
         inactiveBulletColor: Colors.black38,
+        nextText: 'つぎへ',
+        finishText: '閉じる',
+        skipText: '閉じる',
         pages: pages,
         showBullets: true,
         skipCallback: () {

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app_tutorial.dart';
+import 'package:flutter_app/screens/app_tutorial.dart';
 import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/repository/download_file_from_firebase.dart';
 import 'package:flutter_app/repository/find_rooms_in_use.dart';
