@@ -257,21 +257,22 @@ class _BasePageState extends ConsumerState<BasePage> {
           resizeToAvoidBottomInset: false,
           backgroundColor: customFunColor,
           body: SafeArea(
-              child: Stack(
-            children: TabItem.values
-                .map((tabItem) => Offstage(
-                      offstage: currentTab != tabItem,
-                      child: Navigator(
-                        key: _navigatorKeys[tabItem],
-                        onGenerateRoute: (settings) {
-                          return MaterialPageRoute(
-                            builder: (context) => tabItem.page,
-                          );
-                        },
-                      ),
-                    ))
-                .toList(),
-          )),
+            child: Stack(
+              children: TabItem.values
+                  .map((tabItem) => Offstage(
+                        offstage: currentTab != tabItem,
+                        child: Navigator(
+                          key: _navigatorKeys[tabItem],
+                          onGenerateRoute: (settings) {
+                            return MaterialPageRoute(
+                              builder: (context) => tabItem.page,
+                            );
+                          },
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             currentIndex: TabItem.values.indexOf(currentTab),

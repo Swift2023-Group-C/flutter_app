@@ -216,8 +216,7 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
   @override
   void initState() {
     super.initState();
-    loadPersonalTimeTableList();
-    filterTimeTable();
+    dailyLessonSchedule(DateTime.now());
     fetchRecords().then((value) {
       setState(() {
         records = value;

@@ -5,7 +5,6 @@ import 'package:flutter_app/app_tutorial.dart';
 import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
-import 'package:flutter_app/screens/app_usage_guide.dart';
 import 'package:flutter_app/screens/course_cancellation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
