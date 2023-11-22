@@ -44,10 +44,10 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
     return records;
   }
 
-  Widget seasonTimeTableList(
+  /*Widget seasonTimeTableList(   ListView表示のやつ
       int seasonnumber, List<Map<String, dynamic>> records) {
     List<Map<String, dynamic>> seasonList = records.where((record) {
-      return record['開講時期'] == seasonnumber;
+      return record['開講時期'] == seasonnumber || record['開講時期'] == 0;
     }).toList();
     return ListView.builder(
       itemCount: seasonList.length,
@@ -73,6 +73,141 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
         );
       },
     );
+  }*/
+
+  InkWell tableText(
+      String name, int week, period, List<Map<String, dynamic>> records,
+      {bool exist = false}) {
+    List<Map<String, dynamic>> seasonList = records.where((record) {
+      return record['week'] == week && record['period'] == period;
+    }).toList();
+    return InkWell(
+        onTap: () {
+          print(seasonList);
+        },
+        child: Container(
+          margin: const EdgeInsets.all(2),
+          height: 100,
+          decoration: BoxDecoration(
+            border: exist ? Border.all(color: Colors.grey) : null,
+            color: exist ? Colors.grey.shade300 : Colors.grey.shade100,
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
+          ),
+          padding: const EdgeInsets.all(3),
+          child: Text(
+            exist ? name : "",
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 10),
+          ),
+        ));
+  }
+
+  Widget seasonTimeTableList(
+      int seasonnumber, List<Map<String, dynamic>> records) {
+    return SingleChildScrollView(
+        child: Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Table(
+        columnWidths: const <int, TableColumnWidth>{
+          1: FlexColumnWidth(1),
+          2: FlexColumnWidth(1),
+          3: FlexColumnWidth(1),
+          4: FlexColumnWidth(1),
+          5: FlexColumnWidth(1),
+          6: FlexColumnWidth(1),
+        },
+        children: <TableRow>[
+          const TableRow(
+            children: <Widget>[
+              TableCell(
+                  child: Center(
+                      child: Text(
+                "月",
+                style: TextStyle(fontSize: 10),
+              ))),
+              TableCell(
+                  child: Center(
+                      child: Text(
+                "火",
+                style: TextStyle(fontSize: 10),
+              ))),
+              TableCell(
+                  child: Center(
+                      child: Text(
+                "水",
+                style: TextStyle(fontSize: 10),
+              ))),
+              TableCell(
+                  child: Center(
+                      child: Text(
+                "木",
+                style: TextStyle(fontSize: 10),
+              ))),
+              TableCell(
+                  child: Center(
+                      child: Text(
+                "金",
+                style: TextStyle(fontSize: 10),
+              ))),
+            ],
+          ),
+          TableRow(
+            children: <Widget>[
+              tableText("オペレーションズリサーチ2-ABCD", 1, 1, records),
+              tableText("Cell(1,2)", 2, 1, records),
+              tableText("Cell(1,3)", 3, 1, records),
+              tableText("Cell(1,4)", 4, 1, records),
+              tableText("Cell(1,5)", 5, 1, records),
+            ],
+          ),
+          TableRow(
+            children: <Widget>[
+              tableText("Cell(2,1)", 1, 2, records),
+              tableText("Cell(2,2)", 2, 2, records),
+              tableText("Cell(2,3)", 3, 2, records),
+              tableText("Cell(2,4)", 4, 2, records),
+              tableText("Cell(2,5)", 5, 2, records),
+            ],
+          ),
+          TableRow(
+            children: <Widget>[
+              tableText("Cell(3,1)", 1, 3, records),
+              tableText("Cell(3,2)", 2, 3, records),
+              tableText("Cell(3,3)", 3, 3, records),
+              tableText("Cell(3,4)", 4, 3, records),
+              tableText("Cell(3,5)", 5, 3, records),
+            ],
+          ),
+          TableRow(
+            children: <Widget>[
+              tableText("Cell(4,1)", 1, 4, records),
+              tableText("Cell(4,2)", 2, 4, records),
+              tableText("Cell(4,3)", 3, 4, records),
+              tableText("Cell(4,4)", 4, 4, records),
+              tableText("Cell(4,5)", 5, 4, records),
+            ],
+          ),
+          TableRow(
+            children: <Widget>[
+              tableText("Cell(5,1)", 1, 5, records),
+              tableText("Cell(5,2)", 2, 5, records),
+              tableText("Cell(5,3)", 3, 5, records),
+              tableText("Cell(5,4)", 4, 5, records),
+              tableText("Cell(5,5)", 5, 5, records),
+            ],
+          ),
+          TableRow(
+            children: <Widget>[
+              tableText("Cell(6,1)", 1, 6, records),
+              tableText("Cell(6,2)", 2, 6, records),
+              tableText("Cell(6,3)", 3, 6, records),
+              tableText("Cell(6,4)", 4, 6, records),
+              tableText("Cell(6,5)", 5, 6, records),
+            ],
+          ),
+        ],
+      ),
+    ));
   }
 
   @override
@@ -108,7 +243,7 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(
-                3,
+                2,
                 (index) => GestureDetector(
                   onTap: () {
                     _pageController.animateToPage(
@@ -156,7 +291,6 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
               children: [
                 seasonTimeTableList(10, records),
                 seasonTimeTableList(20, records),
-                seasonTimeTableList(0, records),
               ],
             ),
           ),
@@ -171,8 +305,6 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
         return '前期';
       case 1:
         return '後期';
-      case 2:
-        return '通年';
       default:
         return '';
     }
