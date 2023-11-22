@@ -4,7 +4,6 @@ import 'package:flutter_app/components/db_config.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 import 'dart:convert';
 import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/repository/narrowed_lessons.dart';
 import 'package:sqflite/sqflite.dart';
 
 class PersonalTimeTableScreen extends StatefulWidget {
@@ -17,20 +16,18 @@ class PersonalTimeTableScreen extends StatefulWidget {
 
 class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
   List<int> personalTimeTableList = [];
-  List<dynamic> filteredData = [];
   late List<Map<String, dynamic>> records = [];
   final PageController _pageController = PageController();
   int _currentPageIndex = 0;
 
-  // Future<void> loadPersonalTimeTableList() async {
-  //   final jsonString = await UserPreferences.getFinishList();
-  //   if (jsonString != null) {
-  //     setState(() {
-  //       personalTimeTableList = List<int>.from(json.decode(jsonString));
-  //       //print(personalTimeTableList);
-  //     });
-  //   }
-  // }
+  Future<void> loadPersonalTimeTableList() async {
+    final jsonString = await UserPreferences.getFinishList();
+    if (jsonString != null) {
+      setState(() {
+        personalTimeTableList = List<int>.from(json.decode(jsonString));
+      });
+    }
+  }
 
   Future<void> savePersonalTimeTableList() async {
     await UserPreferences.setFinishList(json.encode(personalTimeTableList));
@@ -137,11 +134,23 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
                                   ),
                                   onPressed: () {
                                     print(seasonList[index]['lessonId']);
+                                    setState(() {
+                                      personalTimeTableList.removeWhere(
+                                          (item) =>
+                                              item ==
+                                              seasonList[index]['LessonId']);
+                                      savePersonalTimeTableList();
+                                    });
                                   },
                                   child: const Text("削除する"))
                               : ElevatedButton(
                                   onPressed: () {
                                     print(seasonList[index]['lessonId']);
+                                    setState(() {
+                                      personalTimeTableList
+                                          .add(seasonList[index]['LessonId']);
+                                      savePersonalTimeTableList();
+                                    });
                                   },
                                   child: const Text("追加する")),
                         );
@@ -281,18 +290,12 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
   void initState() {
     super.initState();
     loadPersonalTimeTableList();
-    filterTimeTable();
     fetchRecords().then((value) {
       setState(() {
         records = value;
       });
     });
   }
-
-  // Future<void> fetchFilteredData() async {
-  //   filteredData = await filterTimeTable(personalTimeTableList);
-  //   print(filteredData);
-  // }
 
   @override
   Widget build(BuildContext context) {
