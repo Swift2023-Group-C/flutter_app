@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/db_config.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
@@ -16,20 +17,18 @@ class PersonalTimeTableScreen extends StatefulWidget {
 
 class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
   List<int> personalTimeTableList = [];
-  List<dynamic> filteredData = [];
   late List<Map<String, dynamic>> records = [];
   final PageController _pageController = PageController();
   int _currentPageIndex = 0;
 
-  // Future<void> loadPersonalTimeTableList() async {
-  //   final jsonString = await UserPreferences.getFinishList();
-  //   if (jsonString != null) {
-  //     setState(() {
-  //       personalTimeTableList = List<int>.from(json.decode(jsonString));
-  //       //print(personalTimeTableList);
-  //     });
-  //   }
-  // }
+  Future<void> loadPersonalTimeTableList() async {
+    final jsonString = await UserPreferences.getFinishList();
+    if (jsonString != null) {
+      setState(() {
+        personalTimeTableList = List<int>.from(json.decode(jsonString));
+      });
+    }
+  }
 
   Future<void> savePersonalTimeTableList() async {
     await UserPreferences.setFinishList(json.encode(personalTimeTableList));
@@ -38,12 +37,14 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
   Future<List<Map<String, dynamic>>> fetchRecords() async {
     Database database = await openDatabase(SyllabusDBConfig.dbPath);
 
-    String whereClause = personalTimeTableList.map((id) => '?').join(', ');
-    List<Map<String, dynamic>> records = await database.query(
-      'week_period',
-      where: 'lessonID IN ($whereClause)',
-      whereArgs: personalTimeTableList,
-    );
+    // String whereClause = personalTimeTableList.map((id) => '?').join(', ');
+    // List<Map<String, dynamic>> records = await database.query(
+    //   'week_period',
+    //   where: 'lessonID IN ($whereClause)',
+    //   whereArgs: personalTimeTableList,
+    // );
+    List<Map<String, dynamic>> records =
+        await database.rawQuery('SELECT * FROM week_period');
     return records;
   }
 
@@ -78,6 +79,30 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
     );
   }*/
 
+  void seasonTimeTable(List<Map<String, dynamic>> records) {
+    List<Map<String, dynamic>> seasonList = records.where((record) {
+      return personalTimeTableList.contains(record['lessonId']);
+    }).toList();
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("取得してる科目一覧"),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                itemCount: personalTimeTableList.length,
+                itemBuilder: (context, Index) {
+                  return ListTile(
+                    title: Text(seasonList[Index]['授業名']),
+                  );
+                },
+              ),
+            ),
+          );
+        });
+  }
+
   InkWell tableText(
       String name, int week, period, List<Map<String, dynamic>> records,
       {bool exist = false}) {
@@ -86,7 +111,56 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
     }).toList();
     return InkWell(
         onTap: () {
-          print(seasonList);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("${name}の科目"),
+                content: Container(
+                  width: double.maxFinite,
+                  child: ListView.builder(
+                      itemCount: seasonList.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          onTap: () {
+                            print(personalTimeTableList);
+                          },
+                          title: Text(seasonList[index]['授業名']),
+                          trailing: personalTimeTableList
+                                  .contains(seasonList[index]['lessonId'])
+                              ? ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all(Colors.blue),
+                                  ),
+                                  onPressed: () {
+                                    print(seasonList[index]['lessonId']);
+                                    setState(() {
+                                      personalTimeTableList.removeWhere(
+                                          (item) =>
+                                              item ==
+                                              seasonList[index]['LessonId']);
+                                      savePersonalTimeTableList();
+                                    });
+                                  },
+                                  child: const Text("削除する"))
+                              : ElevatedButton(
+                                  onPressed: () {
+                                    print(seasonList[index]['lessonId']);
+                                    setState(() {
+                                      personalTimeTableList
+                                          .add(seasonList[index]['LessonId']);
+                                      savePersonalTimeTableList();
+                                    });
+                                  },
+                                  child: const Text("追加する")),
+                        );
+                      }),
+                ),
+              );
+            },
+          );
+          //print(seasonList);
         },
         child: Container(
           margin: const EdgeInsets.all(2),
@@ -156,56 +230,56 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
           ),
           TableRow(
             children: <Widget>[
-              tableText("オペレーションズリサーチ2-ABCD", 1, 1, records),
-              tableText("Cell(1,2)", 2, 1, records),
-              tableText("Cell(1,3)", 3, 1, records),
-              tableText("Cell(1,4)", 4, 1, records),
-              tableText("Cell(1,5)", 5, 1, records),
+              tableText("月曜1限", 1, 1, records, exist: true),
+              tableText("火曜1限", 2, 1, records),
+              tableText("水曜1限", 3, 1, records),
+              tableText("木曜1限", 4, 1, records),
+              tableText("金曜1限", 5, 1, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(2,1)", 1, 2, records),
-              tableText("Cell(2,2)", 2, 2, records),
-              tableText("Cell(2,3)", 3, 2, records),
-              tableText("Cell(2,4)", 4, 2, records),
-              tableText("Cell(2,5)", 5, 2, records),
+              tableText("月曜2限", 1, 2, records),
+              tableText("火曜2限", 2, 2, records),
+              tableText("水曜2限", 3, 2, records),
+              tableText("木曜2限", 4, 2, records),
+              tableText("金曜2限", 5, 2, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(3,1)", 1, 3, records),
-              tableText("Cell(3,2)", 2, 3, records),
-              tableText("Cell(3,3)", 3, 3, records),
-              tableText("Cell(3,4)", 4, 3, records),
-              tableText("Cell(3,5)", 5, 3, records),
+              tableText("月曜3限", 1, 3, records),
+              tableText("火曜3限", 2, 3, records),
+              tableText("水曜3限", 3, 3, records),
+              tableText("木曜3限", 4, 3, records),
+              tableText("金曜3限", 5, 3, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(4,1)", 1, 4, records),
-              tableText("Cell(4,2)", 2, 4, records),
-              tableText("Cell(4,3)", 3, 4, records),
-              tableText("Cell(4,4)", 4, 4, records),
-              tableText("Cell(4,5)", 5, 4, records),
+              tableText("月曜4限", 1, 4, records),
+              tableText("火曜4限", 2, 4, records),
+              tableText("水曜4限", 3, 4, records),
+              tableText("木曜4限", 4, 4, records),
+              tableText("金曜4限", 5, 4, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(5,1)", 1, 5, records),
-              tableText("Cell(5,2)", 2, 5, records),
-              tableText("Cell(5,3)", 3, 5, records),
-              tableText("Cell(5,4)", 4, 5, records),
-              tableText("Cell(5,5)", 5, 5, records),
+              tableText("月曜5限", 1, 5, records),
+              tableText("火曜5限", 2, 5, records),
+              tableText("水曜5限", 3, 5, records),
+              tableText("木曜5限", 4, 5, records),
+              tableText("金曜5限", 5, 5, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(6,1)", 1, 6, records),
-              tableText("Cell(6,2)", 2, 6, records),
-              tableText("Cell(6,3)", 3, 6, records),
-              tableText("Cell(6,4)", 4, 6, records),
-              tableText("Cell(6,5)", 5, 6, records),
+              tableText("月曜6限", 1, 6, records),
+              tableText("火曜6限", 2, 6, records),
+              tableText("水曜6限", 3, 6, records),
+              tableText("木曜6限", 4, 6, records),
+              tableText("金曜6限", 5, 6, records),
             ],
           ),
         ],
@@ -217,17 +291,13 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
   void initState() {
     super.initState();
     dailyLessonSchedule(DateTime.now());
+    loadPersonalTimeTableList();
     fetchRecords().then((value) {
       setState(() {
         records = value;
       });
     });
   }
-
-  // Future<void> fetchFilteredData() async {
-  //   filteredData = await filterTimeTable(personalTimeTableList);
-  //   print(filteredData);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -239,6 +309,7 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
         actions: [
           IconButton(
               onPressed: () {
+                seasonTimeTable(records);
                 //print(records);
               },
               icon: const Icon(Icons.abc))
