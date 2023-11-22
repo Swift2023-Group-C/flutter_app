@@ -111,6 +111,10 @@ flutter:
     - images/
     - .env.dev
     - assets/syllabus.db
+    - assets/tutorial/kadai.png
+    - assets/tutorial/kamoku_detail.png
+    - assets/tutorial/kamoku.png
+    - assets/tutorial/map.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

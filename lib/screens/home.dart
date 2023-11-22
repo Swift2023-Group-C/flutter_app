@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app_tutorial.dart';
 import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
@@ -211,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) {
-                        return const AppGuideScreen();
+                        return const AppTutorial();
                       },
                       transitionsBuilder: animation,
                     ),
