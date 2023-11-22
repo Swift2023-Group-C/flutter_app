@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app_tutorial.dart';
 import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/repository/download_file_from_firebase.dart';
 import 'package:flutter_app/repository/find_rooms_in_use.dart';
@@ -128,6 +129,19 @@ class _BasePageState extends ConsumerState<BasePage> {
     downloadcourseCancellation();
   }
 
+  Widget animation(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    const Offset begin = Offset(0.0, 1.0);
+    const Offset end = Offset.zero;
+    final Animatable<Offset> tween = Tween(begin: begin, end: end)
+        .chain(CurveTween(curve: Curves.easeInOut));
+    final Animation<Offset> offsetAnimation = animation.drive(tween);
+    return SlideTransition(
+      position: offsetAnimation,
+      child: child,
+    );
+  }
+
   Future<void> downloadcourseCancellation() async {
     // Firebaseからファイルをダウンロード
     String courseCancellationSchedulePath = 'home/cancel_lecture.json';
@@ -213,8 +227,30 @@ class _BasePageState extends ConsumerState<BasePage> {
     return !await _navigatorKeys[currentTab]!.currentState!.maybePop();
   }
 
+  Future<bool> isAppTutorialCompleted() async {
+    return await UserPreferences.getBool(
+            UserPreferenceKeys.isAppTutorialComplete) ??
+        false;
+  }
+
+  void _showAppTutorial(BuildContext context) async {
+    if (!await isAppTutorialCompleted()) {
+      if (context.mounted) {
+        Navigator.of(context).push(PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const AppTutorial(),
+          fullscreenDialog: true,
+          transitionsBuilder: animation,
+        ));
+        UserPreferences.setBool(UserPreferenceKeys.isAppTutorialComplete, true);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _showAppTutorial(context));
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(

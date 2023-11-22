@@ -61,6 +61,7 @@ dependencies:
   collection: ^1.17.1
   flutter_local_notifications: ^16.1.0
   timezone: ^0.9.2
+  flutter_overboard: ^3.1.1
 
 dev_dependencies:
   flutter_test:
@@ -110,6 +111,10 @@ flutter:
     - images/
     - .env.dev
     - assets/syllabus.db
+    - assets/tutorial/kadai.png
+    - assets/tutorial/kamoku_detail.png
+    - assets/tutorial/kamoku.png
+    - assets/tutorial/map.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
