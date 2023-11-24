@@ -129,7 +129,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     MapDetailMap.instance.getList();
     mapDownload();
     downloadcourseCancellation();
-    dailyLessonSchedule(DateTime.now());
   }
 
   Widget animation(BuildContext context, Animation<double> animation,

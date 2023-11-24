@@ -13,7 +13,7 @@ Future<List<int>> loadPersonalTimeTableList(WidgetRef ref) async {
         ref.watch(personalLessonIdListProvider.notifier);
     personalLessonIdListNotifier.state =
         List<int>.from(json.decode(jsonString));
-    return json.decode(jsonString);
+    return List<int>.from(json.decode(jsonString));
   }
   return [];
 }
@@ -23,16 +23,16 @@ Future<void> savePersonalTimeTableList(
   await UserPreferences.setFinishList(json.encode(personalTimeTableList));
   final personalLessonIdListNotifier =
       ref.watch(personalLessonIdListProvider.notifier);
-  personalLessonIdListNotifier.state = personalTimeTableList;
+  personalLessonIdListNotifier.state = [...personalTimeTableList];
 }
 
 // 施設予約のjsonファイルの中から取得している科目のみに絞り込み
-Future<List<dynamic>> filterTimeTable() async {
+Future<List<dynamic>> filterTimeTable(WidgetRef ref) async {
   String fileName = 'map/oneweek_schedule.json';
   String jsonString = await readJsonFile(fileName);
   List<dynamic> jsonData = json.decode(jsonString);
 
-  List<int> personalTimeTableList = await loadPersonalTimeTableList();
+  List<int> personalTimeTableList = await loadPersonalTimeTableList(ref);
 
   List<dynamic> filteredData = [];
   for (int lessonId in personalTimeTableList) {
@@ -60,11 +60,12 @@ List<DateTime> getDateRange() {
 }
 
 // 時間を入れたらその日の授業を返す
-Future<List<String>> dailyLessonSchedule(DateTime selectTime) async {
+Future<List<String>> dailyLessonSchedule(
+    WidgetRef ref, DateTime selectTime) async {
   List<String> lessonName = [];
   //print(DateTime.now());
 
-  List<dynamic> lessonData = await filterTimeTable();
+  List<dynamic> lessonData = await filterTimeTable(ref);
 
   for (var item in lessonData) {
     DateTime lessonTime = DateTime.parse(item['start']);

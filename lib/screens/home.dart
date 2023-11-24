@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/app_tutorial.dart';
@@ -7,20 +6,20 @@ import 'package:flutter_app/repository/narrowed_lessons.dart';
 import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
 import 'package:flutter_app/screens/course_cancellation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_app/screens/personal_time_table.dart';
-import 'package:flutter_app/components/setting_user_info.dart';
 import 'package:intl/intl.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   User? currentUser = FirebaseAuth.instance.currentUser;
   List<int> personalTimeTableList = [];
 
@@ -29,15 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
       launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       throw 'Could not launch $url';
-    }
-  }
-
-  Future<void> loadPersonalTimeTableList() async {
-    final jsonString = await UserPreferences.getFinishList();
-    if (jsonString != null) {
-      setState(() {
-        personalTimeTableList = List<int>.from(json.decode(jsonString));
-      });
     }
   }
 
@@ -149,6 +139,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    loadPersonalTimeTableList(ref);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final double infoBoxWidth = MediaQuery.sizeOf(context).width * 0.4;
     List<DateTime> dates = getDateRange();
@@ -221,27 +217,34 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SingleChildScrollView(
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: dates.map((date) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          await dailyLessonSchedule(date);
-                          print(date.toString());
-                          //print(date.runtimeType);
-                          // print(
-                          //     'Selected date: ${DateFormat('yyyy-MM-dd').format(date)}');
-                        },
-                        child: Text(DateFormat('MM-dd').format(date)),
+              Consumer(
+                builder: (context, ref, child) {
+                  return Column(
+                    children: [
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: dates.map((date) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  await dailyLessonSchedule(ref, date);
+                                  print(date.toString());
+                                  //print(date.runtimeType);
+                                  // print(
+                                  //     'Selected date: ${DateFormat('yyyy-MM-dd').format(date)}');
+                                },
+                                child: Text(DateFormat('MM-dd').format(date)),
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
-                    );
-                  }).toList(),
-                ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 20),
               Row(

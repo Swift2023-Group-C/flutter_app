@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/db_config.dart';
-import 'package:flutter_app/components/setting_user_info.dart';
-import 'dart:convert';
 import 'package:flutter_app/components/color_fun.dart';
+import 'package:flutter_app/screens/personal_select_lesson.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_app/repository/narrowed_lessons.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter_app/repository/narrowed_lessons.dart';
 
 class PersonalTimeTableScreen extends ConsumerStatefulWidget {
   const PersonalTimeTableScreen({Key? key}) : super(key: key);
@@ -18,7 +16,6 @@ class PersonalTimeTableScreen extends ConsumerStatefulWidget {
 
 class _PersonalTimeTableScreenState
     extends ConsumerState<PersonalTimeTableScreen> {
-  List<int> personalTimeTableList = [];
   late List<Map<String, dynamic>> records = [];
   final PageController _pageController = PageController();
   int _currentPageIndex = 0;
@@ -84,9 +81,9 @@ class _PersonalTimeTableScreenState
                 width: double.maxFinite,
                 child: ListView.builder(
                   itemCount: personalLessonIdList.length,
-                  itemBuilder: (context, Index) {
+                  itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(seasonList[Index]['授業名']),
+                      title: Text(seasonList[index]['授業名']),
                     );
                   },
                 ),
@@ -96,92 +93,30 @@ class _PersonalTimeTableScreenState
     }
   }
 
-  InkWell tableText(
-      String name, int week, period, List<Map<String, dynamic>> records,
+  Widget animation(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    const Offset begin = Offset(1.0, 0.0); // 開始位置（画面外から）
+    const Offset end = Offset.zero; // 終了位置（画面内へ）
+    final Animatable<Offset> tween = Tween(begin: begin, end: end)
+        .chain(CurveTween(curve: Curves.easeInOut));
+    final Animation<Offset> offsetAnimation = animation.drive(tween);
+
+    // お洒落なアニメーションの追加例
+    return FadeTransition(
+      // フェードインしながらスライド
+      opacity: animation, // フェード用のアニメーション
+      child: SlideTransition(
+        // スライド
+        position: offsetAnimation, // スライド用のアニメーション
+        child: child, // 子ウィジェット
+      ),
+    );
+  }
+
+  Widget tableText(
+      String name, int week, period, term, List<Map<String, dynamic>> records,
       {bool exist = false}) {
-    List<Map<String, dynamic>> seasonList = records.where((record) {
-      return record['week'] == week && record['period'] == period;
-    }).toList();
     return InkWell(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("${name}の科目"),
-                content: SizedBox(
-                  width: double.maxFinite,
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final personalLessonIdList =
-                          ref.watch(personalLessonIdListProvider);
-                      return ListView.builder(
-                          itemCount: seasonList.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              onTap: () {
-                                print(personalLessonIdList);
-                              },
-                              title: Text(seasonList[index]['授業名']),
-                              trailing: personalLessonIdList
-                                      .contains(seasonList[index]['lessonId'])
-                                  ? ElevatedButton(
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                Colors.blue),
-                                      ),
-                                      onPressed: () async {
-                                        print(seasonList[index]['lessonId']);
-                                        setState(() {
-                                          personalLessonIdList.removeWhere(
-                                              (item) =>
-                                                  item ==
-                                                  seasonList[index]
-                                                      ['lessonId']);
-                                          savePersonalTimeTableList(
-                                              personalLessonIdList, ref);
-                                        });
-                                        //await savePersonalTimeTableList();
-                                        var updatedRecords =
-                                            await fetchRecords();
-                                        setState(() {
-                                          records = updatedRecords;
-                                        });
-                                      },
-                                      child: const Text("削除する"))
-                                  : ElevatedButton(
-                                      onPressed: () async {
-                                        var lessonId =
-                                            seasonList[index]['lessonId'];
-                                        if (lessonId != null) {
-                                          print(lessonId);
-                                          setState(() {
-                                            personalLessonIdList.add(lessonId);
-                                            savePersonalTimeTableList(
-                                                personalLessonIdList, ref);
-                                          });
-                                          //await savePersonalTimeTableList();
-                                          var updatedRecords =
-                                              await fetchRecords();
-                                          setState(() {
-                                            records = updatedRecords;
-                                          });
-                                        } else {
-                                          // LessonIdがnullの場合の処理（エラーメッセージの表示など）
-                                        }
-                                      },
-                                      child: const Text("追加する")),
-                            );
-                          });
-                    },
-                  ),
-                ),
-              );
-            },
-          );
-          //print(seasonList);
-        },
         child: Container(
           margin: const EdgeInsets.all(2),
           height: 100,
@@ -196,11 +131,20 @@ class _PersonalTimeTableScreenState
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 10),
           ),
-        ));
+        ),
+        onTap: () {
+          Navigator.of(context).push(
+            PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    PersonalSelectLessonScreen(term, week, period, records),
+                transitionsBuilder: animation),
+          );
+        });
   }
 
   Widget seasonTimeTableList(
       int seasonnumber, List<Map<String, dynamic>> records) {
+    final weekString = ['月', '火', '水', '木', '金'];
     return SingleChildScrollView(
         child: Padding(
       padding: const EdgeInsets.all(10.0),
@@ -214,94 +158,24 @@ class _PersonalTimeTableScreenState
           6: FlexColumnWidth(1),
         },
         children: <TableRow>[
-          const TableRow(
-            children: <Widget>[
-              TableCell(
-                  child: Center(
-                      child: Text(
-                "月",
-                style: TextStyle(fontSize: 10),
-              ))),
-              TableCell(
-                  child: Center(
-                      child: Text(
-                "火",
-                style: TextStyle(fontSize: 10),
-              ))),
-              TableCell(
-                  child: Center(
-                      child: Text(
-                "水",
-                style: TextStyle(fontSize: 10),
-              ))),
-              TableCell(
-                  child: Center(
-                      child: Text(
-                "木",
-                style: TextStyle(fontSize: 10),
-              ))),
-              TableCell(
-                  child: Center(
-                      child: Text(
-                "金",
-                style: TextStyle(fontSize: 10),
-              ))),
-            ],
-          ),
           TableRow(
-            children: <Widget>[
-              tableText("月曜1限", 1, 1, records, exist: true),
-              tableText("火曜1限", 2, 1, records),
-              tableText("水曜1限", 3, 1, records),
-              tableText("木曜1限", 4, 1, records),
-              tableText("金曜1限", 5, 1, records),
-            ],
+            children: weekString
+                .map((e) => TableCell(
+                        child: Center(
+                            child: Text(
+                      e,
+                      style: const TextStyle(fontSize: 10),
+                    ))))
+                .toList(),
           ),
-          TableRow(
-            children: <Widget>[
-              tableText("月曜2限", 1, 2, records),
-              tableText("火曜2限", 2, 2, records),
-              tableText("水曜2限", 3, 2, records),
-              tableText("木曜2限", 4, 2, records),
-              tableText("金曜2限", 5, 2, records),
-            ],
-          ),
-          TableRow(
-            children: <Widget>[
-              tableText("月曜3限", 1, 3, records),
-              tableText("火曜3限", 2, 3, records),
-              tableText("水曜3限", 3, 3, records),
-              tableText("木曜3限", 4, 3, records),
-              tableText("金曜3限", 5, 3, records),
-            ],
-          ),
-          TableRow(
-            children: <Widget>[
-              tableText("月曜4限", 1, 4, records),
-              tableText("火曜4限", 2, 4, records),
-              tableText("水曜4限", 3, 4, records),
-              tableText("木曜4限", 4, 4, records),
-              tableText("金曜4限", 5, 4, records),
-            ],
-          ),
-          TableRow(
-            children: <Widget>[
-              tableText("月曜5限", 1, 5, records),
-              tableText("火曜5限", 2, 5, records),
-              tableText("水曜5限", 3, 5, records),
-              tableText("木曜5限", 4, 5, records),
-              tableText("金曜5限", 5, 5, records),
-            ],
-          ),
-          TableRow(
-            children: <Widget>[
-              tableText("月曜6限", 1, 6, records),
-              tableText("火曜6限", 2, 6, records),
-              tableText("水曜6限", 3, 6, records),
-              tableText("木曜6限", 4, 6, records),
-              tableText("金曜6限", 5, 6, records),
-            ],
-          ),
+          for (int i = 1; i <= 6; i++) ...{
+            TableRow(children: [
+              for (int j = 1; j <= 5; j++) ...{
+                tableText(
+                    "${weekString[j - 1]}曜$i限", j, i, seasonnumber, records),
+              }
+            ])
+          }
         ],
       ),
     ));
@@ -310,8 +184,6 @@ class _PersonalTimeTableScreenState
   @override
   void initState() {
     super.initState();
-    dailyLessonSchedule(DateTime.now());
-    loadPersonalTimeTableList(ref);
     fetchRecords().then((value) {
       setState(() {
         records = value;
