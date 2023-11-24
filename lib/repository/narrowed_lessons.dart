@@ -1,14 +1,29 @@
 import 'dart:convert';
 import 'package:flutter_app/repository/read_json_file.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-List<int> _personalTimeTableList = [];
+final StateProvider<List<int>> personalLessonIdListProvider =
+    StateProvider((ref) => []);
 
-Future<void> loadPersonalTimeTableList() async {
+Future<List<int>> loadPersonalTimeTableList(WidgetRef ref) async {
   final jsonString = await UserPreferences.getFinishList();
   if (jsonString != null) {
-    _personalTimeTableList = List<int>.from(json.decode(jsonString));
+    final personalLessonIdListNotifier =
+        ref.watch(personalLessonIdListProvider.notifier);
+    personalLessonIdListNotifier.state =
+        List<int>.from(json.decode(jsonString));
+    return json.decode(jsonString);
   }
+  return [];
+}
+
+Future<void> savePersonalTimeTableList(
+    List<int> personalTimeTableList, WidgetRef ref) async {
+  await UserPreferences.setFinishList(json.encode(personalTimeTableList));
+  final personalLessonIdListNotifier =
+      ref.watch(personalLessonIdListProvider.notifier);
+  personalLessonIdListNotifier.state = personalTimeTableList;
 }
 
 Future<List<dynamic>> filterTimeTable() async {
