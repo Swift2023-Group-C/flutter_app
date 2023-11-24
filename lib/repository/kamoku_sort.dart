@@ -89,6 +89,7 @@ class _SearchResultsState extends State<SearchResults> {
 
   @override
   Widget build(BuildContext context) {
+    //loadPersonalTimeTableList();
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),

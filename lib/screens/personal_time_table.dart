@@ -3,47 +3,36 @@ import 'package:flutter_app/components/db_config.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 import 'dart:convert';
 import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/repository/narrowed_lessons.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_app/repository/narrowed_lessons.dart';
 
-class PersonalTimeTableScreen extends StatefulWidget {
+class PersonalTimeTableScreen extends ConsumerStatefulWidget {
   const PersonalTimeTableScreen({Key? key}) : super(key: key);
 
   @override
-  State<PersonalTimeTableScreen> createState() =>
+  ConsumerState<PersonalTimeTableScreen> createState() =>
       _PersonalTimeTableScreenState();
 }
 
-class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
+class _PersonalTimeTableScreenState
+    extends ConsumerState<PersonalTimeTableScreen> {
   List<int> personalTimeTableList = [];
-  List<dynamic> filteredData = [];
   late List<Map<String, dynamic>> records = [];
   final PageController _pageController = PageController();
   int _currentPageIndex = 0;
 
-  // Future<void> loadPersonalTimeTableList() async {
-  //   final jsonString = await UserPreferences.getFinishList();
-  //   if (jsonString != null) {
-  //     setState(() {
-  //       personalTimeTableList = List<int>.from(json.decode(jsonString));
-  //       //print(personalTimeTableList);
-  //     });
-  //   }
-  // }
-
-  Future<void> savePersonalTimeTableList() async {
-    await UserPreferences.setFinishList(json.encode(personalTimeTableList));
-  }
-
   Future<List<Map<String, dynamic>>> fetchRecords() async {
     Database database = await openDatabase(SyllabusDBConfig.dbPath);
 
-    String whereClause = personalTimeTableList.map((id) => '?').join(', ');
-    List<Map<String, dynamic>> records = await database.query(
-      'week_period',
-      where: 'lessonID IN ($whereClause)',
-      whereArgs: personalTimeTableList,
-    );
+    // String whereClause = personalTimeTableList.map((id) => '?').join(', ');
+    // List<Map<String, dynamic>> records = await database.query(
+    //   'week_period',
+    //   where: 'lessonID IN ($whereClause)',
+    //   whereArgs: personalTimeTableList,
+    // );
+    List<Map<String, dynamic>> records =
+        await database.rawQuery('SELECT * FROM week_period');
     return records;
   }
 
@@ -78,6 +67,34 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
     );
   }*/
 
+  Future<void> seasonTimeTable(BuildContext context, WidgetRef ref,
+      List<Map<String, dynamic>> records) async {
+    final personalLessonIdList = await loadPersonalTimeTableList(ref);
+    List<Map<String, dynamic>> seasonList = records.where((record) {
+      return personalLessonIdList.contains(record['lessonId']);
+    }).toList();
+    if (context.mounted) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("取得してる科目一覧"),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ListView.builder(
+                  itemCount: personalLessonIdList.length,
+                  itemBuilder: (context, Index) {
+                    return ListTile(
+                      title: Text(seasonList[Index]['授業名']),
+                    );
+                  },
+                ),
+              ),
+            );
+          });
+    }
+  }
+
   InkWell tableText(
       String name, int week, period, List<Map<String, dynamic>> records,
       {bool exist = false}) {
@@ -86,7 +103,83 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
     }).toList();
     return InkWell(
         onTap: () {
-          print(seasonList);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("${name}の科目"),
+                content: SizedBox(
+                  width: double.maxFinite,
+                  child: Consumer(
+                    builder: (context, ref, child) {
+                      final personalLessonIdList =
+                          ref.watch(personalLessonIdListProvider);
+                      return ListView.builder(
+                          itemCount: seasonList.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              onTap: () {
+                                print(personalLessonIdList);
+                              },
+                              title: Text(seasonList[index]['授業名']),
+                              trailing: personalLessonIdList
+                                      .contains(seasonList[index]['lessonId'])
+                                  ? ElevatedButton(
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                Colors.blue),
+                                      ),
+                                      onPressed: () async {
+                                        print(seasonList[index]['lessonId']);
+                                        setState(() {
+                                          personalLessonIdList.removeWhere(
+                                              (item) =>
+                                                  item ==
+                                                  seasonList[index]
+                                                      ['lessonId']);
+                                          savePersonalTimeTableList(
+                                              personalLessonIdList, ref);
+                                        });
+                                        //await savePersonalTimeTableList();
+                                        var updatedRecords =
+                                            await fetchRecords();
+                                        setState(() {
+                                          records = updatedRecords;
+                                        });
+                                      },
+                                      child: const Text("削除する"))
+                                  : ElevatedButton(
+                                      onPressed: () async {
+                                        var lessonId =
+                                            seasonList[index]['lessonId'];
+                                        if (lessonId != null) {
+                                          print(lessonId);
+                                          setState(() {
+                                            personalLessonIdList.add(lessonId);
+                                            savePersonalTimeTableList(
+                                                personalLessonIdList, ref);
+                                          });
+                                          //await savePersonalTimeTableList();
+                                          var updatedRecords =
+                                              await fetchRecords();
+                                          setState(() {
+                                            records = updatedRecords;
+                                          });
+                                        } else {
+                                          // LessonIdがnullの場合の処理（エラーメッセージの表示など）
+                                        }
+                                      },
+                                      child: const Text("追加する")),
+                            );
+                          });
+                    },
+                  ),
+                ),
+              );
+            },
+          );
+          //print(seasonList);
         },
         child: Container(
           margin: const EdgeInsets.all(2),
@@ -109,7 +202,7 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
       int seasonnumber, List<Map<String, dynamic>> records) {
     return SingleChildScrollView(
         child: Padding(
-      padding: EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(10.0),
       child: Table(
         columnWidths: const <int, TableColumnWidth>{
           1: FlexColumnWidth(1),
@@ -156,56 +249,56 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
           ),
           TableRow(
             children: <Widget>[
-              tableText("オペレーションズリサーチ2-ABCD", 1, 1, records),
-              tableText("Cell(1,2)", 2, 1, records),
-              tableText("Cell(1,3)", 3, 1, records),
-              tableText("Cell(1,4)", 4, 1, records),
-              tableText("Cell(1,5)", 5, 1, records),
+              tableText("月曜1限", 1, 1, records, exist: true),
+              tableText("火曜1限", 2, 1, records),
+              tableText("水曜1限", 3, 1, records),
+              tableText("木曜1限", 4, 1, records),
+              tableText("金曜1限", 5, 1, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(2,1)", 1, 2, records),
-              tableText("Cell(2,2)", 2, 2, records),
-              tableText("Cell(2,3)", 3, 2, records),
-              tableText("Cell(2,4)", 4, 2, records),
-              tableText("Cell(2,5)", 5, 2, records),
+              tableText("月曜2限", 1, 2, records),
+              tableText("火曜2限", 2, 2, records),
+              tableText("水曜2限", 3, 2, records),
+              tableText("木曜2限", 4, 2, records),
+              tableText("金曜2限", 5, 2, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(3,1)", 1, 3, records),
-              tableText("Cell(3,2)", 2, 3, records),
-              tableText("Cell(3,3)", 3, 3, records),
-              tableText("Cell(3,4)", 4, 3, records),
-              tableText("Cell(3,5)", 5, 3, records),
+              tableText("月曜3限", 1, 3, records),
+              tableText("火曜3限", 2, 3, records),
+              tableText("水曜3限", 3, 3, records),
+              tableText("木曜3限", 4, 3, records),
+              tableText("金曜3限", 5, 3, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(4,1)", 1, 4, records),
-              tableText("Cell(4,2)", 2, 4, records),
-              tableText("Cell(4,3)", 3, 4, records),
-              tableText("Cell(4,4)", 4, 4, records),
-              tableText("Cell(4,5)", 5, 4, records),
+              tableText("月曜4限", 1, 4, records),
+              tableText("火曜4限", 2, 4, records),
+              tableText("水曜4限", 3, 4, records),
+              tableText("木曜4限", 4, 4, records),
+              tableText("金曜4限", 5, 4, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(5,1)", 1, 5, records),
-              tableText("Cell(5,2)", 2, 5, records),
-              tableText("Cell(5,3)", 3, 5, records),
-              tableText("Cell(5,4)", 4, 5, records),
-              tableText("Cell(5,5)", 5, 5, records),
+              tableText("月曜5限", 1, 5, records),
+              tableText("火曜5限", 2, 5, records),
+              tableText("水曜5限", 3, 5, records),
+              tableText("木曜5限", 4, 5, records),
+              tableText("金曜5限", 5, 5, records),
             ],
           ),
           TableRow(
             children: <Widget>[
-              tableText("Cell(6,1)", 1, 6, records),
-              tableText("Cell(6,2)", 2, 6, records),
-              tableText("Cell(6,3)", 3, 6, records),
-              tableText("Cell(6,4)", 4, 6, records),
-              tableText("Cell(6,5)", 5, 6, records),
+              tableText("月曜6限", 1, 6, records),
+              tableText("火曜6限", 2, 6, records),
+              tableText("水曜6限", 3, 6, records),
+              tableText("木曜6限", 4, 6, records),
+              tableText("金曜6限", 5, 6, records),
             ],
           ),
         ],
@@ -216,19 +309,12 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
   @override
   void initState() {
     super.initState();
-    loadPersonalTimeTableList();
-    filterTimeTable();
     fetchRecords().then((value) {
       setState(() {
         records = value;
       });
     });
   }
-
-  // Future<void> fetchFilteredData() async {
-  //   filteredData = await filterTimeTable(personalTimeTableList);
-  //   print(filteredData);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -238,11 +324,17 @@ class _PersonalTimeTableScreenState extends State<PersonalTimeTableScreen> {
       appBar: AppBar(
         title: const Text('時間割'),
         actions: [
-          IconButton(
-              onPressed: () {
-                //print(records);
-              },
-              icon: const Icon(Icons.abc))
+          Consumer(
+            builder: (context, ref, child) {
+              return IconButton(
+                onPressed: () {
+                  seasonTimeTable(context, ref, records);
+                  //print(records);
+                },
+                icon: const Icon(Icons.abc),
+              );
+            },
+          ),
         ],
       ),
       body: Column(
