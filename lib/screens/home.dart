@@ -138,6 +138,76 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget timeTable() {
+    List<DateTime> dates = getDateRange();
+    List<String> weekString = ['月', '火', '水', '木', '金', '土', '日'];
+    List<Color> weekColors = [
+      Colors.black,
+      Colors.black,
+      Colors.black,
+      Colors.black,
+      Colors.black,
+      Colors.blue,
+      Colors.red
+    ];
+    return Consumer(
+      builder: (context, ref, child) {
+        return Column(
+          children: [
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  children: dates.map((date) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        await dailyLessonSchedule(ref, date);
+                        print(date.toString());
+                        //print(date.runtimeType);
+                        // print(
+                        //     'Selected date: ${DateFormat('yyyy-MM-dd').format(date)}');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        shape: const CircleBorder(
+                          side: BorderSide(
+                            color: Colors.black,
+                            width: 1,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        fixedSize: const Size(50, 50),
+                      ),
+                      // 日付表示
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            DateFormat('MM').format(date),
+                            style: const TextStyle(fontSize: 7),
+                          ),
+                          Text(DateFormat('dd').format(date)),
+                          Text(
+                            weekString[date.weekday - 1],
+                            style: TextStyle(
+                                fontSize: 9,
+                                color: weekColors[date.weekday - 1]),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -147,7 +217,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final double infoBoxWidth = MediaQuery.sizeOf(context).width * 0.4;
-    List<DateTime> dates = getDateRange();
 
     const Map<String, String> fileNamePath = {
       '前期時間割': 'home/timetable_first.pdf',
@@ -218,34 +287,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Center(
           child: Column(
             children: [
-              Consumer(
-                builder: (context, ref, child) {
-                  return Column(
-                    children: [
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: dates.map((date) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  await dailyLessonSchedule(ref, date);
-                                  print(date.toString());
-                                  //print(date.runtimeType);
-                                  // print(
-                                  //     'Selected date: ${DateFormat('yyyy-MM-dd').format(date)}');
-                                },
-                                child: Text(DateFormat('MM-dd').format(date)),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+              // 時間割
+              timeTable(),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -46,17 +46,27 @@ Future<List<dynamic>> filterTimeTable(WidgetRef ref) async {
   return filteredData;
 }
 
-// 2日前から7日後までの日付を返す
+// 月曜から次の週の日曜までの日付を返す
 List<DateTime> getDateRange() {
   var now = DateTime.now();
-  var startDate = now.subtract(const Duration(days: 2));
+  // 月曜
+  var startDate = now.subtract(Duration(days: now.weekday - 1));
 
   List<DateTime> dates = [];
-  for (int i = 0; i <= 7; i++) {
+  for (int i = 0; i <= 14; i++) {
     dates.add(startDate.add(Duration(days: i)));
   }
 
   return dates;
+}
+
+class TimeTableCourse {
+  final int lessonId;
+  final String title;
+  final int period;
+  final List<int> resourseIds;
+
+  TimeTableCourse(this.lessonId, this.title, this.period, this.resourseIds);
 }
 
 // 時間を入れたらその日の授業を返す
