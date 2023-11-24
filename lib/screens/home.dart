@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/app_tutorial.dart';
 import 'package:flutter_app/components/color_fun.dart';
+import 'package:flutter_app/repository/narrowed_lessons.dart';
 import 'package:flutter_app/screens/file_viewer.dart';
 import 'package:flutter_app/screens/setting.dart';
 import 'package:flutter_app/screens/course_cancellation.dart';
@@ -10,6 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_app/screens/personal_time_table.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -108,49 +110,54 @@ class _HomeScreenState extends State<HomeScreen> {
     debugPrint(width.toString());
     const double height = 100;
     return Container(
-        margin: const EdgeInsets.all(5),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            fixedSize: Size(width, height),
-          ),
-          onPressed: onPressed,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            width: width,
-            height: height,
-            child: Column(
-              children: [
-                ClipOval(
-                    child: Container(
+      margin: const EdgeInsets.all(5),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          fixedSize: Size(width, height),
+        ),
+        onPressed: onPressed,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          width: width,
+          height: height,
+          child: Column(
+            children: [
+              ClipOval(
+                child: Container(
                   width: 50,
                   height: 50,
                   color: customFunColor,
                   child: Center(
-                      child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 30,
-                  )),
-                )),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 12),
+                    child: Icon(
+                      icon,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),
                 ),
-                if (subtitle != null)
-                  Text(
-                    subtitle,
-                    style: TextStyle(color: Colors.grey.shade800),
-                  )
-              ],
-            ),
+              ),
+              Text(
+                title,
+                style: const TextStyle(fontSize: 12),
+              ),
+              if (subtitle != null)
+                Text(
+                  subtitle,
+                  style: TextStyle(color: Colors.grey.shade800),
+                ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    List<DateTime> dates = getDateRange();
+
     const Map<String, String> fileNamePath = {
       '前期時間割': 'home/timetable_first.pdf',
       '後期時間割': 'home/timetable_second.pdf',
@@ -159,15 +166,17 @@ class _HomeScreenState extends State<HomeScreen> {
     };
     List<Widget> infoTiles = fileNamePath.entries
         .map((item) => infoButton(context, () {
-              Navigator.of(context).push(PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) {
-                  return FileViewerScreen(
-                      filename: item.key,
-                      url: item.value,
-                      storage: StorageService.firebase);
-                },
-                transitionsBuilder: animation,
-              ));
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return FileViewerScreen(
+                        filename: item.key,
+                        url: item.value,
+                        storage: StorageService.firebase);
+                  },
+                  transitionsBuilder: animation,
+                ),
+              );
             }, Icons.picture_as_pdf, item.key))
         .toList();
     infoTiles.add(infoButton(context, () {
@@ -183,20 +192,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
           leading: TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return const PersonalTimeTableScreen();
-                    },
-                    transitionsBuilder: animation,
-                  ),
-                );
-              },
-              child: const Text(
-                "時間割",
-                style: TextStyle(color: Colors.white),
-              )),
+            onPressed: () {
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return const PersonalTimeTableScreen();
+                  },
+                  transitionsBuilder: animation,
+                ),
+              );
+            },
+            child: const Text(
+              "時間割",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
           actions: [
             IconButton(
               onPressed: () {
@@ -217,6 +227,26 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: dates.map((date) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await dailyLessonSchedule(date);
+                          print(date.toString());
+                          //print(date.runtimeType);
+                          // print(
+                          //     'Selected date: ${DateFormat('yyyy-MM-dd').format(date)}');
+                        },
+                        child: Text(DateFormat('MM-dd').format(date)),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {

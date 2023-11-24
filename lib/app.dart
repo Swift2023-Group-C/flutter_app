@@ -5,6 +5,7 @@ import 'package:flutter_app/app_tutorial.dart';
 import 'package:flutter_app/components/map_detail.dart';
 import 'package:flutter_app/repository/download_file_from_firebase.dart';
 import 'package:flutter_app/repository/find_rooms_in_use.dart';
+import 'package:flutter_app/repository/narrowed_lessons.dart';
 import 'package:flutter_app/repository/read_json_file.dart';
 import 'package:flutter_app/screens/kadai_list.dart';
 import 'package:flutter_app/screens/kamoku.dart';
@@ -127,6 +128,7 @@ class _BasePageState extends ConsumerState<BasePage> {
     MapDetailMap.instance.getList();
     mapDownload();
     downloadcourseCancellation();
+    dailyLessonSchedule(DateTime.now());
   }
 
   Widget animation(BuildContext context, Animation<double> animation,
