@@ -4,6 +4,7 @@ import 'package:flutter_app/components/setting_user_info.dart';
 import 'dart:convert';
 import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_app/repository/narrowed_lessons.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_app/repository/narrowed_lessons.dart';
 
@@ -309,6 +310,8 @@ class _PersonalTimeTableScreenState
   @override
   void initState() {
     super.initState();
+    dailyLessonSchedule(DateTime.now());
+    loadPersonalTimeTableList(ref);
     fetchRecords().then((value) {
       setState(() {
         records = value;
