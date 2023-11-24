@@ -17,7 +17,7 @@ class PersonalSelectLessonScreen extends StatelessWidget {
     List<Map<String, dynamic>> termList = records.where((record) {
       return record['week'] == week &&
           record['period'] == period &&
-          record['開講時期'] == term;
+          (record['開講時期'] == term || record['開講時期'] == 0);
     }).toList();
 
     return Scaffold(
@@ -51,6 +51,13 @@ class PersonalSelectLessonScreen extends StatelessWidget {
                           child: const Text("削除する"))
                       : ElevatedButton(
                           onPressed: () async {
+                            // if (selectedLessonList.length > 1) {
+                            //   ScaffoldMessenger.of(context)
+                            //       .removeCurrentSnackBar();
+                            //   ScaffoldMessenger.of(context).showSnackBar(
+                            //       const SnackBar(
+                            //           content: Text('１つのコマに２つ以上選択できません')));
+                            // } else {
                             var lessonId = termList[index]['lessonId'];
                             if (lessonId != null) {
                               print(lessonId);
@@ -61,6 +68,7 @@ class PersonalSelectLessonScreen extends StatelessWidget {
                               // LessonIdがnullの場合の処理（エラーメッセージの表示など）
                             }
                             Navigator.of(context).pop();
+                            //}
                           },
                           child: const Text("追加する")),
                 );

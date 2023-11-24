@@ -76,6 +76,19 @@ class _PersonalTimeTableScreenState
     );
   }
 
+  //SnackBarを表示するための関数
+  Future<void> overSelectLessonSnackbar(
+      List<Map<String, dynamic>> selectedLessonList) async {
+    final personalLessonIdList = ref.watch(personalLessonIdListProvider);
+    selectedLessonList.removeLast();
+    personalLessonIdList.removeLast();
+    await savePersonalTimeTableList(personalLessonIdList, ref);
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('１つのコマに２つ以上選択できません')),
+    );
+  }
+
   Widget tableText(
       String name, int week, period, term, List<Map<String, dynamic>> records,
       {bool exist = false}) {
@@ -83,9 +96,12 @@ class _PersonalTimeTableScreenState
     List<Map<String, dynamic>> selectedLessonList = records.where((record) {
       return record['week'] == week &&
           record['period'] == period &&
-          record['開講時期'] == term &&
+          (record['開講時期'] == term || record['開講時期'] == 0) &&
           personalLessonIdList.contains(record['lessonId']);
     }).toList();
+    if (selectedLessonList.length > 2) {
+      overSelectLessonSnackbar(selectedLessonList);
+    }
     return InkWell(
         // 表示
         child: Container(
@@ -125,6 +141,7 @@ class _PersonalTimeTableScreenState
                 ),
         ),
         onTap: () {
+          print(personalLessonIdList);
           Navigator.of(context).push(
             PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
@@ -199,7 +216,7 @@ class _PersonalTimeTableScreenState
                   seasonTimeTable(context, ref, records);
                   //print(records);
                 },
-                icon: const Icon(Icons.abc),
+                icon: const Icon(Icons.list),
               );
             },
           ),
