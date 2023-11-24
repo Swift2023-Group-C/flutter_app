@@ -23,47 +23,10 @@ class _PersonalTimeTableScreenState
   Future<List<Map<String, dynamic>>> fetchRecords() async {
     Database database = await openDatabase(SyllabusDBConfig.dbPath);
 
-    // String whereClause = personalTimeTableList.map((id) => '?').join(', ');
-    // List<Map<String, dynamic>> records = await database.query(
-    //   'week_period',
-    //   where: 'lessonID IN ($whereClause)',
-    //   whereArgs: personalTimeTableList,
-    // );
     List<Map<String, dynamic>> records =
         await database.rawQuery('SELECT * FROM week_period');
     return records;
   }
-
-  /*Widget seasonTimeTableList(   ListView表示のやつ
-      int seasonnumber, List<Map<String, dynamic>> records) {
-    List<Map<String, dynamic>> seasonList = records.where((record) {
-      return record['開講時期'] == seasonnumber || record['開講時期'] == 0;
-    }).toList();
-    return ListView.builder(
-      itemCount: seasonList.length,
-      itemBuilder: (context, index) {
-        var record = seasonList[index];
-        return ListTile(
-          title: Text(record['授業名'] ?? '不明な授業'),
-          /* よくわからなくなったので保留
-          leading: IconButton(
-              onPressed: () async {
-                setState(() {
-                  personalTimeTableList
-                      .removeWhere((item) => item == record['LessonId']);
-                });
-                await savePersonalTimeTableList();
-                var updatedRecords = await fetchRecords();
-                setState(() {
-                  records = updatedRecords;
-                });
-                print(personalTimeTableList);
-              },
-              icon: const Icon(Icons.playlist_remove)),*/
-        );
-      },
-    );
-  }*/
 
   Future<void> seasonTimeTable(BuildContext context, WidgetRef ref,
       List<Map<String, dynamic>> records) async {
@@ -116,27 +79,57 @@ class _PersonalTimeTableScreenState
   Widget tableText(
       String name, int week, period, term, List<Map<String, dynamic>> records,
       {bool exist = false}) {
+    final personalLessonIdList = ref.watch(personalLessonIdListProvider);
+    List<Map<String, dynamic>> selectedLessonList = records.where((record) {
+      return record['week'] == week &&
+          record['period'] == period &&
+          record['開講時期'] == term &&
+          personalLessonIdList.contains(record['lessonId']);
+    }).toList();
     return InkWell(
+        // 表示
         child: Container(
           margin: const EdgeInsets.all(2),
           height: 100,
-          decoration: BoxDecoration(
-            border: exist ? Border.all(color: Colors.grey) : null,
-            color: exist ? Colors.grey.shade300 : Colors.grey.shade100,
-            borderRadius: const BorderRadius.all(Radius.circular(5)),
-          ),
-          padding: const EdgeInsets.all(3),
-          child: Text(
-            exist ? name : "",
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 10),
-          ),
+          child: selectedLessonList.isNotEmpty
+              ? Column(
+                  children: selectedLessonList
+                      .map((lesson) => Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              color: Colors.grey.shade300,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(5)),
+                            ),
+                            padding: const EdgeInsets.all(2),
+                            child: Text(
+                              lesson['授業名'],
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 8),
+                            ),
+                          )))
+                      .toList(),
+                )
+              // Text(
+              //   textAlign: TextAlign.center,
+              //   style: const TextStyle(fontSize: 10),
+              // );
+              : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  ),
+                  padding: const EdgeInsets.all(2),
+                ),
         ),
         onTap: () {
           Navigator.of(context).push(
             PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
-                    PersonalSelectLessonScreen(term, week, period, records),
+                    PersonalSelectLessonScreen(
+                        term, week, period, records, selectedLessonList),
                 transitionsBuilder: animation),
           );
         });
