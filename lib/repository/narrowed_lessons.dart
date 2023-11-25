@@ -73,9 +73,17 @@ class TimeTableCourse {
 }
 
 // 時間を入れたらその日の授業を返す
-Future<Map<int, TimeTableCourse>> dailyLessonSchedule(
+Future<Map<int, List<TimeTableCourse>>> dailyLessonSchedule(
     WidgetRef ref, DateTime selectTime) async {
-  Map<int, TimeTableCourse> periodData = {};
+  Map<int, Map<int, TimeTableCourse>> periodData = {
+    1: {},
+    2: {},
+    3: {},
+    4: {},
+    5: {},
+    6: {}
+  };
+  Map<int, List<TimeTableCourse>> returnData = {};
   print(selectTime);
 
   List<dynamic> lessonData = await filterTimeTable(ref);
@@ -85,21 +93,25 @@ Future<Map<int, TimeTableCourse>> dailyLessonSchedule(
 
     if (selectTime.day == lessonTime.day) {
       int period = item['period'];
-      if (periodData.containsKey(period)) {
-        periodData[period]!.resourseIds.add(int.parse(item['resourceId']));
-      } else {
-        List<int> resourceId = [];
-        if (item['resourceId'] != null) {
-          try {
-            resourceId.add(int.parse(item['resourceId']));
-          } catch (e) {
-            // 空白
-          }
-        }
-        periodData[period] = TimeTableCourse(
-            int.parse(item['lessonId']), item['title'], resourceId);
+      int lessonId = int.parse(item['lessonId']);
+      List<int> resourceId = [];
+      try {
+        resourceId.add(int.parse(item['resourceId']));
+      } catch (e) {
+        // resourceIdが空白
       }
+      if (periodData.containsKey(period)) {
+        if (periodData[period]!.containsKey(lessonId)) {
+          periodData[period]![lessonId]!.resourseIds.addAll(resourceId);
+          continue;
+        }
+      }
+      periodData[period]![lessonId] =
+          TimeTableCourse(lessonId, item['title'], resourceId);
     }
   }
-  return periodData;
+  periodData.forEach((key, value) {
+    returnData[key] = value.values.toList();
+  });
+  return returnData;
 }
