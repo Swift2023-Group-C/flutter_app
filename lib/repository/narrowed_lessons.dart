@@ -90,7 +90,11 @@ Future<Map<int, TimeTableCourse>> dailyLessonSchedule(
       } else {
         List<int> resourceId = [];
         if (item['resourceId'] != null) {
-          resourceId.add(int.parse(item['resourceId']));
+          try {
+            resourceId.add(int.parse(item['resourceId']));
+          } catch (e) {
+            // 空白
+          }
         }
         periodData[period] = TimeTableCourse(
             int.parse(item['lessonId']), item['title'], resourceId);
