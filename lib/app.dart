@@ -127,8 +127,7 @@ class _BasePageState extends ConsumerState<BasePage> {
     initUniLinks();
     SyllabusDBConfig.setDB();
     MapDetailMap.instance.getList();
-    mapDownload();
-    downloadcourseCancellation();
+    downloadFiles();
   }
 
   Widget animation(BuildContext context, Animation<double> animation,
@@ -154,14 +153,10 @@ class _BasePageState extends ConsumerState<BasePage> {
     }
   }
 
-  Future<void> downloadcourseCancellation() async {
+  Future<void> downloadFiles() async {
     // Firebaseからファイルをダウンロード
     String courseCancellationSchedulePath = 'home/cancel_lecture.json';
     await downloadFileFromFirebase(courseCancellationSchedulePath);
-  }
-
-  Future<void> mapDownload() async {
-    // Firebaseからファイルをダウンロード
     String scheduleFilePath = 'map/oneweek_schedule.json';
     await downloadFileFromFirebase(scheduleFilePath);
   }
