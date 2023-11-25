@@ -162,8 +162,20 @@ class _SettingScreenState extends State<SettingScreen> {
     onFunction();
     await UserPreferences.setGrade(dropdownValue1);
     await UserPreferences.setCourse(dropdownValue2);
-    await UserPreferences.setUserKey(_userKeyController.text);
-    _saveMessage();
+    try {
+      if (_userKeyController.text.isNotEmpty) {
+        await UserPreferences.setUserKey(_userKeyController.text);
+      }
+      _saveMessage();
+    } catch (e) {
+      _failuredMessage();
+    }
+  }
+
+  void _failuredMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('ユーザーキーが不正です。')),
+    );
   }
 
   void _saveMessage() {
