@@ -19,6 +19,11 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
+final StateProvider<Map<int, TimeTableCourse>> focusTimeTableDataProvider =
+    StateProvider((ref) => {});
+final StateProvider<DateTime> focusTimeTableDayProvider =
+    StateProvider((ref) => DateTime.now());
+
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   User? currentUser = FirebaseAuth.instance.currentUser;
   List<int> personalTimeTableList = [];
@@ -138,6 +143,101 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Future<void> getOneDayTimeTable(WidgetRef ref) async {
+    final focusTimeTableDay = ref.read(focusTimeTableDayProvider);
+    final focusTimeTableDataNotifier =
+        ref.read(focusTimeTableDataProvider.notifier);
+    focusTimeTableDataNotifier.state =
+        await dailyLessonSchedule(ref, focusTimeTableDay);
+    ;
+  }
+
+  void setFocusTimeTableDay(DateTime dt) {
+    final focusTimeTableDayNotifier =
+        ref.read(focusTimeTableDayProvider.notifier);
+    focusTimeTableDayNotifier.state = dt;
+  }
+
+  Widget timeTablePeriod(int period, TimeTableCourse? timeTableCourse) {
+    Map<int, String> roomName = {
+      1: '講堂',
+      2: '大講義室',
+      3: '493',
+      4: '593',
+      5: '594',
+      6: '595',
+      7: 'R791',
+      8: '494C&D',
+      9: '495C&D',
+      10: '484',
+      11: '583',
+      12: '584',
+      13: '585',
+      14: 'R781',
+      15: 'R782',
+      16: '363',
+      17: '364',
+      18: '365',
+      19: '483',
+      50: 'アトリエ',
+      51: '体育館',
+      90: 'その他',
+      99: 'オンライン',
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      height: 40,
+      child: Row(
+        children: [
+          Text('$period限'),
+          const SizedBox(width: 15),
+          Expanded(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+              ),
+              onPressed: () {},
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          (timeTableCourse != null)
+                              ? timeTableCourse.title
+                              : '-',
+                          style: const TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                        if (timeTableCourse != null)
+                          Text(
+                            timeTableCourse.resourseIds
+                                .map((resourceId) =>
+                                    roomName.containsKey(resourceId)
+                                        ? roomName[resourceId]
+                                        : null)
+                                .toList()
+                                .join(', '),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget timeTable() {
     List<DateTime> dates = getDateRange();
     List<String> weekString = ['月', '火', '水', '木', '金', '土', '日'];
@@ -150,58 +250,88 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       Colors.blue,
       Colors.red
     ];
+    final deviceWidth = MediaQuery.of(context).size.width;
+    double buttonSize = 50;
+    double buttonPadding = 8;
+    final deviceCenter = deviceWidth / 2 - (buttonSize / 2 + buttonPadding);
+    final buttonPosition =
+        (DateTime.now().weekday - 1) * (buttonSize + buttonPadding);
+    double initialScrollOffset =
+        (buttonPosition > deviceCenter) ? buttonPosition - deviceCenter : 0;
+    ScrollController controller =
+        ScrollController(initialScrollOffset: initialScrollOffset);
     return Consumer(
       builder: (context, ref, child) {
+        final focusTimeTableData = ref.watch(focusTimeTableDataProvider);
+        final focusTimeTableDay = ref.watch(focusTimeTableDayProvider);
         return Column(
           children: [
             SingleChildScrollView(
+              controller: controller,
               scrollDirection: Axis.horizontal,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: EdgeInsets.symmetric(
+                    vertical: buttonPadding, horizontal: buttonPadding / 2),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: dates.map((date) {
-                    return ElevatedButton(
-                      onPressed: () async {
-                        await dailyLessonSchedule(ref, date);
-                        print(date.toString());
-                        //print(date.runtimeType);
-                        // print(
-                        //     'Selected date: ${DateFormat('yyyy-MM-dd').format(date)}');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        shape: const CircleBorder(
-                          side: BorderSide(
-                            color: Colors.black,
-                            width: 1,
-                            style: BorderStyle.solid,
+                    return Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: buttonPadding / 2),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          setFocusTimeTableDay(date);
+                          await getOneDayTimeTable(ref);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: focusTimeTableDay.day == date.day
+                              ? customFunColor.shade50
+                              : Colors.white,
+                          foregroundColor: Colors.black,
+                          shape: const CircleBorder(
+                            side: BorderSide(
+                              color: Colors.black,
+                              width: 1,
+                              style: BorderStyle.solid,
+                            ),
                           ),
+                          minimumSize: Size(buttonSize, buttonSize),
+                          fixedSize: Size(buttonSize, buttonSize),
                         ),
-                        fixedSize: const Size(50, 50),
-                      ),
-                      // 日付表示
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            DateFormat('MM').format(date),
-                            style: const TextStyle(fontSize: 7),
-                          ),
-                          Text(DateFormat('dd').format(date)),
-                          Text(
-                            weekString[date.weekday - 1],
-                            style: TextStyle(
-                                fontSize: 9,
-                                color: weekColors[date.weekday - 1]),
-                          ),
-                        ],
+                        // 日付表示
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              DateFormat('MM').format(date),
+                              style: const TextStyle(fontSize: 7),
+                            ),
+                            Text(
+                              DateFormat('dd').format(date),
+                              style: TextStyle(
+                                  fontWeight:
+                                      (focusTimeTableDay.day == date.day)
+                                          ? FontWeight.bold
+                                          : null),
+                            ),
+                            Text(
+                              weekString[date.weekday - 1],
+                              style: TextStyle(
+                                  fontSize: 9,
+                                  color: weekColors[date.weekday - 1]),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }).toList(),
                 ),
               ),
             ),
+            // 時間割表示
+            for (int i = 1; i <= 6; i++) ...{
+              timeTablePeriod(i, focusTimeTableData[i])
+            },
           ],
         );
       },
@@ -211,7 +341,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    loadPersonalTimeTableList(ref);
+    getOneDayTimeTable(ref);
   }
 
   @override
@@ -312,6 +442,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: const Text(
                       'アプリの使い方',
                       textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
                     ),
                   ),
                   ElevatedButton(
@@ -327,6 +460,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: const Text(
                       '意見要望\nお聞かせください！',
                       textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
                     ),
                   ),
                 ],
@@ -383,6 +519,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ? '未来大Googleアカウントで\nサインイン'
                       : '${currentUser!.email}\nからログアウト',
                   textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 10,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),

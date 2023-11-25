@@ -10,7 +10,7 @@ Future<List<int>> loadPersonalTimeTableList(WidgetRef ref) async {
   final jsonString = await UserPreferences.getFinishList();
   if (jsonString != null) {
     final personalLessonIdListNotifier =
-        ref.watch(personalLessonIdListProvider.notifier);
+        ref.read(personalLessonIdListProvider.notifier);
     personalLessonIdListNotifier.state =
         List<int>.from(json.decode(jsonString));
     return List<int>.from(json.decode(jsonString));
@@ -42,7 +42,6 @@ Future<List<dynamic>> filterTimeTable(WidgetRef ref) async {
       }
     }
   }
-  print(filteredData);
   return filteredData;
 }
 
@@ -53,7 +52,7 @@ List<DateTime> getDateRange() {
   var startDate = now.subtract(Duration(days: now.weekday - 1));
 
   List<DateTime> dates = [];
-  for (int i = 0; i <= 14; i++) {
+  for (int i = 0; i < 14; i++) {
     dates.add(startDate.add(Duration(days: i)));
   }
 
@@ -63,17 +62,21 @@ List<DateTime> getDateRange() {
 class TimeTableCourse {
   final int lessonId;
   final String title;
-  final int period;
   final List<int> resourseIds;
 
-  TimeTableCourse(this.lessonId, this.title, this.period, this.resourseIds);
+  TimeTableCourse(this.lessonId, this.title, this.resourseIds);
+
+  @override
+  String toString() {
+    return "$lessonId $title $resourseIds";
+  }
 }
 
 // 時間を入れたらその日の授業を返す
-Future<List<String>> dailyLessonSchedule(
+Future<Map<int, TimeTableCourse>> dailyLessonSchedule(
     WidgetRef ref, DateTime selectTime) async {
-  List<String> lessonName = [];
-  //print(DateTime.now());
+  Map<int, TimeTableCourse> periodData = {};
+  print(selectTime);
 
   List<dynamic> lessonData = await filterTimeTable(ref);
 
@@ -81,14 +84,18 @@ Future<List<String>> dailyLessonSchedule(
     DateTime lessonTime = DateTime.parse(item['start']);
 
     if (selectTime.day == lessonTime.day) {
-      lessonName.add(item['title']);
+      int period = item['period'];
+      if (periodData.containsKey(period)) {
+        periodData[period]!.resourseIds.add(int.parse(item['resourceId']));
+      } else {
+        List<int> resourceId = [];
+        if (item['resourceId'] != null) {
+          resourceId.add(int.parse(item['resourceId']));
+        }
+        periodData[period] = TimeTableCourse(
+            int.parse(item['lessonId']), item['title'], resourceId);
+      }
     }
-    //else {
-    //   print('selectday = $selectTime');
-    //   print('lessonday = $lessonTime');
-    // }
   }
-  print(lessonName);
-
-  return lessonName;
+  return periodData;
 }
