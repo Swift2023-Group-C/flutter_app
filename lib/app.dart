@@ -155,10 +155,14 @@ class _BasePageState extends ConsumerState<BasePage> {
 
   Future<void> downloadFiles() async {
     // Firebaseからファイルをダウンロード
-    String courseCancellationSchedulePath = 'home/cancel_lecture.json';
-    await downloadFileFromFirebase(courseCancellationSchedulePath);
-    String scheduleFilePath = 'map/oneweek_schedule.json';
-    await downloadFileFromFirebase(scheduleFilePath);
+    List<String> filePaths = [
+      'home/cancel_lecture.json',
+      'home/sup_lecture.json',
+      'map/oneweek_schedule.json',
+    ];
+    for (var path in filePaths) {
+      await downloadFileFromFirebase(path);
+    }
   }
 
   TabItem currentTab = TabItem.home;

@@ -189,40 +189,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
           fixedSize: const Size.fromHeight(40),
           minimumSize: const Size.fromHeight(40),
           maximumSize: const Size.fromHeight(40),
         ),
         onPressed: () {},
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // 科目名表示など
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  (timeTableCourse != null) ? timeTableCourse.title : '-',
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-                if (timeTableCourse != null)
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    timeTableCourse.resourseIds
-                        .map((resourceId) => roomName.containsKey(resourceId)
-                            ? roomName[resourceId]
-                            : null)
-                        .toList()
-                        .join(', '),
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 10,
-                    ),
+                    (timeTableCourse != null) ? timeTableCourse.title : '-',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-              ],
+                  if (timeTableCourse != null)
+                    Text(
+                      timeTableCourse.resourseIds
+                          .map((resourceId) => roomName.containsKey(resourceId)
+                              ? roomName[resourceId]
+                              : null)
+                          .toList()
+                          .join(', '),
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 10,
+                      ),
+                    ),
+                ],
+              ),
             ),
             // 休講情報など
+            if (timeTableCourse != null)
+              if (timeTableCourse.cancel)
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.cancel_outlined,
+                      color: Colors.red,
+                    ),
+                    Text(
+                      "休講",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                )
+              else if (timeTableCourse.sup)
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.orange,
+                    ),
+                    Text(
+                      "補講",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ],
+                )
           ],
         ),
       ),

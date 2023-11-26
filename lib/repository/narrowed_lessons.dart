@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:flutter_app/components/db_config.dart';
 import 'package:flutter_app/repository/read_json_file.dart';
 import 'package:flutter_app/components/setting_user_info.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqflite/sqflite.dart';
 
 final StateProvider<List<int>> personalLessonIdListProvider =
     StateProvider((ref) => []);
@@ -16,6 +18,21 @@ Future<List<int>> loadPersonalTimeTableList(WidgetRef ref) async {
     return List<int>.from(json.decode(jsonString));
   }
   return [];
+}
+
+Future<Map<String, int>> loadPersonalTimeTableMapString(WidgetRef ref) async {
+  List<int> personalTimeTableListInt = await loadPersonalTimeTableList(ref);
+
+  Database database = await openDatabase(SyllabusDBConfig.dbPath);
+  Map<String, int> loadPersonalTimeTableMap = {};
+  List<Map<String, dynamic>> records = await database.rawQuery(
+      'select LessonId, 授業名 from sort where LessonId in (${personalTimeTableListInt.join(",")})');
+  for (var record in records) {
+    String lessonName = record['授業名'];
+    int lessonId = record['LessonId'];
+    loadPersonalTimeTableMap[lessonName] = lessonId;
+  }
+  return loadPersonalTimeTableMap;
 }
 
 Future<void> savePersonalTimeTableList(
@@ -63,8 +80,11 @@ class TimeTableCourse {
   final int lessonId;
   final String title;
   final List<int> resourseIds;
+  final bool cancel;
+  bool sup;
 
-  TimeTableCourse(this.lessonId, this.title, this.resourseIds);
+  TimeTableCourse(this.lessonId, this.title, this.resourseIds,
+      {this.cancel = false, this.sup = false});
 
   @override
   String toString() {
@@ -84,7 +104,6 @@ Future<Map<int, List<TimeTableCourse>>> dailyLessonSchedule(
     6: {}
   };
   Map<int, List<TimeTableCourse>> returnData = {};
-  print(selectTime);
 
   List<dynamic> lessonData = await filterTimeTable(ref);
 
@@ -108,6 +127,36 @@ Future<Map<int, List<TimeTableCourse>>> dailyLessonSchedule(
       }
       periodData[period]![lessonId] =
           TimeTableCourse(lessonId, item['title'], resourceId);
+    }
+  }
+
+  String jsonData = await readJsonFile('home/cancel_lecture.json');
+  List<dynamic> cancelLectureData = jsonDecode(jsonData);
+  jsonData = await readJsonFile('home/sup_lecture.json');
+  List<dynamic> supLectureData = jsonDecode(jsonData);
+  Map<String, int> loadPersonalTimeTableMap =
+      await loadPersonalTimeTableMapString(ref);
+
+  for (var cancelLecture in cancelLectureData) {
+    DateTime dt = DateTime.parse(cancelLecture['date']);
+    if (dt.month == selectTime.month && dt.day == selectTime.day) {
+      String lessonName = cancelLecture['lessonName'];
+      if (loadPersonalTimeTableMap.containsKey(lessonName)) {
+        int lessonId = loadPersonalTimeTableMap[lessonName]!;
+        periodData[cancelLecture['period']]![lessonId] =
+            TimeTableCourse(lessonId, lessonName, [], cancel: true);
+      }
+    }
+  }
+
+  for (var supLecture in supLectureData) {
+    DateTime dt = DateTime.parse(supLecture['date']);
+    if (dt.month == selectTime.month && dt.day == selectTime.day) {
+      String lessonName = supLecture['lessonName'];
+      if (loadPersonalTimeTableMap.containsKey(lessonName)) {
+        int lessonId = loadPersonalTimeTableMap[lessonName]!;
+        periodData[supLecture['period']]![lessonId]!.sup = true;
+      }
     }
   }
   periodData.forEach((key, value) {
