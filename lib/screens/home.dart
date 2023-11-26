@@ -19,8 +19,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-final StateProvider<Map<int, TimeTableCourse>> focusTimeTableDataProvider =
-    StateProvider((ref) => {});
+final StateProvider<Map<int, List<TimeTableCourse>>>
+    focusTimeTableDataProvider = StateProvider((ref) => {});
 final StateProvider<DateTime> focusTimeTableDayProvider =
     StateProvider((ref) => DateTime.now());
 
@@ -158,7 +158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     focusTimeTableDayNotifier.state = dt;
   }
 
-  Widget timeTablePeriod(int period, TimeTableCourse? timeTableCourse) {
+  Widget timeTableLessonButton(TimeTableCourse? timeTableCourse) {
     Map<int, String> roomName = {
       1: '講堂',
       2: '大講義室',
@@ -184,53 +184,110 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       90: 'その他',
       99: 'オンライン',
     };
+    return SizedBox(
+      height: 40,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          fixedSize: const Size.fromHeight(40),
+          minimumSize: const Size.fromHeight(40),
+          maximumSize: const Size.fromHeight(40),
+        ),
+        onPressed: () {},
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // 科目名表示など
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    (timeTableCourse != null) ? timeTableCourse.title : '-',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (timeTableCourse != null)
+                    Text(
+                      timeTableCourse.resourseIds
+                          .map((resourceId) => roomName.containsKey(resourceId)
+                              ? roomName[resourceId]
+                              : null)
+                          .toList()
+                          .join(', '),
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 10,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            // 休講情報など
+            if (timeTableCourse != null)
+              if (timeTableCourse.cancel)
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.cancel_outlined,
+                      color: Colors.red,
+                    ),
+                    Text(
+                      "休講",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                )
+              else if (timeTableCourse.sup)
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.orange,
+                    ),
+                    Text(
+                      "補講",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ],
+                )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget timeTablePeriod(
+      int period, List<TimeTableCourse> timeTableCourseList) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       margin: const EdgeInsets.symmetric(vertical: 5),
-      height: 40,
+      height: timeTableCourseList.isEmpty
+          ? 40
+          : timeTableCourseList.length * 50 - 10,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$period限'),
+          Container(
+            height: 40,
+            alignment: Alignment.centerLeft,
+            child: Text('$period限'),
+          ),
           const SizedBox(width: 15),
           Expanded(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-              ),
-              onPressed: () {},
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          (timeTableCourse != null)
-                              ? timeTableCourse.title
-                              : '-',
-                          style: const TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                        if (timeTableCourse != null)
-                          Text(
-                            timeTableCourse.resourseIds
-                                .map((resourceId) =>
-                                    roomName.containsKey(resourceId)
-                                        ? roomName[resourceId]
-                                        : null)
-                                .toList()
-                                .join(', '),
-                            style: const TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (timeTableCourseList.isEmpty)
+                  timeTableLessonButton(null)
+                else
+                  ...timeTableCourseList
+                      .map((timeTableCourse) =>
+                          timeTableLessonButton(timeTableCourse))
+                      .toList(),
+              ],
             ),
           ),
         ],
@@ -330,7 +387,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             // 時間割表示
             for (int i = 1; i <= 6; i++) ...{
-              timeTablePeriod(i, focusTimeTableData[i])
+              timeTablePeriod(i, focusTimeTableData[i] ?? [])
             },
           ],
         );
