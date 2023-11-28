@@ -161,6 +161,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget timeTableLessonButton(TimeTableCourse? timeTableCourse) {
+    Color foregroundColor = Colors.black;
+    if (timeTableCourse != null) {
+      if (timeTableCourse.cancel) {
+        foregroundColor = Colors.grey;
+      }
+    }
     Map<int, String> roomName = {
       1: '講堂',
       2: '大講義室',
@@ -191,7 +197,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          foregroundColor: foregroundColor,
           fixedSize: const Size.fromHeight(40),
           minimumSize: const Size.fromHeight(40),
           maximumSize: const Size.fromHeight(40),
@@ -344,9 +350,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: focusTimeTableDay.day == date.day
-                              ? customFunColor.shade50
+                              ? customFunColor
                               : Colors.white,
-                          foregroundColor: Colors.black,
+                          foregroundColor: focusTimeTableDay.day == date.day
+                              ? Colors.white
+                              : Colors.black,
                           shape: const CircleBorder(
                             side: BorderSide(
                               color: Colors.black,
@@ -368,16 +376,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             Text(
                               DateFormat('dd').format(date),
                               style: TextStyle(
-                                  fontWeight:
-                                      (focusTimeTableDay.day == date.day)
-                                          ? FontWeight.bold
-                                          : null),
+                                fontWeight: (focusTimeTableDay.day == date.day)
+                                    ? FontWeight.bold
+                                    : null,
+                              ),
                             ),
                             Text(
                               weekString[date.weekday - 1],
                               style: TextStyle(
-                                  fontSize: 9,
-                                  color: weekColors[date.weekday - 1]),
+                                fontSize: 9,
+                                color: focusTimeTableDay.day == date.day
+                                    ? Colors.white
+                                    : weekColors[date.weekday - 1],
+                              ),
                             ),
                           ],
                         ),
