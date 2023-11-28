@@ -149,7 +149,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ref.read(focusTimeTableDataProvider.notifier);
     focusTimeTableDataNotifier.state =
         await dailyLessonSchedule(ref, focusTimeTableDay);
-    ;
   }
 
   void setFocusTimeTableDay(DateTime dt) {
