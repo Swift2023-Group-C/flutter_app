@@ -141,7 +141,6 @@ class _PersonalTimeTableScreenState
                 ),
         ),
         onTap: () {
-          print(personalLessonIdList);
           Navigator.of(context).push(
             PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>

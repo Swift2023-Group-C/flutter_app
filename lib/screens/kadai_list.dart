@@ -243,7 +243,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
             children: [
               const Text('削除の確認'),
               Text(listkadai.courseName),
-              Text('${listkadai.endtime}'),
             ],
           ),
           content: const Text('このタスクを削除しますか？'),
