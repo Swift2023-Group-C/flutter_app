@@ -52,13 +52,13 @@ class UserPreferences {
   static final RegExp _userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
 
   // ユーザーキーを保存する前にチェックを行う
-  static Future<void> setUserKey(String userKey) async {
+  static Future<bool> setUserKey(String userKey) async {
     if (!_isValidUserKey(userKey)) {
-      throw ArgumentError(
-          'Invalid userKey format. It should be 16 alphanumeric characters.');
+      return false;
     }
 
     await setString(UserPreferenceKeys.userKey, userKey);
+    return true;
   }
 
   // ユーザーキーが正しいフォーマットかどうかをチェック
