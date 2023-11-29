@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -124,7 +126,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
       content: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           width: double.maxFinite,
           child: Column(
             children: [
@@ -184,17 +186,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: const Text('全般'),
             tiles: <SettingsTile>[
               // Googleでログイン
-              SettingsTile.navigation(
-                title: Text(
-                  (currentUser == null) ? 'ログイン' : 'ログアウト',
+              if (Platform.isIOS)
+                SettingsTile.navigation(
+                  title: Text(
+                    (currentUser == null) ? 'ログイン' : 'ログイン中',
+                  ),
+                  value: (currentUser == null) ? null : const Text('ログアウト'),
+                  description: Text((currentUser == null)
+                      ? '未来大Googleアカウント'
+                      : '${currentUser!.email}でログイン中'),
+                  leading:
+                      Icon((currentUser == null) ? Icons.login : Icons.logout),
+                  onPressed: loginButton,
+                )
+              else
+                SettingsTile.navigation(
+                  title: Text(
+                    (currentUser == null) ? 'ログイン' : 'ログアウト',
+                  ),
+                  value: Text((currentUser == null)
+                      ? '未来大Googleアカウント'
+                      : '${currentUser!.email}でログイン中'),
+                  leading:
+                      Icon((currentUser == null) ? Icons.login : Icons.logout),
+                  onPressed: loginButton,
                 ),
-                value: Text((currentUser == null)
-                    ? '未来大Googleアカウント'
-                    : currentUser!.email.toString()),
-                leading:
-                    Icon((currentUser == null) ? Icons.login : Icons.logout),
-                onPressed: loginButton,
-              ),
               // 学年
               SettingsTile.navigation(
                 onPressed: (context) async {
@@ -247,10 +263,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 },
               ),
               SettingsTile.navigation(
-                title: const Text('ユーザーキーを設定する方法は下記リンクから'),
-                value: const SelectableText(
+                title: const Text('ユーザーキーの設定は下記リンクから'),
+                description: const SelectableText(
                   "https://dotto.web.app/",
                 ),
+                trailing: const Icon(null),
               ),
             ],
           ),

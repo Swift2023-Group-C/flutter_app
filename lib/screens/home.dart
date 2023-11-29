@@ -385,12 +385,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final double infoBoxWidth = MediaQuery.sizeOf(context).width * 0.4;
 
     const Map<String, String> fileNamePath = {
+      'バス時刻表': 'home/hakodatebus55.pdf',
+      '学年歴': 'home/academic_calendar.pdf',
       '前期時間割': 'home/timetable_first.pdf',
       '後期時間割': 'home/timetable_second.pdf',
-      '学年歴': 'home/academic_calendar.pdf',
-      'バス時刻表': 'home/hakodatebus55.pdf'
     };
-    List<Widget> infoTiles = fileNamePath.entries
+    List<Widget> infoTiles = [];
+    infoTiles.add(infoButton(context, () {
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return const CourseCancellationScreen();
+          },
+          transitionsBuilder: animation,
+        ),
+      );
+    }, Icons.event_busy, '休講情報'));
+    infoTiles.addAll(fileNamePath.entries
         .map((item) => infoButton(context, () {
               Navigator.of(context).push(
                 PageRouteBuilder(
@@ -404,17 +415,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               );
             }, Icons.picture_as_pdf, item.key))
-        .toList();
-    infoTiles.add(infoButton(context, () {
-      Navigator.of(context).push(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return const CourseCancellationScreen();
-          },
-          transitionsBuilder: animation,
-        ),
-      );
-    }, Icons.event_busy, '休講情報'));
+        .toList());
 
     return Scaffold(
       appBar: AppBar(),

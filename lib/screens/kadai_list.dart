@@ -514,7 +514,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
 
   TextStyle _titleTextStyle(bool green) {
     return TextStyle(
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: FontWeight.bold,
       color: green ? Colors.green : Colors.black,
     );
@@ -575,7 +575,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                   Text(
                     kadai.courseName!,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: finishList.contains(kadai.id)
                           ? Colors.green
                           : Colors.black54,
@@ -585,7 +585,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                     Text(
                       "終了：${stringFromDateTime(kadai.endtime)}",
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: finishList.contains(kadai.id)
                             ? Colors.green
                             : endtimeCheck(data[index])

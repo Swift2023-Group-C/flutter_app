@@ -95,11 +95,8 @@ class _CourseCancellationScreenState extends State<CourseCancellationScreen> {
           return ListTile(
             title: Text('日付: ${item['date']}'),
             subtitle: Text(
-                '時限: ${item['period']}\n授業名: ${item['lessonName']}\nキャンパス: ${item['campus']}\n担当教員: ${item['staff']}\nタイプ: ${item['type']}\nコメント: ${item['comment']}'),
+                '時限: ${item['period']}\n授業名: ${item['lessonName']}\nキャンパス: ${item['campus']}\n担当教員: ${item['staff']}\nコメント: ${item['comment']}'),
             // 他のウィジェットやアクションを追加することも可能
-            onTap: () {
-              // タップ時の処理を追加
-            },
           );
         },
       ),

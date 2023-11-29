@@ -138,6 +138,11 @@ class _PersonalTimeTableScreenState
                     borderRadius: const BorderRadius.all(Radius.circular(5)),
                   ),
                   padding: const EdgeInsets.all(2),
+                  child: Center(
+                      child: Icon(
+                    Icons.add,
+                    color: Colors.grey.shade400,
+                  )),
                 ),
         ),
         onTap: () {
@@ -207,7 +212,7 @@ class _PersonalTimeTableScreenState
     final deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('時間割'),
+        title: const Text('時間割 設定'),
         actions: [
           Consumer(
             builder: (context, ref, child) {
