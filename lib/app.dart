@@ -13,6 +13,7 @@ import 'package:flutter_app/screens/kamoku.dart';
 import 'package:flutter_app/screens/home.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_app/components/color_fun.dart';
+import 'package:flutter_app/screens/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -59,6 +60,12 @@ enum TabItem {
     icon: Icons.assignment_outlined,
     activeIcon: Icons.assignment,
     page: KadaiListScreen(),
+  ),
+  setting(
+    title: '設定',
+    icon: Icons.settings_outlined,
+    activeIcon: Icons.settings,
+    page: SettingsScreen(),
   );
 
   const TabItem({
@@ -144,7 +151,8 @@ class _BasePageState extends ConsumerState<BasePage> {
   }
 
   Future<void> loadTimeTableList() async {
-    final jsonString = await UserPreferences.getFinishList();
+    final jsonString =
+        await UserPreferences.getString(UserPreferenceKeys.kadaiFinishList);
     if (jsonString != null) {
       final personalLessonIdListNotifier =
           ref.watch(personalLessonIdListProvider.notifier);
@@ -224,9 +232,11 @@ class _BasePageState extends ConsumerState<BasePage> {
       mapUsingMapNotifier.state = await setUsingColor(DateTime.now());
     }
     if (currentTab == selectedTab) {
-      _navigatorKeys[selectedTab]!
-          .currentState!
-          .popUntil((route) => route.isFirst);
+      if (_navigatorKeys[selectedTab] != null) {
+        _navigatorKeys[selectedTab]!
+            .currentState!
+            .popUntil((route) => route.isFirst);
+      }
     } else {
       setState(() {
         currentTab = selectedTab;

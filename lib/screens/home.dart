@@ -1,13 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/app_tutorial.dart';
 import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/repository/narrowed_lessons.dart';
 import 'package:flutter_app/screens/file_viewer.dart';
-import 'package:flutter_app/screens/setting.dart';
 import 'package:flutter_app/screens/course_cancellation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_app/screens/personal_time_table.dart';
 import 'package:intl/intl.dart';
@@ -36,37 +33,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  Future<UserCredential?> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-
-    try {
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-      // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'account-exists-with-different-credential') {
-        return null;
-      } else if (e.code == 'invalid-credential') {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-    return null;
-  }
-
   Widget animation(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
-    const Offset begin = Offset(0.0, 1.0);
+    const Offset begin = Offset(1.0, 0.0);
     const Offset end = Offset.zero;
     final Animatable<Offset> tween = Tween(begin: begin, end: end)
         .chain(CurveTween(curve: Curves.easeInOut));
@@ -149,7 +118,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ref.read(focusTimeTableDataProvider.notifier);
     focusTimeTableDataNotifier.state =
         await dailyLessonSchedule(ref, focusTimeTableDay);
-    ;
   }
 
   void setFocusTimeTableDay(DateTime dt) {
@@ -159,6 +127,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget timeTableLessonButton(TimeTableCourse? timeTableCourse) {
+    Color foregroundColor = Colors.black;
+    if (timeTableCourse != null) {
+      if (timeTableCourse.cancel) {
+        foregroundColor = Colors.grey;
+      }
+    }
     Map<int, String> roomName = {
       1: '講堂',
       2: '大講義室',
@@ -189,7 +163,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          foregroundColor: foregroundColor,
           fixedSize: const Size.fromHeight(40),
           minimumSize: const Size.fromHeight(40),
           maximumSize: const Size.fromHeight(40),
@@ -342,9 +316,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: focusTimeTableDay.day == date.day
-                              ? customFunColor.shade50
+                              ? customFunColor
                               : Colors.white,
-                          foregroundColor: Colors.black,
+                          foregroundColor: focusTimeTableDay.day == date.day
+                              ? Colors.white
+                              : Colors.black,
                           shape: const CircleBorder(
                             side: BorderSide(
                               color: Colors.black,
@@ -366,16 +342,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             Text(
                               DateFormat('dd').format(date),
                               style: TextStyle(
-                                  fontWeight:
-                                      (focusTimeTableDay.day == date.day)
-                                          ? FontWeight.bold
-                                          : null),
+                                fontWeight: (focusTimeTableDay.day == date.day)
+                                    ? FontWeight.bold
+                                    : null,
+                              ),
                             ),
                             Text(
                               weekString[date.weekday - 1],
                               style: TextStyle(
-                                  fontSize: 9,
-                                  color: weekColors[date.weekday - 1]),
+                                fontSize: 9,
+                                color: focusTimeTableDay.day == date.day
+                                    ? Colors.white
+                                    : weekColors[date.weekday - 1],
+                              ),
                             ),
                           ],
                         ),
@@ -438,72 +417,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }, Icons.event_busy, '休講情報'));
 
     return Scaffold(
-      appBar: AppBar(
-          leading: TextButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) {
-                    return const PersonalTimeTableScreen();
-                  },
-                  transitionsBuilder: animation,
-                ),
-              );
-            },
-            child: const Text(
-              "時間割",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return const SettingScreen();
-                    },
-                    transitionsBuilder: animation,
-                  ),
-                );
-              },
-              icon: const Icon(Icons.settings),
-            ),
-          ]),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
             children: [
               // 時間割
               timeTable(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  style: TextButton.styleFrom(),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) {
+                          return const PersonalTimeTableScreen();
+                        },
+                        transitionsBuilder: animation,
+                      ),
+                    )
+                        .then((value) async {
+                      await getOneDayTimeTable(ref);
+                    });
+                  },
+                  child: Text(
+                    "時間割を設定する ⇀",
+                    style: TextStyle(
+                      color: Colors.blue.shade700,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        PageRouteBuilder(
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) {
-                            return const AppTutorial();
-                          },
-                          transitionsBuilder: animation,
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber.shade700,
-                      fixedSize: Size(infoBoxWidth, 80),
-                    ),
-                    child: const Text(
-                      'アプリの使い方',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
                   ElevatedButton(
                     onPressed: () async {
                       const formUrl = 'https://forms.gle/ruo8iBxLMmvScNMFA';
@@ -525,64 +476,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              // ログインボタン
-              ElevatedButton(
-                onPressed: () async {
-                  // ログインしていないなら
-                  if (currentUser == null) {
-                    final userCredential = await signInWithGoogle();
-                    if (userCredential != null) {
-                      final user = userCredential.user;
-                      if (user != null) {
-                        debugPrint(user.uid);
-                        if (user.email != null) {
-                          if (user.email!.endsWith('@fun.ac.jp')) {
-                            setState(() {
-                              currentUser = user;
-                            });
-                          } else {
-                            await user.delete();
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('このユーザーではログインできません。')),
-                              );
-                            }
-                          }
-                        } else {
-                          await user.delete();
-                        }
-                      } else {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('ログインに失敗しました。')),
-                          );
-                        }
-                      }
-                    }
-                  } else {
-                    await FirebaseAuth.instance.signOut();
-                    setState(() {
-                      currentUser = null;
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  fixedSize: Size(infoBoxWidth + 20, 80),
-                ),
-                child: Text(
-                  (currentUser == null)
-                      ? '未来大Googleアカウントで\nサインイン'
-                      : '${currentUser!.email}\nからログアウト',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
               infoTile(infoTiles),
+              const SizedBox(height: 20),
             ],
           ),
         ),

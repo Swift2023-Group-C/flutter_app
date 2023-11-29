@@ -30,7 +30,7 @@ class PersonalSelectLessonScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 return ListTile(
                   onTap: () {
-                    print(personalLessonIdList);
+                    debugPrint(personalLessonIdList.toString());
                   },
                   title: Text(termList[index]['授業名']),
                   trailing: personalLessonIdList
@@ -60,7 +60,7 @@ class PersonalSelectLessonScreen extends StatelessWidget {
                             // } else {
                             var lessonId = termList[index]['lessonId'];
                             if (lessonId != null) {
-                              print(lessonId);
+                              debugPrint(lessonId.toString());
                               personalLessonIdList.add(lessonId);
                               savePersonalTimeTableList(
                                   personalLessonIdList, ref);
@@ -77,6 +77,4 @@ class PersonalSelectLessonScreen extends StatelessWidget {
       ),
     );
   }
-
-  // TODO dispose
 }

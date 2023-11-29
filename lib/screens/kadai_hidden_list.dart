@@ -24,7 +24,8 @@ class _KadaiHiddenScreenState extends State<KadaiHiddenScreen> {
   List<Kadai> hiddenKadai = [];
 
   Future<void> loadDeleteList() async {
-    final jsonString = await UserPreferences.getDeleteList();
+    final jsonString =
+        await UserPreferences.getString(UserPreferenceKeys.kadaiDeleteList);
     if (jsonString != null) {
       setState(() {
         deleteList = List<int>.from(json.decode(jsonString));
@@ -33,7 +34,8 @@ class _KadaiHiddenScreenState extends State<KadaiHiddenScreen> {
   }
 
   Future<void> saveDeleteList() async {
-    await UserPreferences.setDeleteList(json.encode(deleteList));
+    await UserPreferences.setString(
+        UserPreferenceKeys.kadaiDeleteList, json.encode(deleteList));
   }
 
   Future<void> hiddenKadaiList() async {

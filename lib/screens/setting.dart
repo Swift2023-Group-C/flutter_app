@@ -160,8 +160,8 @@ class _SettingScreenState extends State<SettingScreen> {
   // 設定保存処理
   void _saveSettings(void Function() onFunction) async {
     onFunction();
-    await UserPreferences.setGrade(dropdownValue1);
-    await UserPreferences.setCourse(dropdownValue2);
+    await UserPreferences.setString(UserPreferenceKeys.grade, dropdownValue1);
+    await UserPreferences.setString(UserPreferenceKeys.course, dropdownValue2);
     try {
       if (_userKeyController.text.isNotEmpty) {
         await UserPreferences.setUserKey(_userKeyController.text);
@@ -186,9 +186,12 @@ class _SettingScreenState extends State<SettingScreen> {
 
 //保存設定を確認する処理
   void _checkSettings() async {
-    final String? grade = await UserPreferences.getGrade();
-    final String? course = await UserPreferences.getCourse();
-    final String? userKey = await UserPreferences.getUserKey();
+    final String? grade =
+        await UserPreferences.getString(UserPreferenceKeys.grade);
+    final String? course =
+        await UserPreferences.getString(UserPreferenceKeys.course);
+    final String? userKey =
+        await UserPreferences.getString(UserPreferenceKeys.userKey);
 
     setState(() {
       _userKeyController = TextEditingController(text: userKey);
