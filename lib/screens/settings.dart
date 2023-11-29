@@ -157,18 +157,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void initSettings() async {
+    packageInfo = await PackageInfo.fromPlatform();
     ref.read(settingsGradeProvider.notifier).state =
         await UserPreferences.getString(UserPreferenceKeys.grade) ?? 'なし';
     ref.read(settingsCourseProvider.notifier).state =
         await UserPreferences.getString(UserPreferenceKeys.course) ?? 'なし';
     ref.read(settingsUserKeyProvider.notifier).state =
         await UserPreferences.getString(UserPreferenceKeys.userKey) ?? '';
-    packageInfo = await PackageInfo.fromPlatform();
   }
 
   @override
   void initState() {
     super.initState();
+    WidgetsFlutterBinding.ensureInitialized();
     initSettings();
   }
 
