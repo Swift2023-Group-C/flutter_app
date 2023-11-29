@@ -144,7 +144,8 @@ class _BasePageState extends ConsumerState<BasePage> {
   }
 
   Future<void> loadTimeTableList() async {
-    final jsonString = await UserPreferences.getFinishList();
+    final jsonString =
+        await UserPreferences.getString(UserPreferenceKeys.kadaiFinishList);
     if (jsonString != null) {
       final personalLessonIdListNotifier =
           ref.watch(personalLessonIdListProvider.notifier);

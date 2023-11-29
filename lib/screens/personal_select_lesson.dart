@@ -77,6 +77,4 @@ class PersonalSelectLessonScreen extends StatelessWidget {
       ),
     );
   }
-
-  // TODO dispose
 }

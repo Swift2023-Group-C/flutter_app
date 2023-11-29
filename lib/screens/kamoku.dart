@@ -15,7 +15,8 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   final TextEditingController _controller = TextEditingController();
 
   Future<void> updateGradeCheckedList() async {
-    String? savedGrade = await UserPreferences.getGrade();
+    String? savedGrade =
+        await UserPreferences.getString(UserPreferenceKeys.grade);
 
     if (savedGrade != null) {
       int? index = grade.indexOf(savedGrade);
@@ -28,7 +29,8 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   }
 
   Future<void> updateCourseStrCheckedList() async {
-    String? savedCourse = await UserPreferences.getCourse();
+    String? savedCourse =
+        await UserPreferences.getString(UserPreferenceKeys.course);
 
     if (savedCourse != null) {
       int? index = courseStr.indexOf(savedCourse);

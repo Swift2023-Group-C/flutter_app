@@ -9,7 +9,8 @@ final StateProvider<List<int>> personalLessonIdListProvider =
     StateProvider((ref) => []);
 
 Future<List<int>> loadPersonalTimeTableList(WidgetRef ref) async {
-  final jsonString = await UserPreferences.getFinishList();
+  final jsonString = await UserPreferences.getString(
+      UserPreferenceKeys.personalTimetableListKey);
   if (jsonString != null) {
     final personalLessonIdListNotifier =
         ref.read(personalLessonIdListProvider.notifier);
@@ -37,7 +38,8 @@ Future<Map<String, int>> loadPersonalTimeTableMapString(WidgetRef ref) async {
 
 Future<void> savePersonalTimeTableList(
     List<int> personalTimeTableList, WidgetRef ref) async {
-  await UserPreferences.setFinishList(json.encode(personalTimeTableList));
+  await UserPreferences.setString(UserPreferenceKeys.personalTimetableListKey,
+      json.encode(personalTimeTableList));
   final personalLessonIdListNotifier =
       ref.watch(personalLessonIdListProvider.notifier);
   personalLessonIdListNotifier.state = [...personalTimeTableList];

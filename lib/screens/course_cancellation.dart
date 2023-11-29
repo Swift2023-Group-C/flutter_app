@@ -7,8 +7,7 @@ class CourseCancellationScreen extends StatefulWidget {
   const CourseCancellationScreen({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
-  _CourseCancellationScreenState createState() =>
+  State<CourseCancellationScreen> createState() =>
       _CourseCancellationScreenState();
 }
 

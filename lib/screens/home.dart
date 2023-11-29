@@ -454,14 +454,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
           leading: TextButton(
             onPressed: () {
-              Navigator.of(context).push(
+              Navigator.of(context)
+                  .push(
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) {
                     return const PersonalTimeTableScreen();
                   },
                   transitionsBuilder: animation,
                 ),
-              );
+              )
+                  .then((value) async {
+                await getOneDayTimeTable(ref);
+              });
             },
             child: const Text(
               "時間割",

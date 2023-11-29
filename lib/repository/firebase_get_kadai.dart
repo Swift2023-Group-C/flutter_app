@@ -7,7 +7,7 @@ class FirebaseGetKadai {
   const FirebaseGetKadai();
   Future<List<KadaiList>> getKadaiFromFirebase() async {
     final String userKey =
-        "dotto_hope_user_key_${await UserPreferences.getUserKey()}";
+        "dotto_hope_user_key_${await UserPreferences.getString(UserPreferenceKeys.userKey)}";
     List<Kadai> kadaiList = [];
     final snapshot =
         await GetFirebaseRealtimeDB.getData('hope/users/$userKey/data');

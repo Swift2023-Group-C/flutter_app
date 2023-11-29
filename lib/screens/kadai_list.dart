@@ -127,7 +127,8 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> loadFinishList() async {
-    final jsonString = await UserPreferences.getFinishList();
+    final jsonString =
+        await UserPreferences.getString(UserPreferenceKeys.kadaiFinishList);
     if (jsonString != null) {
       setState(() {
         finishList = List<int>.from(json.decode(jsonString));
@@ -136,11 +137,13 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> saveFinishList() async {
-    await UserPreferences.setFinishList(json.encode(finishList));
+    await UserPreferences.setString(
+        UserPreferenceKeys.kadaiFinishList, json.encode(finishList));
   }
 
   Future<void> loadAlertList() async {
-    final jsonString = await UserPreferences.getAlertList();
+    final jsonString =
+        await UserPreferences.getString(UserPreferenceKeys.kadaiAlertList);
     if (jsonString != null) {
       setState(() {
         alertList = List<int>.from(json.decode(jsonString));
@@ -149,11 +152,13 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> saveAlertList() async {
-    await UserPreferences.setAlertList(json.encode(alertList));
+    await UserPreferences.setString(
+        UserPreferenceKeys.kadaiAlertList, json.encode(alertList));
   }
 
   Future<void> loadDeleteList() async {
-    final jsonString = await UserPreferences.getDeleteList();
+    final jsonString =
+        await UserPreferences.getString(UserPreferenceKeys.kadaiDeleteList);
     if (jsonString != null) {
       setState(() {
         deleteList = List<int>.from(json.decode(jsonString));
@@ -162,7 +167,8 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Future<void> saveDeleteList() async {
-    await UserPreferences.setDeleteList(json.encode(deleteList));
+    await UserPreferences.setString(
+        UserPreferenceKeys.kadaiDeleteList, json.encode(deleteList));
   }
 
   /*void _resetDeleteList() {
@@ -178,7 +184,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }*/
 
   Future<void> getUserKey() async {
-    userKey = await UserPreferences.getUserKey();
+    userKey = await UserPreferences.getString(UserPreferenceKeys.userKey);
   }
 
   String stringFromDateTime(DateTime? dt) {
