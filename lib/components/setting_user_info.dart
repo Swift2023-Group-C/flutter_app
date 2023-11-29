@@ -20,8 +20,6 @@ enum UserPreferenceKeys {
 }
 
 class UserPreferences {
-  static const _keyPersonalTimeTableListKey = 'personalTimeTableListKey';
-
   static Future<void> setBool(UserPreferenceKeys key, bool value) async {
     final prefs = await SharedPreferences.getInstance();
     if (key.type == bool) {
