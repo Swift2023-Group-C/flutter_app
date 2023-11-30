@@ -201,11 +201,11 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
         return AlertDialog(
           title: Column(
             children: [
-              const Text('削除の確認'),
+              const Text('非表示の確認'),
               Text('${kadai.name}'),
             ],
           ),
-          content: const Text('このタスクを削除しますか？'),
+          content: const Text('このタスクを非表示にしますか？'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -232,7 +232,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 });
                 Navigator.of(context).pop();
               },
-              child: const Text('削除'),
+              child: const Text('確認'),
             ),
           ],
         );
@@ -247,11 +247,11 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
         return AlertDialog(
           title: Column(
             children: [
-              const Text('削除の確認'),
+              const Text('非表示の確認'),
               Text(listkadai.courseName),
             ],
           ),
-          content: const Text('このタスクを削除しますか？'),
+          content: const Text('このタスクを非表示にしますか？'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -278,7 +278,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 });
                 Navigator.of(context).pop();
               },
-              child: const Text('削除'),
+              child: const Text('確認'),
             ),
           ],
         );
