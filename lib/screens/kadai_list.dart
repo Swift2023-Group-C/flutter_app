@@ -794,21 +794,23 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                           title: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          SizedBox(height: 20),
                           Text(
                             "ユーザーキーを設定すると課題が表示されます",
-                            style: TextStyle(fontSize: 20),
                           ),
                           Text(
                             "以下のURLからユーザーキーを設定してください",
-                            style: TextStyle(fontSize: 20),
                           ),
                           Text(
                             "パソコンで以下のリンクを開くことをおすすめします",
-                            style: TextStyle(fontSize: 20),
                           ),
                           SelectableText(
                             "https://dotto.web.app/",
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            "ユーザーキーを設定しても表示されない場合は上からスワイプしてください",
                           ),
                         ],
                       )),
