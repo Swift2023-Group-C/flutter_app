@@ -70,7 +70,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget infoButton(BuildContext context, void Function() onPressed,
       IconData icon, String title) {
     final double width = MediaQuery.sizeOf(context).width * 0.26;
-    debugPrint(width.toString());
     const double height = 100;
     return Container(
       margin: const EdgeInsets.all(5),
