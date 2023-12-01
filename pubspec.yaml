@@ -44,6 +44,7 @@ dependencies:
   firebase_storage: ^11.2.8
   firebase_database: ^10.2.7
   firebase_auth: ^4.10.1
+  firebase_app_check: ^0.2.1+6
   google_sign_in: ^6.1.6
   flutter_dotenv: ^5.1.0
   minio_new:
