@@ -17,7 +17,8 @@ Future<void> main() async {
   FirebaseDatabase.instance.setPersistenceEnabled(true);
   await FirebaseAppCheck.instance.activate(
     androidProvider:
-        kReleaseMode ? AndroidProvider.playIntegrity : AndroidProvider.debug,
+        /*kReleaseMode ? AndroidProvider.playIntegrity : */ AndroidProvider
+            .debug,
     appleProvider:
         kReleaseMode ? AppleProvider.deviceCheck : AppleProvider.debug,
   );
