@@ -336,15 +336,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              DateFormat('MM').format(date),
-                              style: const TextStyle(fontSize: 7),
-                            ),
-                            Text(
                               DateFormat('dd').format(date),
                               style: TextStyle(
                                 fontWeight: (focusTimeTableDay.day == date.day)
                                     ? FontWeight.bold
                                     : null,
+                                fontSize: 13,
                               ),
                             ),
                             Text(
