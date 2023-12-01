@@ -14,6 +14,7 @@ import 'package:flutter_app/screens/home.dart';
 import 'package:flutter_app/screens/map.dart';
 import 'package:flutter_app/components/color_fun.dart';
 import 'package:flutter_app/screens/settings.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -32,6 +33,13 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Murecho',
       ),
       home: const BasePage(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('English'), Locale('ja')],
+      locale: const Locale('ja'),
     );
   }
 }
