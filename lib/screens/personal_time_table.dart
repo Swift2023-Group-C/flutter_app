@@ -85,7 +85,7 @@ class _PersonalTimeTableScreenState
     await savePersonalTimeTableList(personalLessonIdList, ref);
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('１つのコマに２つ以上選択できません')),
+      const SnackBar(content: Text('１つのコマに３つ以上選択できません')),
     );
   }
 
