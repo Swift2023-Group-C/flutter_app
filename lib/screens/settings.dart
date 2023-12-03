@@ -181,6 +181,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       behavior: HitTestBehavior.opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: SettingsList(
+        lightTheme: SettingsThemeData(
+          settingsListBackground: Colors.white,
+          settingsSectionBackground:
+              (Platform.isIOS) ? const Color(0xFFF7F7F7) : null,
+        ),
         sections: [
           SettingsSection(
             title: const Text('全般'),

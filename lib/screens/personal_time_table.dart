@@ -113,6 +113,7 @@ class _PersonalTimeTableScreenState
                       .map((lesson) => Expanded(
                           flex: 1,
                           child: Container(
+                            width: double.infinity,
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey),
                               color: Colors.grey.shade300,
