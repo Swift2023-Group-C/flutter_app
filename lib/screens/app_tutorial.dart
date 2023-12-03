@@ -66,6 +66,16 @@ class AppTutorial extends StatelessWidget {
       PageModel.withChild(
         child: _withImage(
           topMargin,
+          'assets/tutorial/home.png',
+          'ホーム',
+          '時間割を設定でき、休講・補講情報などの確認をできます',
+          backgroundColor,
+        ),
+        color: backgroundColor,
+      ),
+      PageModel.withChild(
+        child: _withImage(
+          topMargin,
           'assets/tutorial/map.png',
           '学内マップ',
           '使用中の教室を確認したり、教員名で検索したりできます',
