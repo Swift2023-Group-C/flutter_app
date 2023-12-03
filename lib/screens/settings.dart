@@ -308,6 +308,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 title: const Text('バージョン'),
                 leading: const Icon(Icons.info),
                 value: Text(packageInfo?.version ?? ''),
+                trailing: const Icon(null),
               ),
             ],
           ),
