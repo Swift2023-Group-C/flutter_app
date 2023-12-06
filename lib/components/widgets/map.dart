@@ -1062,7 +1062,7 @@ abstract final class GridMaps {
       Tile(3, 4, TileType.subroom, txt: 'R625'),
       Tile(4, 3, TileType.subroom, txt: 'R635'),
       Tile(4, 2, TileType.teacherroom, txt: 'R655', right: 1),
-      Tile(4, 2, TileType.subroom, left: 1, txt: 'R608'),
+      Tile(4, 2, TileType.teacherroom, left: 1, txt: 'R608'),
       Tile(4, 2, TileType.teacherroom, txt: 'R654', right: 1),
       Tile(4, 3, TileType.subroom, txt: 'R634'),
       Tile(4, 2, TileType.teacherroom, left: 1, txt: 'R607'),

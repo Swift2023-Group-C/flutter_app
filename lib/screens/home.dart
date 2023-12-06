@@ -382,7 +382,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     const Map<String, String> fileNamePath = {
       'バス時刻表': 'home/hakodatebus55.pdf',
-      '学年歴': 'home/academic_calendar.pdf',
+      '学年暦': 'home/academic_calendar.pdf',
       '前期時間割': 'home/timetable_first.pdf',
       '後期時間割': 'home/timetable_second.pdf',
     };
