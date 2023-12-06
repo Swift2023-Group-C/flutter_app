@@ -95,8 +95,8 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     if (scheduledDate.isAfter(now)) {
       await flutterLocalNotificationsPlugin.zonedSchedule(
           kadai.id!,
-          '${kadai.courseName}「${kadai.name}」',
-          '締切1日前です',
+          '${kadai.courseName}',
+          '${kadai.name}\n締切1日前です',
           scheduledDate,
           const NotificationDetails(
             android: AndroidNotificationDetails(
@@ -542,6 +542,18 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     return false;
   }
 
+  bool startActionPaneBool(DateTime? endtime) {
+    DateTime now = DateTime.now().subtract(const Duration(days: 1));
+    if (endtime != null) {
+      if (endtime.isBefore(now)) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  }
+
   Widget _kadaiListView(List<KadaiList> data) {
     return ListView.builder(
       itemCount: data.length,
@@ -554,7 +566,9 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           return Card(
               child: Slidable(
             key: UniqueKey(),
-            startActionPane: _kadaiStartSlidable(kadai),
+            startActionPane: startActionPaneBool(kadai.endtime)
+                ? _kadaiStartSlidable(kadai)
+                : null,
             endActionPane: _kadaiEndSlidable(kadai),
             child: ListTile(
               contentPadding:
@@ -618,7 +632,9 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
         return Card(
           child: Slidable(
             key: Key(data[index].toString()),
-            startActionPane: tmpKadaiStartSlidable(data[index]),
+            startActionPane: startActionPaneBool(data.first.endtime)
+                ? tmpKadaiStartSlidable(data[index])
+                : null,
             endActionPane: tmpKadaiEndSlidable(data[index]),
             child: ExpansionTile(
               childrenPadding: const EdgeInsets.all(0),
@@ -677,7 +693,9 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                       ),
                       Slidable(
                         key: UniqueKey(),
-                        startActionPane: _kadaiStartSlidable(kadai),
+                        startActionPane: startActionPaneBool(kadai.endtime)
+                            ? _kadaiStartSlidable(kadai)
+                            : null,
                         endActionPane: _kadaiEndSlidable(kadai),
                         child: ListTile(
                           minLeadingWidth: 0,
