@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/kadai.dart';
+import 'package:dotto/components/kadai.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_app/components/setting_user_info.dart';
+import 'package:dotto/components/setting_user_info.dart';
 import 'dart:convert';
-import 'package:flutter_app/repository/firebase_get_kadai.dart';
+import 'package:dotto/repository/firebase_get_kadai.dart';
 
 class KadaiHiddenScreen extends StatefulWidget {
   const KadaiHiddenScreen({

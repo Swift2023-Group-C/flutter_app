@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_app/repository/get_application_path.dart';
+import 'package:dotto/repository/get_application_path.dart';
 import 'package:path/path.dart';
 
 class SyllabusDBConfig {

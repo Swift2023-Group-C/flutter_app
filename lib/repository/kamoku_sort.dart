@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/repository/narrowed_lessons.dart';
+import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter_app/screens/kamoku_detail_page_view.dart';
-import 'package:flutter_app/components/db_config.dart';
+import 'package:dotto/screens/kamoku_detail_page_view.dart';
+import 'package:dotto/components/db_config.dart';
 
 //sort用のDB取得
 Future<List<Map<String, dynamic>>> fetchRecords() async {

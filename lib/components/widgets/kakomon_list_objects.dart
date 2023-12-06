@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/file_viewer.dart';
+import 'package:dotto/screens/file_viewer.dart';
 
 class KakomonListObjects extends StatefulWidget {
   const KakomonListObjects({Key? key, required this.url}) : super(key: key);

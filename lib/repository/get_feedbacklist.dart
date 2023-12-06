@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_app/components/widgets/progress_indicator.dart';
+import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class FeedbackList extends StatefulWidget {

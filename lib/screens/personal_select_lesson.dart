@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/repository/narrowed_lessons.dart';
+import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PersonalSelectLessonScreen extends StatelessWidget {

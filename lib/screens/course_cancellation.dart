@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:flutter_app/repository/read_json_file.dart';
-import 'package:flutter_app/components/widgets/progress_indicator.dart';
+import 'package:dotto/repository/read_json_file.dart';
+import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_app/repository/narrowed_lessons.dart';
+import 'package:dotto/repository/narrowed_lessons.dart';
 
 class CourseCancellationScreen extends StatefulWidget {
   const CourseCancellationScreen({Key? key}) : super(key: key);

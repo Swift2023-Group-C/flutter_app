@@ -2,24 +2,24 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/app_tutorial.dart';
-import 'package:flutter_app/components/map_detail.dart';
-import 'package:flutter_app/repository/download_file_from_firebase.dart';
-import 'package:flutter_app/repository/find_rooms_in_use.dart';
-import 'package:flutter_app/repository/narrowed_lessons.dart';
-import 'package:flutter_app/repository/read_json_file.dart';
-import 'package:flutter_app/screens/kadai_list.dart';
-import 'package:flutter_app/screens/kamoku.dart';
-import 'package:flutter_app/screens/home.dart';
-import 'package:flutter_app/screens/map.dart';
-import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/screens/settings.dart';
+import 'package:dotto/screens/app_tutorial.dart';
+import 'package:dotto/components/map_detail.dart';
+import 'package:dotto/repository/download_file_from_firebase.dart';
+import 'package:dotto/repository/find_rooms_in_use.dart';
+import 'package:dotto/repository/narrowed_lessons.dart';
+import 'package:dotto/repository/read_json_file.dart';
+import 'package:dotto/screens/kadai_list.dart';
+import 'package:dotto/screens/kamoku.dart';
+import 'package:dotto/screens/home.dart';
+import 'package:dotto/screens/map.dart';
+import 'package:dotto/components/color_fun.dart';
+import 'package:dotto/screens/settings.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uni_links/uni_links.dart';
 
-import 'package:flutter_app/components/setting_user_info.dart';
-import 'package:flutter_app/components/db_config.dart';
+import 'package:dotto/components/setting_user_info.dart';
+import 'package:dotto/components/db_config.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

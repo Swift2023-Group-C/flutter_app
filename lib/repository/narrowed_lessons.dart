@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:flutter_app/components/db_config.dart';
-import 'package:flutter_app/repository/read_json_file.dart';
-import 'package:flutter_app/components/setting_user_info.dart';
+import 'package:dotto/components/db_config.dart';
+import 'package:dotto/repository/read_json_file.dart';
+import 'package:dotto/components/setting_user_info.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 

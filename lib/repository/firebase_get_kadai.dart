@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/kadai.dart';
-import 'package:flutter_app/components/setting_user_info.dart';
-import 'package:flutter_app/repository/get_firebase_realtime_db.dart';
+import 'package:dotto/components/kadai.dart';
+import 'package:dotto/components/setting_user_info.dart';
+import 'package:dotto/repository/get_firebase_realtime_db.dart';
 
 class FirebaseGetKadai {
   const FirebaseGetKadai();

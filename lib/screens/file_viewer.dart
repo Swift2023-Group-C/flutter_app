@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/repository/download_file_from_firebase.dart';
-import 'package:flutter_app/repository/get_application_path.dart';
+import 'package:dotto/repository/download_file_from_firebase.dart';
+import 'package:dotto/repository/get_application_path.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_app/components/s3.dart';
+import 'package:dotto/components/s3.dart';
 import 'dart:typed_data';
-import 'package:flutter_app/components/widgets/progress_indicator.dart';
+import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:share_plus/share_plus.dart';
 
 enum StorageService { cloudflare, firebase }

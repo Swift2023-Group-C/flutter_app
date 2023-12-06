@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/kamoku_detail_syllabus.dart';
-import 'package:flutter_app/screens/kakomon_list.dart';
-import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/screens/kamoku_detail_feedback.dart';
+import 'package:dotto/screens/kamoku_detail_syllabus.dart';
+import 'package:dotto/screens/kakomon_list.dart';
+import 'package:dotto/components/color_fun.dart';
+import 'package:dotto/screens/kamoku_detail_feedback.dart';
 
 class KamokuDetailPageScreen extends StatefulWidget {
   const KamokuDetailPageScreen(

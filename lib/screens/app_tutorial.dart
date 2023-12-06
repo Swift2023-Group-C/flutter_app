@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_overboard/flutter_overboard.dart';
-import 'package:flutter_app/components/color_fun.dart';
+import 'package:dotto/components/color_fun.dart';
 
 class AppTutorial extends StatelessWidget {
   const AppTutorial({Key? key}) : super(key: key);

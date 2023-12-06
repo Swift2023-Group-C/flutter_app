@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app.dart';
-import 'package:flutter_app/components/map_detail.dart';
-import 'package:flutter_app/screens/map.dart';
+import 'package:dotto/app.dart';
+import 'package:dotto/components/map_detail.dart';
+import 'package:dotto/screens/map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 

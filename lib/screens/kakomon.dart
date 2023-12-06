@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/kakomon_list.dart';
+import 'package:dotto/screens/kakomon_list.dart';
 
 class KakomonScreen extends StatefulWidget {
   const KakomonScreen({Key? key}) : super(key: key);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/widgets/progress_indicator.dart';
-import 'package:flutter_app/repository/kamoku_sort.dart';
+import 'package:dotto/components/widgets/progress_indicator.dart';
+import 'package:dotto/repository/kamoku_sort.dart';
 
 class KamokuDetailSyllabusScreen extends StatelessWidget {
   const KamokuDetailSyllabusScreen({Key? key, required this.lessonId})

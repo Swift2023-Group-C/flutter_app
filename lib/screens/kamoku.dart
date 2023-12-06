@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/repository/kamoku_sort.dart';
-import 'package:flutter_app/components/setting_user_info.dart';
+import 'package:dotto/repository/kamoku_sort.dart';
+import 'package:dotto/components/setting_user_info.dart';
 
 class KamokuSearchScreen extends StatefulWidget {
   const KamokuSearchScreen({Key? key}) : super(key: key);

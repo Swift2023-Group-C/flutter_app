@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/repository/narrowed_lessons.dart';
-import 'package:flutter_app/screens/file_viewer.dart';
-import 'package:flutter_app/screens/course_cancellation.dart';
+import 'package:dotto/components/color_fun.dart';
+import 'package:dotto/repository/narrowed_lessons.dart';
+import 'package:dotto/screens/file_viewer.dart';
+import 'package:dotto/screens/course_cancellation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_app/screens/personal_time_table.dart';
+import 'package:dotto/screens/personal_time_table.dart';
 import 'package:intl/intl.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {

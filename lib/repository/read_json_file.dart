@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:flutter_app/repository/get_application_path.dart';
+import 'package:dotto/repository/get_application_path.dart';
 
 Future<String> readJsonFile(String fileName) async {
   final filePath = await getApplicationFilePath(fileName);

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/db_config.dart';
-import 'package:flutter_app/components/color_fun.dart';
-import 'package:flutter_app/screens/personal_select_lesson.dart';
+import 'package:dotto/components/db_config.dart';
+import 'package:dotto/components/color_fun.dart';
+import 'package:dotto/screens/personal_select_lesson.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_app/repository/narrowed_lessons.dart';
+import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:sqflite/sqflite.dart';
 
 class PersonalTimeTableScreen extends ConsumerStatefulWidget {
