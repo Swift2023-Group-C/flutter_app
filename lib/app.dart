@@ -140,10 +140,12 @@ class _BasePageState extends ConsumerState<BasePage> {
   @override
   void initState() {
     super.initState();
-    initUniLinks();
-    SyllabusDBConfig.setDB();
-    MapDetailMap.instance.getList();
-    downloadFiles();
+    Future(() async {
+      await initUniLinks();
+      await SyllabusDBConfig.setDB();
+      await MapDetailMap.instance.getList();
+      await downloadFiles();
+    });
   }
 
   Widget animation(BuildContext context, Animation<double> animation,
