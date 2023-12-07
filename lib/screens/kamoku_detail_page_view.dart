@@ -22,6 +22,7 @@ class KamokuDetailPageScreen extends StatefulWidget {
 class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
   final PageController _pageController = PageController();
   int _currentPageIndex = 0;
+  bool appBarText = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,15 @@ class _KamokuDetailPageScreenState extends State<KamokuDetailPageScreen> {
     final deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.lessonName),
+        title: GestureDetector(
+          child:
+              Text(appBarText ? widget.lessonId.toString() : widget.lessonName),
+          onDoubleTap: () {
+            setState(() {
+              appBarText = !appBarText;
+            });
+          },
+        ),
       ),
       body: Column(
         children: [
