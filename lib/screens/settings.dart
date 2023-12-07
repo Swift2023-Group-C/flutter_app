@@ -75,7 +75,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         if (user != null) {
           debugPrint(user.uid);
           if (user.email != null) {
-            if (user.email!.endsWith('@fun.ac.jp')) {
+            if (user.email!.endsWith('@fun.ac.jp') ||
+                user.email! == 'demodotto@gmail.com') {
               setState(() {
                 currentUser = user;
               });
