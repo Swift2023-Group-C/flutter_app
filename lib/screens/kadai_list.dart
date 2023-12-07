@@ -1,7 +1,9 @@
+import 'package:dotto/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:dotto/components/kadai.dart';
 import 'package:dotto/repository/firebase_get_kadai.dart';
@@ -786,60 +788,64 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
           ],
         ),
         body: RefreshIndicator(
-          edgeOffset: 50,
-          onRefresh: () async {
-            //await Future.delayed(const Duration(seconds: 1));
-            setState(() {
-              const FirebaseGetKadai().getKadaiFromFirebase();
-            });
-            await Future.delayed(const Duration(seconds: 1));
-          },
-          child: GestureDetector(
-            onPanDown: (details) => Slidable.of(context)?.close(),
-            child: FutureBuilder(
-              future: const FirebaseGetKadai().getKadaiFromFirebase(),
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<List<KadaiList>>? snapshot,
-              ) {
-                if (snapshot!.hasData) {
-                  delete = snapshot.data!;
-                  return _kadaiListView(snapshot.data!);
-                } else if (snapshot.hasError) {
-                  return ListView(
-                    children: const [
-                      ListTile(
-                          title: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 20),
-                          Text(
-                            "ユーザーキーを設定すると課題が表示されます",
-                          ),
-                          Text(
-                            "以下のURLからユーザーキーを設定してください",
-                          ),
-                          Text(
-                            "パソコンで以下のリンクを開くことをおすすめします",
-                          ),
-                          SelectableText(
-                            "https://dotto.web.app/",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "ユーザーキーを設定しても表示されない場合は上からスワイプしてください",
-                          ),
-                        ],
-                      )),
-                    ],
-                  );
-                } else {
-                  return createProgressIndicator();
-                }
+            edgeOffset: 50,
+            onRefresh: () async {
+              //await Future.delayed(const Duration(seconds: 1));
+              setState(() {
+                const FirebaseGetKadai().getKadaiFromFirebase();
+              });
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            child: Consumer(
+              builder: (context, ref, child) {
+                ref.watch(settingsUserKeyProvider);
+                return GestureDetector(
+                  onPanDown: (details) => Slidable.of(context)?.close(),
+                  child: FutureBuilder(
+                    future: const FirebaseGetKadai().getKadaiFromFirebase(),
+                    builder: (
+                      BuildContext context,
+                      AsyncSnapshot<List<KadaiList>>? snapshot,
+                    ) {
+                      if (snapshot!.hasData) {
+                        delete = snapshot.data!;
+                        return _kadaiListView(snapshot.data!);
+                      } else if (snapshot.hasError) {
+                        return ListView(
+                          children: const [
+                            ListTile(
+                                title: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(height: 20),
+                                Text(
+                                  "ユーザーキーを設定すると課題が表示されます",
+                                ),
+                                Text(
+                                  "以下のURLからユーザーキーを設定してください",
+                                ),
+                                Text(
+                                  "パソコンで以下のリンクを開くことをおすすめします",
+                                ),
+                                SelectableText(
+                                  "https://dotto.web.app/",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                SizedBox(height: 20),
+                                Text(
+                                  "ユーザーキーを設定しても表示されない場合は上からスワイプしてください",
+                                ),
+                              ],
+                            )),
+                          ],
+                        );
+                      } else {
+                        return createProgressIndicator();
+                      }
+                    },
+                  ),
+                );
               },
-            ),
-          ),
-        ));
+            )));
   }
 }
