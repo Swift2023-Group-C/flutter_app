@@ -329,13 +329,13 @@ class SettingsStringScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final RegExp userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
     controller.text = initString;
     return Consumer(
       builder: (context, ref, child) {
         return WillPopScope(
             onWillPop: () async {
               String text = controller.text;
-              final RegExp userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
               if (text.isNotEmpty) {
                 if (userKeyPattern.hasMatch(text)) {
                   await UserPreferences.setString(
@@ -372,6 +372,19 @@ class SettingsStringScreen extends StatelessWidget {
                       RegExp(r'[a-zA-Z0-9]'),
                     ),
                   ],
+                  onChanged: (value) async {
+                    if (value.length == 16) {
+                      if (userKeyPattern.hasMatch(value)) {
+                        await UserPreferences.setString(
+                            UserPreferenceKeys.userKey, value);
+                        ref.read(provider.notifier).state = value;
+                      }
+                    } else if (value.isEmpty) {
+                      await UserPreferences.setString(
+                          UserPreferenceKeys.userKey, value);
+                      ref.read(provider.notifier).state = '';
+                    }
+                  },
                 ),
               ),
             ));
