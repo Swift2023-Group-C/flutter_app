@@ -1,3 +1,4 @@
+import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,82 +57,137 @@ class _SearchBoxState extends State<SearchBox> {
   }
 }
 
-class SearchResults extends StatefulWidget {
+class SearchResults extends StatelessWidget {
   final List<Map<String, dynamic>> records;
 
   const SearchResults({Key? key, required this.records}) : super(key: key);
 
-  @override
-  State<SearchResults> createState() => _SearchResultsState();
-}
+  Future<List<Map<String, dynamic>>> fetchWeekPeriodDB() async {
+    Database database = await openDatabase(SyllabusDBConfig.dbPath);
 
-//授業名を検索するときのシステム
-class _SearchResultsState extends State<SearchResults> {
+    List<Map<String, dynamic>> records =
+        await database.rawQuery('SELECT * FROM week_period where lessonId');
+    return records;
+  }
+
+  Future<Map<int, String>> getWeekPeriod() async {
+    List<Map<String, dynamic>> records = await fetchWeekPeriodDB();
+    Map<int, Map<int, List<int>>> weekPeriodMap = {};
+    for (var record in records) {
+      final int lessonId = record['lessonId'];
+      final int week = record['week'];
+      final int period = record['period'];
+      if (weekPeriodMap.containsKey(lessonId)) {
+        if (weekPeriodMap[lessonId]!.containsKey(week)) {
+          weekPeriodMap[lessonId]![week]!.add(period);
+        } else {
+          weekPeriodMap[lessonId]![week] = [period];
+        }
+      } else {
+        weekPeriodMap[lessonId] = {
+          week: [period]
+        };
+      }
+    }
+    Map<int, String> weekPeriodStringMap = weekPeriodMap.map((lessonId, value) {
+      List<String> weekString = ['', '月', '火', '水', '木', '金', '土', '日'];
+      List<String> s = [];
+      value.forEach(
+        (week, periodList) {
+          if (week != 0) {
+            s.add('${weekString[week]}${periodList.join()}');
+          }
+        },
+      );
+      return MapEntry(lessonId, s.join(','));
+    });
+    return weekPeriodStringMap;
+  }
+
   @override
   Widget build(BuildContext context) {
     //loadPersonalTimeTableList();
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: widget.records.length,
-      itemBuilder: (context, index) {
-        final record = widget.records[index];
-        return ListTile(
-          title: Text(record['授業名'] ?? ''),
-          onTap: () {
-            Navigator.of(context).push(
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) {
-                  return KamokuDetailPageScreen(
-                    lessonId: record['LessonId'],
-                    lessonName: record['授業名'],
-                    kakomonLessonId: record['過去問'],
+    return FutureBuilder(
+      future: getWeekPeriod(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          Map<int, String> weekPeriodStringMap = snapshot.data!;
+          return ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: records.length,
+            itemBuilder: (context, index) {
+              final record = records[index];
+              final int lessonId = record['LessonId'];
+              return ListTile(
+                title: Text(record['授業名'] ?? ''),
+                subtitle: weekPeriodStringMap.containsKey(lessonId)
+                    ? Text(weekPeriodStringMap[lessonId]!)
+                    : null,
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return KamokuDetailPageScreen(
+                          lessonId: record['LessonId'],
+                          lessonName: record['授業名'],
+                          kakomonLessonId: record['過去問'],
+                        );
+                      },
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const Offset begin = Offset(1.0, 0.0); // 右から左
+                        const Offset end = Offset.zero;
+                        final Animatable<Offset> tween =
+                            Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: Curves.easeInOut));
+                        final Animation<Offset> offsetAnimation =
+                            animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
                   );
                 },
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  const Offset begin = Offset(1.0, 0.0); // 右から左
-                  const Offset end = Offset.zero;
-                  final Animatable<Offset> tween = Tween(begin: begin, end: end)
-                      .chain(CurveTween(curve: Curves.easeInOut));
-                  final Animation<Offset> offsetAnimation =
-                      animation.drive(tween);
-                  return SlideTransition(
-                    position: offsetAnimation,
-                    child: child,
-                  );
-                },
-              ),
-            );
-          },
-          trailing: const Icon(Icons.chevron_right),
-          leading: Consumer(
-            builder: (context, ref, child) {
-              final personalLessonIdList =
-                  ref.watch(personalLessonIdListProvider);
-              return IconButton(
-                icon: Icon(Icons.playlist_add,
-                    color: personalLessonIdList.contains(record['LessonId'])
-                        ? Colors.green
-                        : Colors.black),
-                onPressed: () {
-                  if (!personalLessonIdList.contains(record['LessonId'])) {
-                    personalLessonIdList.add(record['LessonId']);
-                    savePersonalTimeTableList(personalLessonIdList, ref);
-                  } else {
-                    personalLessonIdList
-                        .removeWhere((item) => item == record['LessonId']);
-                    savePersonalTimeTableList(personalLessonIdList, ref);
-                  }
-                },
+                trailing: const Icon(Icons.chevron_right),
+                leading: Consumer(
+                  builder: (context, ref, child) {
+                    final personalLessonIdList =
+                        ref.watch(personalLessonIdListProvider);
+                    return IconButton(
+                      icon: Icon(Icons.playlist_add,
+                          color:
+                              personalLessonIdList.contains(record['LessonId'])
+                                  ? Colors.green
+                                  : Colors.black),
+                      onPressed: () {
+                        if (!personalLessonIdList
+                            .contains(record['LessonId'])) {
+                          personalLessonIdList.add(record['LessonId']);
+                          savePersonalTimeTableList(personalLessonIdList, ref);
+                        } else {
+                          personalLessonIdList.removeWhere(
+                              (item) => item == record['LessonId']);
+                          savePersonalTimeTableList(personalLessonIdList, ref);
+                        }
+                      },
+                    );
+                  },
+                ),
               );
             },
-          ),
-        );
+            separatorBuilder: (context, index) => const Divider(
+              height: 0,
+            ),
+          );
+        } else {
+          return Center(
+            child: createProgressIndicator(),
+          );
+        }
       },
-      separatorBuilder: (context, index) => const Divider(
-        height: 0,
-      ),
     );
   }
 }

@@ -46,6 +46,7 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
   List<String> senmonKyoyo = ['専門', '教養'];
   List<String> grade = ['1年', '2年', '3年', '4年'];
   List<String> courseStr = ['情報システム', '情報デザイン', '複雑', '知能', '高度ICT'];
+  List<String> coursedisplayStr = ['情シス', '情デザ', '複雑', '知能', '高度ICT'];
   List<String> classification = ['必修', '選択'];
   List<String> education = ['社会', '人間', '科学', '健康', 'コミュ'];
 
@@ -111,11 +112,12 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 12,
-                  horizontal: 36,
+                  horizontal: 24,
                 ),
                 child: TextField(
                   controller: _controller,
@@ -141,7 +143,8 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                   ),
                   Visibility(
                     visible: senmonKyoyoStatus == 0,
-                    child: buildFilterRow(courseStr, courseStrCheckedList),
+                    child:
+                        buildFilterRow(coursedisplayStr, courseStrCheckedList),
                   ),
                   Visibility(
                     visible: classificationStatus(),
@@ -152,44 +155,52 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                     visible: senmonKyoyoStatus == 1,
                     child: buildFilterRow(education, educationCheckedList),
                   ),
-                  Row(children: [
-                    TextButton(
+                ],
+              ),
+              Stack(
+                alignment: Alignment.topLeft,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5),
+                    child: TextButton(
                         onPressed: () {
                           falseAll();
                           _controller.clear();
                           word = '';
                         },
                         child: const Text('リセット')),
-                  ])
+                  ),
+                  Center(
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          FocusScope.of(context).unfocus();
+                          List<Map<String, dynamic>> records = await search(
+                              term: termCheckedList,
+                              senmon: senmonKyoyoStatus,
+                              grade: gradeCheckedList,
+                              course: courseStrCheckedList,
+                              classification: classificationCheckedList,
+                              education: educationCheckedList);
+                          searchClasses(word, records);
+                        },
+                        child: const SizedBox(
+                            width: 120,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '科目検索',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Icon(
+                                  Icons.search,
+                                )
+                              ],
+                            ))),
+                  ),
                 ],
               ),
-              ElevatedButton(
-                  onPressed: () async {
-                    FocusScope.of(context).unfocus();
-                    List<Map<String, dynamic>> records = await search(
-                        term: termCheckedList,
-                        senmon: senmonKyoyoStatus,
-                        grade: gradeCheckedList,
-                        course: courseStrCheckedList,
-                        classification: classificationCheckedList,
-                        education: educationCheckedList);
-                    searchClasses(word, records);
-                  },
-                  child: const SizedBox(
-                      width: 120,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '科目検索',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Icon(
-                            Icons.search,
-                          )
-                        ],
-                      ))),
               const Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
@@ -223,20 +234,23 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             for (int i = 0; i < items.length; i++)
-              Row(
-                children: [
-                  Checkbox(
-                    value: checkedList[i],
-                    onChanged: (bool? value) {
-                      setState(() {
-                        checkedList[i] = value ?? false;
-                      });
-                    },
-                  ),
-                  Text(items[i]),
-                ],
+              SizedBox(
+                width: 100,
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: checkedList[i],
+                      onChanged: (bool? value) {
+                        setState(() {
+                          checkedList[i] = value ?? false;
+                        });
+                      },
+                    ),
+                    Text(items[i]),
+                  ],
+                ),
               ),
-            const SizedBox(width: 20),
+            const SizedBox(width: 10),
           ],
         ),
       ),
@@ -252,21 +266,24 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             for (int i = 0; i < senmonKyoyo.length; i++)
-              Row(
-                children: [
-                  Radio(
-                    value: i,
-                    onChanged: (value) {
-                      setState(() {
-                        senmonKyoyoStatus = value ?? -1;
-                      });
-                    },
-                    groupValue: senmonKyoyoStatus,
-                  ),
-                  Text(senmonKyoyo[i]),
-                ],
+              SizedBox(
+                width: 100,
+                child: Row(
+                  children: [
+                    Radio(
+                      value: i,
+                      onChanged: (value) {
+                        setState(() {
+                          senmonKyoyoStatus = value ?? -1;
+                        });
+                      },
+                      groupValue: senmonKyoyoStatus,
+                    ),
+                    Text(senmonKyoyo[i]),
+                  ],
+                ),
               ),
-            const SizedBox(width: 20),
+            const SizedBox(width: 10),
           ],
         ),
       ),
