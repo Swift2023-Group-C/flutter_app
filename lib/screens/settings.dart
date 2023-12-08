@@ -315,7 +315,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               SettingsTile.navigation(
                 title: const Text('バージョン'),
                 leading: const Icon(Icons.info),
-                value: FutureBuilder(
+                trailing: FutureBuilder(
                   future: PackageInfo.fromPlatform(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
@@ -326,7 +326,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     }
                   },
                 ),
-                trailing: const Icon(null),
               ),
             ],
           ),
