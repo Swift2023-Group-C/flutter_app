@@ -411,13 +411,16 @@ class MapBottomSheet extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(mapDetail.header,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  SelectableText(
+                    mapDetail.header,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(width: double.infinity, height: 10),
-                  if (mapDetail.detail != null) Text(mapDetail.detail!),
+                  if (mapDetail.detail != null)
+                    SelectableText(mapDetail.detail!),
                   if (mapDetail.mail != null)
-                    Text('${mapDetail.mail}@fun.ac.jp'),
+                    SelectableText('${mapDetail.mail}@fun.ac.jp'),
                 ],
               ),
             ),
