@@ -316,10 +316,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 title: const Text('バージョン'),
                 leading: const Icon(Icons.info),
                 value: FutureBuilder(
-                  future: getVersion(),
+                  future: PackageInfo.fromPlatform(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return Text(snapshot.data!);
+                      var data = snapshot.data!;
+                      return Text(data.version);
                     } else {
                       return const Text('');
                     }
