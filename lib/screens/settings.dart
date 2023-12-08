@@ -35,6 +35,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  Future<String?> getVersion() async {
+    packageInfo = await PackageInfo.fromPlatform();
+    if (packageInfo != null) {
+      return packageInfo!.version;
+    }
+    return null;
+  }
+
   Future<UserCredential?> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -160,7 +168,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void initSettings() async {
-    packageInfo = await PackageInfo.fromPlatform();
     ref.read(settingsGradeProvider.notifier).state =
         await UserPreferences.getString(UserPreferenceKeys.grade) ?? 'なし';
     ref.read(settingsCourseProvider.notifier).state =
@@ -308,7 +315,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               SettingsTile.navigation(
                 title: const Text('バージョン'),
                 leading: const Icon(Icons.info),
-                value: Text(packageInfo?.version ?? ''),
+                value: FutureBuilder(
+                  future: getVersion(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(snapshot.data!);
+                    } else {
+                      return const Text('');
+                    }
+                  },
+                ),
                 trailing: const Icon(null),
               ),
             ],
