@@ -17,14 +17,14 @@ class PersonalTimeTableScreen extends ConsumerStatefulWidget {
 class _PersonalTimeTableScreenState
     extends ConsumerState<PersonalTimeTableScreen> {
   late List<Map<String, dynamic>> records = [];
-  final PageController _pageController = PageController();
+  PageController _pageController = PageController();
   int _currentPageIndex = 0;
 
   Future<List<Map<String, dynamic>>> fetchRecords() async {
     Database database = await openDatabase(SyllabusDBConfig.dbPath);
 
     List<Map<String, dynamic>> records =
-        await database.rawQuery('SELECT * FROM week_period');
+        await database.rawQuery('SELECT * FROM week_period order by lessonId');
     return records;
   }
 
@@ -197,9 +197,18 @@ class _PersonalTimeTableScreenState
     ));
   }
 
+  void initShowPage() {
+    DateTime now = DateTime.now();
+    if ((now.month >= 9) || (now.month <= 2)) {
+      _pageController = PageController(initialPage: 1);
+      _currentPageIndex = 1;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    initShowPage();
     fetchRecords().then((value) {
       setState(() {
         records = value;

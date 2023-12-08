@@ -20,10 +20,11 @@ class PersonalSelectLessonScreen extends StatelessWidget {
           (record['開講時期'] == term || record['開講時期'] == 0);
     }).toList();
     final weekString = ['月', '火', '水', '木', '金'];
+    final termString = {10: '前期', 20: '後期'};
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${weekString[week - 1]}曜$period限'),
+        title: Text('${termString[term]} ${weekString[week - 1]}曜$period限'),
       ),
       body: Consumer(
         builder: (context, ref, child) {
