@@ -1,3 +1,5 @@
+import 'package:dotto/components/db_config.dart';
+import 'package:dotto/screens/kamoku_detail_page_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dotto/components/color_fun.dart';
@@ -5,6 +7,7 @@ import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:dotto/screens/file_viewer.dart';
 import 'package:dotto/screens/course_cancellation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dotto/screens/personal_time_table.dart';
 import 'package:intl/intl.dart';
@@ -125,13 +128,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     focusTimeTableDayNotifier.state = dt;
   }
 
-  Widget timeTableLessonButton(TimeTableCourse? timeTableCourse) {
-    Color foregroundColor = Colors.black;
-    if (timeTableCourse != null) {
-      if (timeTableCourse.cancel) {
-        foregroundColor = Colors.grey;
-      }
+  Future<Map<String, dynamic>?> fetchDB(int lessonId) async {
+    Database database = await openDatabase(SyllabusDBConfig.dbPath);
+
+    List<Map<String, dynamic>> records = await database.rawQuery(
+        'SELECT LessonId, 過去問, 授業名 FROM sort where LessonId = ?', [lessonId]);
+    if (records.isEmpty) {
+      return null;
     }
+    return records.first;
+  }
+
+  Widget timeTableLessonButton(TimeTableCourse? timeTableCourse) {
     Map<int, String> roomName = {
       1: '講堂',
       2: '大講義室',
@@ -159,74 +167,105 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     };
     return SizedBox(
       height: 40,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: foregroundColor,
-          fixedSize: const Size.fromHeight(40),
-          minimumSize: const Size.fromHeight(40),
-          maximumSize: const Size.fromHeight(40),
-        ),
-        onPressed: () {},
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // 科目名表示など
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    (timeTableCourse != null) ? timeTableCourse.title : '-',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (timeTableCourse != null)
-                    Text(
-                      timeTableCourse.resourseIds
-                          .map((resourceId) => roomName.containsKey(resourceId)
-                              ? roomName[resourceId]
-                              : null)
-                          .toList()
-                          .join(', '),
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                      ),
+      child: GestureDetector(
+        onTap: (timeTableCourse == null)
+            ? null
+            : () async {
+                Map<String, dynamic>? record =
+                    await fetchDB(timeTableCourse.lessonId);
+                if (record == null) return;
+                if (context.mounted) {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return KamokuDetailPageScreen(
+                          lessonId: record['LessonId'],
+                          lessonName: record['授業名'],
+                          kakomonLessonId: record['過去問'],
+                        );
+                      },
+                      transitionsBuilder: animation,
                     ),
-                ],
-              ),
+                  );
+                }
+              },
+        child: Material(
+          elevation: 2.0,
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          child: Container(
+            height: 40,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(5)),
             ),
-            // 休講情報など
-            if (timeTableCourse != null)
-              if (timeTableCourse.cancel)
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.cancel_outlined,
-                      color: Colors.red,
-                    ),
-                    Text(
-                      "休講",
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ],
-                )
-              else if (timeTableCourse.sup)
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.orange,
-                    ),
-                    Text(
-                      "補講",
-                      style: TextStyle(color: Colors.orange),
-                    ),
-                  ],
-                )
-          ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // 科目名表示など
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        (timeTableCourse != null) ? timeTableCourse.title : '-',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (timeTableCourse != null)
+                        Text(
+                          timeTableCourse.resourseIds
+                              .map((resourceId) =>
+                                  roomName.containsKey(resourceId)
+                                      ? roomName[resourceId]
+                                      : null)
+                              .toList()
+                              .join(', '),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                // 休講情報など
+                if (timeTableCourse != null)
+                  if (timeTableCourse.cancel)
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.cancel_outlined,
+                          color: Colors.red,
+                        ),
+                        Text(
+                          "休講",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ],
+                    )
+                  else if (timeTableCourse.sup)
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.orange,
+                        ),
+                        Text(
+                          "補講",
+                          style: TextStyle(color: Colors.orange),
+                        ),
+                      ],
+                    )
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -245,10 +284,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Container(
             height: 40,
+            width: 40,
             alignment: Alignment.centerLeft,
             child: Text('$period限'),
           ),
-          const SizedBox(width: 15),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
