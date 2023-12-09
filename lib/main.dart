@@ -17,10 +17,8 @@ Future<void> main() async {
   FirebaseDatabase.instance.setPersistenceEnabled(true);
   await FirebaseAppCheck.instance.activate(
     androidProvider:
-        /*kReleaseMode ? AndroidProvider.playIntegrity : */ AndroidProvider
-            .debug,
-    appleProvider:
-        kReleaseMode ? AppleProvider.deviceCheck : AppleProvider.debug,
+        kReleaseMode ? AndroidProvider.playIntegrity : AndroidProvider.debug,
+    appleProvider: kReleaseMode ? AppleProvider.appAttest : AppleProvider.debug,
   );
   await dotenv.load(fileName: ".env.dev");
   // 画面の向きを固定.
