@@ -142,9 +142,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget timeTableLessonButton(TimeTableCourse? timeTableCourse) {
     Color foregroundColor = Colors.black;
     if (timeTableCourse != null) {
-        if (timeTableCourse.cancel) {
-            foregroundColor = Colors.grey;
-        }
+      if (timeTableCourse.cancel) {
+        foregroundColor = Colors.grey;
+      }
     }
     Map<int, String> roomName = {
       1: '講堂',
@@ -218,7 +218,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         (timeTableCourse != null) ? timeTableCourse.title : '-',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: foregroundColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
