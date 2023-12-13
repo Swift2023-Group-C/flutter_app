@@ -112,17 +112,19 @@ class _BasePageState extends ConsumerState<BasePage> {
   late List<String?> parameter;
 
   Future<void> initUniLinks() async {
-    linkStream.listen((String? link) {
+    linkStream.listen((String? link) async {
       //さっき設定したスキームをキャッチしてここが走る。
       parameter = getQueryParameter(link);
       if (parameter[0] != null && parameter[1] != null) {
         if (parameter[0] == 'config') {
-          UserPreferences.setUserKey(parameter[1]!);
-          /*setState(() {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('設定が保存されました。')),
-            );
-          });*/
+          final String userKey = parameter[1]!;
+          final RegExp userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
+          if (userKeyPattern.hasMatch(userKey)) {
+            _onItemTapped(4);
+            await UserPreferences.setString(
+                UserPreferenceKeys.userKey, userKey);
+            ref.read(settingsUserKeyProvider.notifier).state = userKey;
+          }
         }
       }
     }, onError: (err) {
