@@ -1,6 +1,8 @@
 .env
 .env.dev
 
+.fvm/flutter_sdk
+
 test.dart
 
 # Miscellaneous
