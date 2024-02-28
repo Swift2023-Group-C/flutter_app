@@ -1,7 +1,9 @@
 .env
 .env.dev
 
-.fvm/flutter_sdk
+# FVM Version Cache
+.fvm/
+!.fvm/fvm_config.json
 
 test.dart
 
