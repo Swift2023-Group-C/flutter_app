@@ -80,12 +80,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     );
   }
 
-  Future<int> _getPendingNotificationCount() async {
-    List<PendingNotificationRequest> p =
-        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    return p.length;
-  }
-
   Future<void> _zonedScheduleNotification(Kadai kadai) async {
     DateTime t = kadai.endtime!;
     // iは通知のID 同じ数字を使うと上書きされる
