@@ -15,8 +15,7 @@ void main() async {
 }
 
 class KamokuFeedbackScreen extends StatefulWidget {
-  const KamokuFeedbackScreen({Key? key, required this.lessonId})
-      : super(key: key);
+  const KamokuFeedbackScreen({super.key, required this.lessonId});
 
   final int lessonId;
 

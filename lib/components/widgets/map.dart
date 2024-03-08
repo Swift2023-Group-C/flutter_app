@@ -75,7 +75,7 @@ class Tile extends StatelessWidget {
     this.width,
     this.height,
     this.ttype, {
-    Key? key,
+    super.key,
     this.top = 0,
     this.right = 0,
     this.bottom = 0,
@@ -89,7 +89,7 @@ class Tile extends StatelessWidget {
     this.stairType = const StairType(Axis.horizontal, true, true),
     this.useEndTime,
     this.innerWidget,
-  }) : super(key: key) {
+  }) {
     setColors();
     if (width == 1) {
       fontSize = 3;
@@ -395,7 +395,7 @@ class Tile extends StatelessWidget {
 }
 
 class MapBottomSheet extends StatelessWidget {
-  const MapBottomSheet({Key? key, required this.mapDetail}) : super(key: key);
+  const MapBottomSheet({super.key, required this.mapDetail});
   final MapDetail mapDetail;
 
   @override

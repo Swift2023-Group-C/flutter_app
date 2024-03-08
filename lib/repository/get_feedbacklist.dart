@@ -4,7 +4,7 @@ import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class FeedbackList extends StatefulWidget {
-  const FeedbackList({Key? key, required this.lessonId}) : super(key: key);
+  const FeedbackList({super.key, required this.lessonId});
 
   final int lessonId;
 

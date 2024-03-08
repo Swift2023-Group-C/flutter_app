@@ -17,7 +17,7 @@ import 'package:dotto/screens/kadai_hidden_list.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class KadaiListScreen extends StatefulWidget {
-  const KadaiListScreen({Key? key}) : super(key: key);
+  const KadaiListScreen({super.key});
 
   @override
   State<KadaiListScreen> createState() => _KadaiListScreenState();

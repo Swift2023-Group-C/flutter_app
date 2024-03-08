@@ -4,7 +4,7 @@ import 'package:dotto/repository/kamoku_sort.dart';
 import 'package:dotto/components/setting_user_info.dart';
 
 class KamokuSearchScreen extends StatefulWidget {
-  const KamokuSearchScreen({Key? key}) : super(key: key);
+  const KamokuSearchScreen({super.key});
 
   @override
   State<KamokuSearchScreen> createState() => _KamokuSearchScreenState();

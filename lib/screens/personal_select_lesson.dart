@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class PersonalSelectLessonScreen extends StatelessWidget {
   const PersonalSelectLessonScreen(
       this.term, this.week, this.period, this.records, this.selectedLessonList,
-      {Key? key})
-      : super(key: key);
+      {super.key});
 
   final int term, week, period;
   final List<Map<String, dynamic>> records;

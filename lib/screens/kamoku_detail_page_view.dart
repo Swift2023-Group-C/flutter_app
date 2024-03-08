@@ -6,11 +6,10 @@ import 'package:dotto/screens/kamoku_detail_feedback.dart';
 
 class KamokuDetailPageScreen extends StatefulWidget {
   const KamokuDetailPageScreen(
-      {Key? key,
+      {super.key,
       required this.lessonId,
       required this.lessonName,
-      this.kakomonLessonId})
-      : super(key: key);
+      this.kakomonLessonId});
   final int lessonId;
   final String lessonName;
   final int? kakomonLessonId;

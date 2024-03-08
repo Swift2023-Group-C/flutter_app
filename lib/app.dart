@@ -22,7 +22,7 @@ import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/components/db_config.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +131,7 @@ final StateProvider<Map<String, bool>> mapUsingMapProvider =
     StateProvider((ref) => {});
 
 class BasePage extends ConsumerStatefulWidget {
-  const BasePage({Key? key}) : super(key: key);
+  const BasePage({super.key});
 
   @override
   ConsumerState<BasePage> createState() => _BasePageState();

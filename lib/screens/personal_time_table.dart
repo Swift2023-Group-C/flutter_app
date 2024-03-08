@@ -7,7 +7,7 @@ import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:sqflite/sqflite.dart';
 
 class PersonalTimeTableScreen extends ConsumerStatefulWidget {
-  const PersonalTimeTableScreen({Key? key}) : super(key: key);
+  const PersonalTimeTableScreen({super.key});
 
   @override
   ConsumerState<PersonalTimeTableScreen> createState() =>

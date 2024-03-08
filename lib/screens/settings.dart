@@ -16,7 +16,7 @@ StateProvider<String> settingsCourseProvider = StateProvider((ref) => 'なし');
 StateProvider<String> settingsUserKeyProvider = StateProvider((ref) => '');
 
 class SettingsScreen extends ConsumerStatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
@@ -336,8 +336,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 }
 
 class SettingsStringScreen extends StatelessWidget {
-  SettingsStringScreen(this.title, this.initString, this.provider, {Key? key})
-      : super(key: key);
+  SettingsStringScreen(this.title, this.initString, this.provider, {super.key});
 
   final String title;
   final String initString;

@@ -3,8 +3,7 @@ import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/repository/kamoku_sort.dart';
 
 class KamokuDetailSyllabusScreen extends StatelessWidget {
-  const KamokuDetailSyllabusScreen({Key? key, required this.lessonId})
-      : super(key: key);
+  const KamokuDetailSyllabusScreen({super.key, required this.lessonId});
 
   final int lessonId;
 

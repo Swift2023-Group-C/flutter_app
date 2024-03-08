@@ -4,7 +4,7 @@ import 'package:dotto/components/widgets/kakomon_list_objects.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
 
 class KakomonListScreen extends StatefulWidget {
-  const KakomonListScreen({Key? key, required this.url}) : super(key: key);
+  const KakomonListScreen({super.key, required this.url});
   final int url;
 
   @override
