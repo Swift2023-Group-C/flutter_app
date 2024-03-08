@@ -127,6 +127,7 @@ class MapScreen extends StatelessWidget {
                 elevation: 5,
                 title: _mapSearchTextField(ref),
                 automaticallyImplyLeading: false,
+                surfaceTintColor: Colors.white,
                 backgroundColor: Colors.grey.shade100,
                 foregroundColor: Colors.black87,
                 actions: onMapSearch

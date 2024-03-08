@@ -31,6 +31,35 @@ class MyApp extends StatelessWidget {
       title: 'Project 03 Group C',
       theme: ThemeData(
         primarySwatch: customFunColor,
+        colorScheme: ColorScheme.light(
+          primary: customFunColor,
+          onSurface: Colors.grey.shade900,
+          background: Colors.grey.shade100,
+        ),
+        buttonTheme: ButtonThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.all(0),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            )),
+            padding: const MaterialStatePropertyAll(EdgeInsets.all(0)),
+            elevation: const MaterialStatePropertyAll(2),
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: customFunColor,
+          foregroundColor: Colors.white,
+        ),
+        textButtonTheme: const TextButtonThemeData(
+          style: ButtonStyle(
+            padding: MaterialStatePropertyAll(EdgeInsets.all(0)),
+          ),
+        ),
         fontFamily: 'Murecho',
       ),
       home: const BasePage(),
@@ -308,6 +337,7 @@ class _BasePageState extends ConsumerState<BasePage> {
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
+            selectedItemColor: customFunColor,
             type: BottomNavigationBarType.fixed,
             currentIndex: TabItem.values.indexOf(currentTab),
             items: TabItem.values

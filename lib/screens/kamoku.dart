@@ -1,3 +1,4 @@
+import 'package:dotto/components/color_fun.dart';
 import 'package:flutter/material.dart';
 import 'package:dotto/repository/kamoku_sort.dart';
 import 'package:dotto/components/setting_user_info.dart';
@@ -172,6 +173,11 @@ class _KamokuSearchScreenState extends State<KamokuSearchScreen> {
                   ),
                   Center(
                     child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: customFunColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                        ),
                         onPressed: () async {
                           FocusScope.of(context).unfocus();
                           List<Map<String, dynamic>> records = await search(
