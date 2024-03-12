@@ -349,62 +349,45 @@ class SettingsStringScreen extends StatelessWidget {
     controller.text = initString;
     return Consumer(
       builder: (context, ref, child) {
-        return WillPopScope(
-            onWillPop: () async {
-              String text = controller.text;
-              if (text.isNotEmpty) {
-                if (userKeyPattern.hasMatch(text)) {
-                  await UserPreferences.setString(
-                      UserPreferenceKeys.userKey, text);
-                  ref.read(provider.notifier).state = text;
-                }
-              } else {
-                await UserPreferences.setString(
-                    UserPreferenceKeys.userKey, text);
-                ref.read(provider.notifier).state = '';
-              }
-              return true;
-            },
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: Scaffold(
-                appBar: AppBar(
-                  title: Text(title),
-                ),
-                body: Container(
-                  margin: const EdgeInsets.only(top: 40, right: 15, left: 15),
-                  child: TextField(
-                    controller: controller,
-                    // 入力数
-                    maxLength: 16,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: '課題のユーザーキー',
-                      hintText: '半角英数字16桁',
+        return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(title),
+              ),
+              body: Container(
+                margin: const EdgeInsets.only(top: 40, right: 15, left: 15),
+                child: TextField(
+                  controller: controller,
+                  // 入力数
+                  maxLength: 16,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '課題のユーザーキー',
+                    hintText: '半角英数字16桁',
+                  ),
+                  inputFormatters: [
+                    // 最大16文字まで入力可能
+                    LengthLimitingTextInputFormatter(16),
+                    // 半角英数字のみ許可
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[a-zA-Z0-9]'),
                     ),
-                    inputFormatters: [
-                      // 最大16文字まで入力可能
-                      LengthLimitingTextInputFormatter(16),
-                      // 半角英数字のみ許可
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'[a-zA-Z0-9]'),
-                      ),
-                    ],
-                    onChanged: (value) async {
-                      if (value.length == 16) {
-                        if (userKeyPattern.hasMatch(value)) {
-                          await UserPreferences.setString(
-                              UserPreferenceKeys.userKey, value);
-                          ref.read(provider.notifier).state = value;
-                        }
-                      } else if (value.isEmpty) {
+                  ],
+                  onChanged: (value) async {
+                    if (value.length == 16) {
+                      if (userKeyPattern.hasMatch(value)) {
                         await UserPreferences.setString(
                             UserPreferenceKeys.userKey, value);
-                        ref.read(provider.notifier).state = '';
+                        ref.read(provider.notifier).state = value;
                       }
-                    },
-                  ),
+                    } else if (value.isEmpty) {
+                      await UserPreferences.setString(
+                          UserPreferenceKeys.userKey, value);
+                      ref.read(provider.notifier).state = '';
+                    }
+                  },
                 ),
               ),
             ));

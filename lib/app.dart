@@ -60,6 +60,12 @@ class MyApp extends StatelessWidget {
             padding: MaterialStatePropertyAll(EdgeInsets.all(0)),
           ),
         ),
+        dividerTheme: DividerThemeData(
+          color: Colors.grey.shade200,
+        ),
+        cardTheme: const CardTheme(
+          surfaceTintColor: Colors.white,
+        ),
         fontFamily: 'Murecho',
       ),
       home: const BasePage(),
@@ -286,10 +292,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     }
   }
 
-  Future<bool> onWillPop() async {
-    return !await _navigatorKeys[currentTab]!.currentState!.maybePop();
-  }
-
   Future<bool> isAppTutorialCompleted() async {
     return await UserPreferences.getBool(
             UserPreferenceKeys.isAppTutorialComplete) ??
@@ -314,8 +316,21 @@ class _BasePageState extends ConsumerState<BasePage> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _showAppTutorial(context));
-    return WillPopScope(
-      onWillPop: onWillPop,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+        final NavigatorState navigator = Navigator.of(context);
+        final bool shouldPop =
+            !await _navigatorKeys[currentTab]!.currentState!.maybePop();
+        if (shouldPop) {
+          if (navigator.canPop()) {
+            navigator.pop();
+          }
+        }
+      },
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: customFunColor,
