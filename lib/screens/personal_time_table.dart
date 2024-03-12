@@ -83,6 +83,7 @@ class _PersonalTimeTableScreenState
     selectedLessonList.removeLast();
     personalLessonIdList.removeLast();
     await savePersonalTimeTableList(personalLessonIdList, ref);
+    if (!mounted) return;
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('１つのコマに３つ以上選択できません')),
@@ -135,7 +136,7 @@ class _PersonalTimeTableScreenState
               // );
               : Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
+                    color: Colors.grey.shade200,
                     borderRadius: const BorderRadius.all(Radius.circular(5)),
                   ),
                   padding: const EdgeInsets.all(2),

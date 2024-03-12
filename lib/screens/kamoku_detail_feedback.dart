@@ -1,18 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dotto/firebase_options.dart';
 import 'package:dotto/repository/get_feedbacklist.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:dotto/components/color_fun.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-}
 
 class KamokuFeedbackScreen extends StatefulWidget {
   const KamokuFeedbackScreen({super.key, required this.lessonId});
@@ -20,8 +11,7 @@ class KamokuFeedbackScreen extends StatefulWidget {
   final int lessonId;
 
   @override
-  // ignore: library_private_types_in_public_api
-  _KamokuFeedbackScreenState createState() => _KamokuFeedbackScreenState();
+  State<KamokuFeedbackScreen> createState() => _KamokuFeedbackScreenState();
 }
 
 class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
@@ -81,6 +71,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                 behavior: HitTestBehavior.opaque,
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: AlertDialog(
+                  surfaceTintColor: Theme.of(context).colorScheme.background,
                   insetPadding: const EdgeInsets.all(8.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -105,6 +96,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                             SizedBox(width: dialogWidth * 0.1),
                             //星のバー
                             RatingBar.builder(
+                              glow: false,
                               minRating: 1,
                               itemBuilder: (context, index) => const Icon(
                                 Icons.star,
@@ -161,7 +153,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               height: dialogHeight * 0.15,
                               child: ElevatedButton(
                                 style: TextButton.styleFrom(
-                                  backgroundColor: Colors.white,
+                                  surfaceTintColor: Colors.white,
                                   foregroundColor: customFunColor,
                                   side: const BorderSide(
                                     color: customFunColor, // 色 // 太さ
@@ -179,6 +171,10 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                               width: dialogWidth * 0.3,
                               height: dialogHeight * 0.15,
                               child: ElevatedButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: customFunColor,
+                                  foregroundColor: Colors.white,
+                                ),
                                 onPressed: () async {
                                   //以下処理
                                   final String? userKey =

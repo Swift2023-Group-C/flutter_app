@@ -1,3 +1,4 @@
+import 'package:dotto/components/color_fun.dart';
 import 'package:flutter/material.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,9 +41,11 @@ class PersonalSelectLessonScreen extends StatelessWidget {
                     trailing: personalLessonIdList
                             .contains(termList[index]['lessonId'])
                         ? ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.blue),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                             ),
                             onPressed: () async {
                               //print(termList[index]['lessonId']);
@@ -54,6 +57,12 @@ class PersonalSelectLessonScreen extends StatelessWidget {
                             },
                             child: const Text("削除する"))
                         : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: customFunColor,
+                              foregroundColor: Colors.white,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                            ),
                             onPressed: () async {
                               // if (selectedLessonList.length > 1) {
                               //   ScaffoldMessenger.of(context)

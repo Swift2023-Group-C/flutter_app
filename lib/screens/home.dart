@@ -180,7 +180,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Map<String, dynamic>? record =
                     await fetchDB(timeTableCourse.lessonId);
                 if (record == null) return;
-                if (context.mounted) {
+                if (mounted) {
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) {
