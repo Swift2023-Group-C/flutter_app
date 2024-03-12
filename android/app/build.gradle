@@ -54,7 +54,7 @@ android {
         applicationId "jp.ac.fun.dotto"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -92,6 +92,6 @@ dependencies {
     implementation platform("com.google.firebase:firebase-bom:32.7.2")
     implementation "com.google.firebase:firebase-appcheck-debug"
     implementation "com.google.firebase:firebase-appcheck-playintegrity"
-    implementation 'androidx.window:window:1.0.0'
-    implementation 'androidx.window:window-java:1.0.0'
+    implementation 'androidx.window:window:1.1.0'
+    implementation 'androidx.window:window-java:1.1.0'
 }
