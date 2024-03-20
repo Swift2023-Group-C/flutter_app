@@ -5,7 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:dotto/components/widgets/map.dart';
 
 class MapGridScreen extends StatelessWidget {
-  const MapGridScreen({Key? key}) : super(key: key);
+  const MapGridScreen({super.key});
 
   static const List<String> gridMapsList = [
     "1",

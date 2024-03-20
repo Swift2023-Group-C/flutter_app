@@ -17,7 +17,7 @@ import 'package:dotto/screens/kadai_hidden_list.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class KadaiListScreen extends StatefulWidget {
-  const KadaiListScreen({Key? key}) : super(key: key);
+  const KadaiListScreen({super.key});
 
   @override
   State<KadaiListScreen> createState() => _KadaiListScreenState();
@@ -78,12 +78,6 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
         debugPrint('payload:${details.payload}');
       },
     );
-  }
-
-  Future<int> _getPendingNotificationCount() async {
-    List<PendingNotificationRequest> p =
-        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    return p.length;
   }
 
   Future<void> _zonedScheduleNotification(Kadai kadai) async {
@@ -557,22 +551,25 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
   }
 
   Widget _kadaiListView(List<KadaiList> data) {
-    return ListView.builder(
+    return ListView.separated(
       itemCount: data.length,
+      separatorBuilder: (context, index) {
+        return const Divider(height: 3);
+      },
       itemBuilder: (context, index) {
         if (data[index].hiddenKadai(deleteList).isEmpty) {
           return Container();
         } else if (data[index].hiddenKadai(deleteList).length == 1) {
           // 1個の場合
           var kadai = data[index].hiddenKadai(deleteList).first;
-          return Card(
-              child: Slidable(
+          return Slidable(
             key: UniqueKey(),
             startActionPane: startActionPaneBool(kadai.endtime)
                 ? _kadaiStartSlidable(kadai)
                 : null,
             endActionPane: _kadaiEndSlidable(kadai),
             child: ListTile(
+              tileColor: Colors.white,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               title: Row(
@@ -628,19 +625,24 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                 launchUrlInExternal(url);
               },
             ),
-          ));
+          );
         }
         // 2個以上の場合
-        return Card(
-          child: Slidable(
-            key: Key(data[index].toString()),
-            startActionPane: startActionPaneBool(data.first.endtime)
-                ? tmpKadaiStartSlidable(data[index])
-                : null,
-            endActionPane: tmpKadaiEndSlidable(data[index]),
+        return Slidable(
+          key: Key(data[index].toString()),
+          startActionPane: startActionPaneBool(data.first.endtime)
+              ? tmpKadaiStartSlidable(data[index])
+              : null,
+          endActionPane: tmpKadaiEndSlidable(data[index]),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              dividerColor: Colors.transparent,
+            ),
             child: ExpansionTile(
               childrenPadding: const EdgeInsets.all(0),
               onExpansionChanged: null,
+              backgroundColor: Colors.white,
+              collapsedBackgroundColor: Colors.white,
               title: Row(
                 children: [
                   const SizedBox(width: 36),
@@ -700,6 +702,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
                             : null,
                         endActionPane: _kadaiEndSlidable(kadai),
                         child: ListTile(
+                          tileColor: Colors.white,
                           minLeadingWidth: 0,
                           leading: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,

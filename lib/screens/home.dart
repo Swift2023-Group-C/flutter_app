@@ -13,7 +13,7 @@ import 'package:dotto/screens/personal_time_table.dart';
 import 'package:intl/intl.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -78,8 +78,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       margin: const EdgeInsets.all(5),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
           foregroundColor: Colors.black,
+          surfaceTintColor: Colors.white,
           fixedSize: Size(width, height),
         ),
         onPressed: onPressed,
@@ -180,7 +180,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Map<String, dynamic>? record =
                     await fetchDB(timeTableCourse.lessonId);
                 if (record == null) return;
-                if (context.mounted) {
+                if (mounted) {
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) {
@@ -302,10 +302,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 if (timeTableCourseList.isEmpty)
                   timeTableLessonButton(null)
                 else
-                  ...timeTableCourseList
-                      .map((timeTableCourse) =>
-                          timeTableLessonButton(timeTableCourse))
-                      .toList(),
+                  ...timeTableCourseList.map((timeTableCourse) =>
+                      timeTableLessonButton(timeTableCourse)),
               ],
             ),
           ),
@@ -360,6 +358,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           await getOneDayTimeTable(ref);
                         },
                         style: ElevatedButton.styleFrom(
+                          surfaceTintColor: Colors.white,
                           backgroundColor: focusTimeTableDay.day == date.day
                               ? customFunColor
                               : Colors.white,
@@ -375,6 +374,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           minimumSize: Size(buttonSize, buttonSize),
                           fixedSize: Size(buttonSize, buttonSize),
+                          padding: const EdgeInsets.all(0),
                         ),
                         // 日付表示
                         child: Column(
@@ -470,7 +470,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  style: TextButton.styleFrom(),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                  ),
                   onPressed: () {
                     Navigator.of(context)
                         .push(
@@ -507,6 +509,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       fixedSize: Size(infoBoxWidth, 80),
+                      foregroundColor: Colors.white,
                     ),
                     child: const Text(
                       '意見要望\nお聞かせください！',

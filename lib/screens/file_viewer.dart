@@ -15,11 +15,10 @@ enum StorageService { cloudflare, firebase }
 
 class FileViewerScreen extends StatefulWidget {
   const FileViewerScreen(
-      {Key? key,
+      {super.key,
       required this.url,
       required this.filename,
-      required this.storage})
-      : super(key: key);
+      required this.storage});
   final String url;
   final String filename;
   final StorageService storage;
@@ -106,8 +105,7 @@ class _FileViewerScreenState extends State<FileViewerScreen> {
 
 class KakomonObjectIfType extends StatelessWidget {
   const KakomonObjectIfType(
-      {Key? key, required this.url, this.data, this.filepath})
-      : super(key: key);
+      {super.key, required this.url, this.data, this.filepath});
   final String url;
   final Uint8List? data;
   final String? filepath;
@@ -136,7 +134,7 @@ class PDFScreen extends StatefulWidget {
   final Uint8List? pdfData;
   final String? filePath;
 
-  const PDFScreen({Key? key, this.pdfData, this.filePath}) : super(key: key);
+  const PDFScreen({super.key, this.pdfData, this.filePath});
 
   @override
   State<PDFScreen> createState() => _PDFScreenState();
@@ -172,8 +170,7 @@ class _PDFScreenState extends State<PDFScreen> with WidgetsBindingObserver {
 class ImageScreen extends StatelessWidget {
   final Uint8List? imageData;
   final String? filePath;
-  const ImageScreen({Key? key, this.imageData, this.filePath})
-      : super(key: key);
+  const ImageScreen({super.key, this.imageData, this.filePath});
 
   @override
   Widget build(BuildContext context) {

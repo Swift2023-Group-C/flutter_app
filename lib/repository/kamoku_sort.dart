@@ -31,7 +31,7 @@ Future<Map<String, dynamic>> fetchDetails(int lessonId) async {
 class SearchBox extends StatefulWidget {
   final Function(String) onSearch;
 
-  const SearchBox({Key? key, required this.onSearch}) : super(key: key);
+  const SearchBox({super.key, required this.onSearch});
 
   @override
   State<SearchBox> createState() => _SearchBoxState();
@@ -60,7 +60,7 @@ class _SearchBoxState extends State<SearchBox> {
 class SearchResults extends StatelessWidget {
   final List<Map<String, dynamic>> records;
 
-  const SearchResults({Key? key, required this.records}) : super(key: key);
+  const SearchResults({super.key, required this.records});
 
   Future<List<Map<String, dynamic>>> fetchWeekPeriodDB() async {
     Database database = await openDatabase(SyllabusDBConfig.dbPath);

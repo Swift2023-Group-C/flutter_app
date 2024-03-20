@@ -9,9 +9,9 @@ import 'package:dotto/repository/firebase_get_kadai.dart';
 
 class KadaiHiddenScreen extends StatefulWidget {
   const KadaiHiddenScreen({
-    Key? key,
+    super.key,
     required this.deletedKadaiLists,
-  }) : super(key: key);
+  });
 
   final List<KadaiList> deletedKadaiLists;
 

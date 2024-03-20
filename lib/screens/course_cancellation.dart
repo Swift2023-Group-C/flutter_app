@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
 
 class CourseCancellationScreen extends StatefulWidget {
-  const CourseCancellationScreen({Key? key}) : super(key: key);
+  const CourseCancellationScreen({super.key});
 
   @override
   State<CourseCancellationScreen> createState() =>

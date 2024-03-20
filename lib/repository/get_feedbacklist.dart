@@ -4,7 +4,7 @@ import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class FeedbackList extends StatefulWidget {
-  const FeedbackList({Key? key, required this.lessonId}) : super(key: key);
+  const FeedbackList({super.key, required this.lessonId});
 
   final int lessonId;
 
@@ -95,7 +95,7 @@ class _FeedbackListState extends State<FeedbackList> {
                           averageScore.toStringAsFixed(2),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 50,
+                            fontSize: 40,
                             color: Colors.black,
                           ),
                         ),
@@ -106,12 +106,11 @@ class _FeedbackListState extends State<FeedbackList> {
                             color: Colors.amber,
                           ),
                           itemCount: 5,
-                          itemSize: 25.0,
+                          itemSize: 20.0,
                         ),
                         Text(
                           'BASED OF ${documents.length} REVIEWS',
                           style: TextStyle(
-                            fontSize: 16,
                             color: Colors.grey[700],
                           ),
                         ),
@@ -183,12 +182,11 @@ class _FeedbackListState extends State<FeedbackList> {
                               color: Colors.amber,
                             ),
                             itemCount: 5,
-                            itemSize: 20.0,
+                            itemSize: 15.0,
                           ),
                           title: Text(
                             '$detail',
                             style: TextStyle(
-                              fontSize: 16,
                               color: Colors.grey[800],
                             ),
                           ),

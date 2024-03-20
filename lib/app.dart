@@ -22,7 +22,7 @@ import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/components/db_config.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +31,41 @@ class MyApp extends StatelessWidget {
       title: 'Project 03 Group C',
       theme: ThemeData(
         primarySwatch: customFunColor,
+        colorScheme: ColorScheme.light(
+          primary: customFunColor,
+          onSurface: Colors.grey.shade900,
+          background: Colors.grey.shade100,
+        ),
+        buttonTheme: ButtonThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.all(0),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            )),
+            padding: const MaterialStatePropertyAll(EdgeInsets.all(0)),
+            elevation: const MaterialStatePropertyAll(2),
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: customFunColor,
+          foregroundColor: Colors.white,
+        ),
+        textButtonTheme: const TextButtonThemeData(
+          style: ButtonStyle(
+            padding: MaterialStatePropertyAll(EdgeInsets.all(0)),
+          ),
+        ),
+        dividerTheme: DividerThemeData(
+          color: Colors.grey.shade200,
+        ),
+        cardTheme: const CardTheme(
+          surfaceTintColor: Colors.white,
+        ),
         fontFamily: 'Murecho',
       ),
       home: const BasePage(),
@@ -102,7 +137,7 @@ final StateProvider<Map<String, bool>> mapUsingMapProvider =
     StateProvider((ref) => {});
 
 class BasePage extends ConsumerStatefulWidget {
-  const BasePage({Key? key}) : super(key: key);
+  const BasePage({super.key});
 
   @override
   ConsumerState<BasePage> createState() => _BasePageState();
@@ -257,10 +292,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     }
   }
 
-  Future<bool> onWillPop() async {
-    return !await _navigatorKeys[currentTab]!.currentState!.maybePop();
-  }
-
   Future<bool> isAppTutorialCompleted() async {
     return await UserPreferences.getBool(
             UserPreferenceKeys.isAppTutorialComplete) ??
@@ -285,8 +316,21 @@ class _BasePageState extends ConsumerState<BasePage> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _showAppTutorial(context));
-    return WillPopScope(
-      onWillPop: onWillPop,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+        final NavigatorState navigator = Navigator.of(context);
+        final bool shouldPop =
+            !await _navigatorKeys[currentTab]!.currentState!.maybePop();
+        if (shouldPop) {
+          if (navigator.canPop()) {
+            navigator.pop();
+          }
+        }
+      },
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: customFunColor,
@@ -308,6 +352,7 @@ class _BasePageState extends ConsumerState<BasePage> {
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
+            selectedItemColor: customFunColor,
             type: BottomNavigationBarType.fixed,
             currentIndex: TabItem.values.indexOf(currentTab),
             items: TabItem.values

@@ -24,7 +24,7 @@ final mapViewTransformationControllerProvider =
 final searchDatetimeProvider = StateProvider((ref) => DateTime.now());
 
 class MapScreen extends StatelessWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  const MapScreen({super.key});
 
   static const List<String> floorBarString = [
     '1',
@@ -127,6 +127,7 @@ class MapScreen extends StatelessWidget {
                 elevation: 5,
                 title: _mapSearchTextField(ref),
                 automaticallyImplyLeading: false,
+                surfaceTintColor: Colors.white,
                 backgroundColor: Colors.grey.shade100,
                 foregroundColor: Colors.black87,
                 actions: onMapSearch
@@ -409,33 +410,31 @@ class MapScreen extends StatelessWidget {
                       ref.watch(mapUsingMapProvider.notifier);
                   return Row(
                     children: [
-                      ...timeMap.entries
-                          .map((item) => Expanded(
-                                flex: 1,
-                                child: Center(
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(0),
-                                      ),
-                                      textStyle: const TextStyle(fontSize: 12),
-                                    ),
-                                    onPressed: () async {
-                                      DateTime setDate = item.value;
-                                      if (setDate.hour == 0) {
-                                        setDate = DateTime.now();
-                                      }
-                                      searchDatetimeNotifier.state = setDate;
-                                      mapUsingMapNotifier.state =
-                                          await setUsingColor(setDate);
-                                    },
-                                    child: Center(
-                                      child: Text(item.key),
-                                    ),
+                      ...timeMap.entries.map((item) => Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(0),
                                   ),
+                                  textStyle: const TextStyle(fontSize: 12),
                                 ),
-                              ))
-                          .toList(),
+                                onPressed: () async {
+                                  DateTime setDate = item.value;
+                                  if (setDate.hour == 0) {
+                                    setDate = DateTime.now();
+                                  }
+                                  searchDatetimeNotifier.state = setDate;
+                                  mapUsingMapNotifier.state =
+                                      await setUsingColor(setDate);
+                                },
+                                child: Center(
+                                  child: Text(item.key),
+                                ),
+                              ),
+                            ),
+                          )),
                       Expanded(
                         flex: 2,
                         child: Center(
