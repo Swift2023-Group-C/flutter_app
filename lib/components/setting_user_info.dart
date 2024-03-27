@@ -7,7 +7,8 @@ enum UserPreferenceKeys {
   kadaiFinishList(keyName: 'finishListKey', type: String),
   kadaiAlertList(keyName: 'alertListKey', type: String),
   kadaiDeleteList(keyName: 'deleteListKey', type: String),
-  personalTimetableListKey(keyName: 'personalTimeTableListKey', type: String),
+  personalTimetableListKey(
+      keyName: 'personalTimeTableListKey2024', type: String),
   isAppTutorialComplete(keyName: 'isAppTutorialCompleted', type: bool),
   isKadaiTutorialComplete(keyName: 'isKadaiTutorialCompleted', type: bool);
 
