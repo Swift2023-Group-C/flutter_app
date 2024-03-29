@@ -53,7 +53,7 @@ class _KadaiListScreenState extends State<KadaiListScreen> {
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()!
-        .requestNotificationsPermission();
+        .requestExactAlarmsPermission();
   }
 
   Future<void> initNotification() async {
