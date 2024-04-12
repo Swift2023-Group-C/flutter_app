@@ -180,7 +180,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     Future(() async {
       await initUniLinks();
       await SyllabusDBConfig.setDB();
-      await MapDetailMap.instance.getList();
       await downloadFiles();
     });
   }

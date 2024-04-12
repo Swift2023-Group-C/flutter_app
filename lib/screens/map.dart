@@ -22,6 +22,7 @@ final mapFocusMapDetailProvider = StateProvider(
 final mapViewTransformationControllerProvider =
     StateProvider((ref) => TransformationController(Matrix4.identity()));
 final searchDatetimeProvider = StateProvider((ref) => DateTime.now());
+final mapDetailMapProvider = StateProvider((ref) => MapDetailMap());
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -153,12 +154,13 @@ class MapScreen extends StatelessWidget {
   void _onChangedSearchTextField(WidgetRef ref, String text) {
     final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
     final onMapSearchNotifier = ref.watch(onMapSearchProvider.notifier);
+    final mapDetailMap = ref.watch(mapDetailMapProvider);
     if (text.isEmpty) {
       onMapSearchNotifier.state = false;
       mapSearchListNotifier.state = [];
     } else {
       onMapSearchNotifier.state = true;
-      mapSearchListNotifier.state = MapDetailMap.instance.searchAll(text);
+      mapSearchListNotifier.state = mapDetailMap.searchAll(text);
     }
   }
 
