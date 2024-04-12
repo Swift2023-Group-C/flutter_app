@@ -23,8 +23,12 @@ class MapDetail {
 
 class MapDetailMap {
   Map<String, Map<String, MapDetail>>? mapDetailList;
-  MapDetailMap._();
-  static final instance = MapDetailMap._();
+
+  MapDetailMap() {
+    Future(() async {
+      mapDetailList = await getMapDetailFromFirebase();
+    });
+  }
 
   Future<Map<String, Map<String, MapDetail>>> getMapDetailFromFirebase() async {
     final snapshot = await GetFirebaseRealtimeDB.getData('map');
@@ -49,14 +53,6 @@ class MapDetailMap {
       throw Exception();
     }
     return returnList;
-  }
-
-  Future<void> getList() async {
-    try {
-      mapDetailList = await getMapDetailFromFirebase();
-    } catch (e) {
-      mapDetailList = null;
-    }
   }
 
   MapDetail? searchOnce(String floor, String roomName) {

@@ -367,29 +367,31 @@ class Tile extends StatelessWidget {
       final mapSearchBarFocusNotifier =
           ref.watch(mapSearchBarFocusProvider.notifier);
       ref.watch(mapUsingMapProvider);
-      MapDetail? mapDetail =
-          MapDetailMap.instance.searchOnce(floorBarString[mapPage], txt);
-      if (mapDetail != null) {
-        return GestureDetector(
-            onTap: () {
-              showBottomSheet(
-                context: context,
-                builder: (BuildContext context) {
-                  return MapBottomSheet(mapDetail: mapDetail);
-                },
-              );
-              mapSearchBarFocusNotifier.state.unfocus();
-            },
-            child: Stack(
-                alignment: AlignmentDirectional.center,
-                fit: StackFit.loose,
-                children: widgetList));
-      } else {
-        return Stack(
-            alignment: AlignmentDirectional.center,
-            fit: StackFit.loose,
-            children: widgetList);
+      final mapDetailMap = ref.watch(mapDetailMapProvider);
+      if (mapDetailMap.mapDetailList != null) {
+        MapDetail? mapDetail =
+            mapDetailMap.searchOnce(floorBarString[mapPage], txt);
+        if (mapDetail != null) {
+          return GestureDetector(
+              onTap: () {
+                showBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return MapBottomSheet(mapDetail: mapDetail);
+                  },
+                );
+                mapSearchBarFocusNotifier.state.unfocus();
+              },
+              child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  fit: StackFit.loose,
+                  children: widgetList));
+        }
       }
+      return Stack(
+          alignment: AlignmentDirectional.center,
+          fit: StackFit.loose,
+          children: widgetList);
     });
   }
 }
