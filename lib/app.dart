@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:dotto/screens/app_tutorial.dart';
-import 'package:dotto/components/map_detail.dart';
 import 'package:dotto/repository/download_file_from_firebase.dart';
 import 'package:dotto/repository/find_rooms_in_use.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
