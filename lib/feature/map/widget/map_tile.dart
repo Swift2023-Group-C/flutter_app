@@ -309,7 +309,7 @@ class MapTile extends StatelessWidget {
           ref.watch(mapSearchBarFocusProvider.notifier);
       ref.watch(mapUsingMapProvider);
       return GestureDetector(
-        onTap: (txt.isNotEmpty)
+        onTap: (txt.isNotEmpty && ttype.index <= MapTileType.subroom.index)
             ? () {
                 showBottomSheet(
                   context: context,
