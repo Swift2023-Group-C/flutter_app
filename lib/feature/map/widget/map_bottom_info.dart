@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:dotto/app.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/domain/map_tile_type.dart';
 import 'package:dotto/feature/map/widget/map_tile.dart';
 import 'package:dotto/repository/find_rooms_in_use.dart';
 import 'package:dotto/repository/read_json_file.dart';
@@ -106,8 +107,8 @@ class MapBottomInfo extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _mapInfoTile(TileColors.using, "下記設定時間に授業等で使用中の部屋"),
-                _mapInfoTile(TileColors.toilet, 'トイレ及び給湯室'),
+                _mapInfoTile(MapColors.using, "下記設定時間に授業等で使用中の部屋"),
+                _mapInfoTile(TileType.wc.backgroundColor, 'トイレ及び給湯室'),
                 _mapInfoTile(Colors.red, '検索結果'),
               ],
             ),

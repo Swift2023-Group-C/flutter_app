@@ -2,34 +2,10 @@ import 'package:dotto/importer.dart';
 
 import 'package:dotto/app.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
-
-enum TileType {
-  classroom, // メインの部屋
-  teacherroom, // 教員室と後ろの実験室
-  subroom, // メインには使わないけど使う部屋
-  otherroom, // 倉庫など
-  wc, // トイレ
-  stair, // 階段
-  ev, // エレベーター
-  road, // 道
-  empty, // 吹き抜けなど
-}
-
-abstract final class TileColors {
-  static Color get room => Colors.grey.shade700;
-  static Color get teacherRoom => Colors.grey.shade600;
-  static Color get subRoom => Colors.grey.shade500;
-  static Color get room2 => Colors.grey.shade400;
-  static Color get road => Colors.grey.shade300;
-  static Color get toilet => Colors.lightGreen.shade400;
-  //static Color get stair => Colors.blueGrey.shade600;
-  static Color get stair => Colors.grey.shade300;
-  static Color get ev => Colors.grey.shade800;
-  static Color get using => Colors.orange.shade300;
-  static const Color empty = Colors.transparent;
-}
+import 'package:dotto/feature/map/domain/map_tile_type.dart';
 
 abstract final class MapColors {
+  static Color get using => Colors.orange.shade300;
   static Color get wcMan => Colors.blue.shade800;
   static Color get wcWoman => Colors.red.shade800;
 }
@@ -102,43 +78,8 @@ class Tile extends StatelessWidget {
   }
 
   void setColors() {
-    switch (ttype) {
-      case TileType.classroom:
-        tileColor = TileColors.room;
-        fontColor = Colors.white;
-        break;
-      case TileType.teacherroom:
-        tileColor = TileColors.teacherRoom;
-        fontColor = Colors.white;
-        break;
-      case TileType.subroom:
-        tileColor = TileColors.subRoom;
-        fontColor = Colors.black;
-        break;
-      case TileType.otherroom:
-        tileColor = TileColors.room2;
-        fontColor = Colors.black;
-        break;
-      case TileType.wc:
-        tileColor = TileColors.toilet;
-        fontColor = Colors.black;
-        break;
-      case TileType.stair:
-        tileColor = TileColors.stair;
-        fontColor = Colors.black;
-        break;
-      case TileType.ev:
-        tileColor = TileColors.ev;
-        fontColor = Colors.black;
-        break;
-      case TileType.road:
-        tileColor = TileColors.road;
-        fontColor = Colors.black;
-        break;
-      default:
-        tileColor = TileColors.empty;
-        fontColor = Colors.black;
-    }
+    tileColor = ttype.backgroundColor;
+    fontColor = ttype.textColor;
   }
 
   void setUsing(bool b) {
@@ -288,7 +229,7 @@ class Tile extends StatelessWidget {
           if (mapUsingMap.containsKey(classroomNo)) {
             if (mapUsingMap[classroomNo]!) {
               using = true;
-              tileColor = TileColors.using;
+              tileColor = MapColors.using;
             } else {
               using = false;
               setColors();
@@ -309,8 +250,9 @@ class Tile extends StatelessWidget {
                   right: oneBorderSide(right, focus),
                   bottom: oneBorderSide(bottom, focus),
                   left: oneBorderSide(left, focus)),
-              color:
-                  (tileColor == TileColors.empty) ? tileColor : TileColors.road,
+              color: (ttype == TileType.empty)
+                  ? tileColor
+                  : TileType.road.backgroundColor,
             ),
             child: SizedBox.expand(
               child: (innerWidget == null)
