@@ -1,6 +1,6 @@
 import 'package:dotto/importer.dart';
 
-import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/domain/map_detail.dart';
 
 class MapDetailBottomSheet extends ConsumerWidget {
   const MapDetailBottomSheet({super.key, required this.mapDetail});
@@ -10,8 +10,21 @@ class MapDetailBottomSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
         height: 200,
-        width: double.infinity,
-        color: Colors.blueGrey.shade100,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          color: Colors.blueGrey.shade100,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              spreadRadius: 1.0,
+              blurRadius: 5.0,
+            )
+          ],
+        ),
         child: Stack(
           children: [
             SingleChildScrollView(

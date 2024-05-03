@@ -1,6 +1,7 @@
 import 'package:dotto/importer.dart';
 
 import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/domain/map_detail.dart';
 
 class MapSearchBar extends ConsumerWidget {
   const MapSearchBar({super.key});

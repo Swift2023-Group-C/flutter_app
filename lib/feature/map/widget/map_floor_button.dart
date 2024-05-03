@@ -2,6 +2,7 @@ import 'package:dotto/importer.dart';
 
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/domain/map_detail.dart';
 
 class MapFloorButton extends ConsumerWidget {
   const MapFloorButton({super.key});
