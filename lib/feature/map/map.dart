@@ -1,28 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:dotto/app.dart';
 import 'package:dotto/components/color_fun.dart';
-import 'package:dotto/components/map_detail.dart';
-import 'package:dotto/components/widgets/map.dart';
+import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/widget/map_tile.dart';
 import 'package:dotto/repository/find_rooms_in_use.dart';
 import 'package:dotto/repository/read_json_file.dart';
-import 'package:dotto/screens/map_grid.dart';
+import 'package:dotto/feature/map/widget/map_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
-
-final onMapSearchProvider = StateProvider((ref) => false);
-final StateProvider<List<MapDetail>> mapSearchListProvider =
-    StateProvider((ref) => []);
-final mapPageProvider = StateProvider((ref) => 2);
-final textEditingControllerProvider =
-    StateProvider((ref) => TextEditingController());
-final mapSearchBarFocusProvider = StateProvider((ref) => FocusNode());
-final mapFocusMapDetailProvider = StateProvider(
-    (ref) => const MapDetail('1', '0', null, '0', null, null, null));
-final mapViewTransformationControllerProvider =
-    StateProvider((ref) => TransformationController(Matrix4.identity()));
-final searchDatetimeProvider = StateProvider((ref) => DateTime.now());
-final mapDetailMapProvider = StateProvider((ref) => MapDetailMap());
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});

@@ -1,5 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:dotto/repository/get_firebase_realtime_db.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final onMapSearchProvider = StateProvider((ref) => false);
+final StateProvider<List<MapDetail>> mapSearchListProvider =
+    StateProvider((ref) => []);
+final mapPageProvider = StateProvider((ref) => 2);
+final textEditingControllerProvider =
+    StateProvider((ref) => TextEditingController());
+final mapSearchBarFocusProvider = StateProvider((ref) => FocusNode());
+final mapFocusMapDetailProvider = StateProvider(
+    (ref) => const MapDetail('1', '0', null, '0', null, null, null));
+final mapViewTransformationControllerProvider =
+    StateProvider((ref) => TransformationController(Matrix4.identity()));
+final searchDatetimeProvider = StateProvider((ref) => DateTime.now());
+final mapDetailMapProvider = StateProvider((ref) => MapDetailMap());
 
 class MapDetail {
   final String floor;
