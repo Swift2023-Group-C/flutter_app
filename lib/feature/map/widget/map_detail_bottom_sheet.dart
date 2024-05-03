@@ -1,6 +1,5 @@
-import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/importer.dart';
-
+import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/domain/map_detail.dart';
 
