@@ -1,3 +1,4 @@
+import 'package:dotto/feature/map/widget/map_detail_bottom_sheet.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/domain/map_detail.dart';
@@ -133,6 +134,8 @@ class MapSearchListView extends ConsumerWidget {
         ref.watch(mapFocusMapDetailProvider.notifier);
     final mapViewTransformationControllerProviderNotifier =
         ref.watch(mapViewTransformationControllerProvider.notifier);
+    final mapSearchBarFocusNotifier =
+        ref.watch(mapSearchBarFocusProvider.notifier);
     if (mapSearchList.isNotEmpty) {
       return Padding(
         padding: const EdgeInsets.only(top: 5, right: 15, left: 15),
@@ -163,6 +166,14 @@ class MapSearchListView extends ConsumerWidget {
                       .setIdentity();
                   mapFocusMapDetailNotifier.state = item;
                   mapPageNotifier.state = floorBarString.indexOf(item.floor);
+                  showBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return MapDetailBottomSheet(
+                          floor: item.floor, roomName: item.roomName);
+                    },
+                  );
+                  mapSearchBarFocusNotifier.state.unfocus();
                 },
                 title: Text(item.header),
                 leading: Text('${item.floor}階'),
