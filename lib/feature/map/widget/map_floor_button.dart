@@ -68,8 +68,7 @@ class MapFloorButton extends ConsumerWidget {
                                 TransformationController(Matrix4(1, 0, 0, 0, 0,
                                     1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
                             mapPageNotifier.state = i;
-                            mapFocusMapDetailNotifier.state = const MapDetail(
-                                '1', '0', null, '0', null, null, null);
+                            mapFocusMapDetailNotifier.state = MapDetail.none;
                             FocusScope.of(context).unfocus();
                           },
                           child: Center(

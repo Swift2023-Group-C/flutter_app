@@ -19,6 +19,9 @@ class MapDetail {
     return MapDetail(floor, roomName, value['classroomNo'], value['header'],
         value['detail'], value['mail'], sWordList);
   }
+
+  static const MapDetail none =
+      MapDetail('1', '0', null, '0', null, null, null);
 }
 
 class MapDetailMap {

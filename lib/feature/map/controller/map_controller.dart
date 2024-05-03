@@ -10,8 +10,7 @@ final mapPageProvider = StateProvider((ref) => 2);
 final textEditingControllerProvider =
     StateProvider((ref) => TextEditingController());
 final mapSearchBarFocusProvider = StateProvider((ref) => FocusNode());
-final mapFocusMapDetailProvider = StateProvider(
-    (ref) => const MapDetail('1', '0', null, '0', null, null, null));
+final mapFocusMapDetailProvider = StateProvider((ref) => MapDetail.none);
 final mapViewTransformationControllerProvider =
     StateProvider((ref) => TransformationController(Matrix4.identity()));
 final searchDatetimeProvider = StateProvider((ref) => DateTime.now());
