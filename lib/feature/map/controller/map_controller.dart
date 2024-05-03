@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:dotto/importer.dart';
+
 import 'package:dotto/repository/get_firebase_realtime_db.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final onMapSearchProvider = StateProvider((ref) => false);
 final StateProvider<List<MapDetail>> mapSearchListProvider =

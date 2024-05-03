@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:dotto/feature/map/controller/map_controller.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dotto/importer.dart';
+
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:dotto/feature/map/widget/map_tile.dart';
+
+import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/widget/fun_grid_map.dart';
 
 class MapGridScreen extends StatelessWidget {
   const MapGridScreen({super.key});
@@ -25,7 +26,7 @@ class MapGridScreen extends StatelessWidget {
         return StaggeredGrid.count(
           crossAxisCount: 48,
           children: [
-            ...GridMaps.mapTileListMap[gridMapsList[mapPage]]!.map(
+            ...FunGridMaps.mapTileListMap[gridMapsList[mapPage]]!.map(
               (e) {
                 return StaggeredGridTile.count(
                     crossAxisCellCount: e.width,
