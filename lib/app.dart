@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:dotto/importer.dart';
+
 import 'package:dotto/screens/app_tutorial.dart';
 import 'package:dotto/repository/download_file_from_firebase.dart';
 import 'package:dotto/repository/find_rooms_in_use.dart';
@@ -11,11 +12,9 @@ import 'package:dotto/screens/kadai_list.dart';
 import 'package:dotto/screens/kamoku.dart';
 import 'package:dotto/screens/home.dart';
 import 'package:dotto/feature/map/map.dart';
-import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/screens/settings.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:dotto/components/setting_user_info.dart';
@@ -132,9 +131,6 @@ final Map<TabItem, GlobalKey<NavigatorState>> _navigatorKeys = {
   TabItem.kamoku: GlobalKey<NavigatorState>(),
   TabItem.kadai: GlobalKey<NavigatorState>(),
 };
-
-final StateProvider<Map<String, bool>> mapUsingMapProvider =
-    StateProvider((ref) => {});
 
 class BasePage extends ConsumerStatefulWidget {
   const BasePage({super.key});
@@ -272,12 +268,6 @@ class _BasePageState extends ConsumerState<BasePage> {
   void _onItemTapped(int index) async {
     final selectedTab = TabItem.values[index];
 
-    if (selectedTab == TabItem.map) {
-      final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
-      final searchDatetimeNotifier = ref.watch(searchDatetimeProvider.notifier);
-      searchDatetimeNotifier.state = DateTime.now();
-      mapUsingMapNotifier.state = await setUsingColor(DateTime.now());
-    }
     if (currentTab == selectedTab) {
       if (_navigatorKeys[selectedTab] != null) {
         _navigatorKeys[selectedTab]!

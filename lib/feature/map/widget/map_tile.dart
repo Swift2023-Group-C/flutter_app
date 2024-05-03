@@ -1,8 +1,8 @@
 import 'package:dotto/importer.dart';
 
-import 'package:dotto/app.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/domain/map_tile_type.dart';
+import 'package:dotto/feature/map/widget/map_detail_bottom_sheet.dart';
 
 abstract final class MapColors {
   static Color get using => Colors.orange.shade300;
@@ -11,11 +11,11 @@ abstract final class MapColors {
 }
 
 // 階段の時の描画設定
-class StairType {
+class MapStairType {
   final Axis direction;
   final bool up;
   final bool down;
-  const StairType(this.direction, this.up, this.down);
+  const MapStairType(this.direction, this.up, this.down);
   Axis getDirection() {
     return direction;
   }
@@ -25,10 +25,10 @@ class StairType {
 ///
 /// top, right, bottom, left: Borderサイズ, txt
 // ignore: must_be_immutable
-class Tile extends StatelessWidget {
+class MapTile extends StatelessWidget {
   final int width;
   final int height;
-  final TileType ttype;
+  final MapTileType ttype;
   final double top;
   final double right;
   final double bottom;
@@ -41,11 +41,11 @@ class Tile extends StatelessWidget {
   double fontSize;
   late Color tileColor;
   late Color fontColor;
-  final StairType stairType;
+  final MapStairType stairType;
   DateTime? useEndTime;
   final Widget? innerWidget;
 
-  Tile(
+  MapTile(
     this.width,
     this.height,
     this.ttype, {
@@ -60,7 +60,7 @@ class Tile extends StatelessWidget {
     this.wc = 0x0000,
     this.using = false,
     this.fontSize = 4,
-    this.stairType = const StairType(Axis.horizontal, true, true),
+    this.stairType = const MapStairType(Axis.horizontal, true, true),
     this.useEndTime,
     this.innerWidget,
   }) {
@@ -145,7 +145,7 @@ class Tile extends StatelessWidget {
         children: icons,
       );
     }
-    if (ttype == TileType.ev) {
+    if (ttype == MapTileType.ev) {
       return const Icon(
         Icons.elevator_outlined,
         size: 12,
@@ -153,7 +153,7 @@ class Tile extends StatelessWidget {
         weight: 100,
       );
     }
-    if (ttype == TileType.stair) {
+    if (ttype == MapTileType.stair) {
       return SizedBox.expand(
         child: Flex(
           direction: stairType.getDirection(),
@@ -250,9 +250,9 @@ class Tile extends StatelessWidget {
                   right: oneBorderSide(right, focus),
                   bottom: oneBorderSide(bottom, focus),
                   left: oneBorderSide(left, focus)),
-              color: (ttype == TileType.empty)
+              color: (ttype == MapTileType.empty)
                   ? tileColor
-                  : TileType.road.backgroundColor,
+                  : MapTileType.road.backgroundColor,
             ),
             child: SizedBox.expand(
               child: (innerWidget == null)
@@ -265,7 +265,7 @@ class Tile extends StatelessWidget {
       },
     )));
     widgetList.add(stackTextIcon());
-    if (ttype == TileType.stair) {
+    if (ttype == MapTileType.stair) {
       if (stairType.up && !stairType.down) {
         widgetList.add(SizedBox.expand(
             child: Center(
@@ -317,7 +317,7 @@ class Tile extends StatelessWidget {
                 showBottomSheet(
                   context: context,
                   builder: (BuildContext context) {
-                    return MapBottomSheet(mapDetail: mapDetail);
+                    return MapDetailBottomSheet(mapDetail: mapDetail);
                   },
                 );
                 mapSearchBarFocusNotifier.state.unfocus();
@@ -333,48 +333,5 @@ class Tile extends StatelessWidget {
           fit: StackFit.loose,
           children: widgetList);
     });
-  }
-}
-
-class MapBottomSheet extends StatelessWidget {
-  const MapBottomSheet({super.key, required this.mapDetail});
-  final MapDetail mapDetail;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        height: 200,
-        width: double.infinity,
-        color: Colors.blueGrey.shade100,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SelectableText(
-                    mapDetail.header,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: double.infinity, height: 10),
-                  if (mapDetail.detail != null)
-                    SelectableText(mapDetail.detail!),
-                  if (mapDetail.mail != null)
-                    SelectableText('${mapDetail.mail}@fun.ac.jp'),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, right: 10),
-              child: Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close))),
-            ),
-          ],
-        ));
   }
 }

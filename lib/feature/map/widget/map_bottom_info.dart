@@ -3,7 +3,6 @@ import 'package:dotto/importer.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
 
-import 'package:dotto/app.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/domain/map_tile_type.dart';
 import 'package:dotto/feature/map/widget/map_tile.dart';
@@ -108,7 +107,7 @@ class MapBottomInfo extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _mapInfoTile(MapColors.using, "下記設定時間に授業等で使用中の部屋"),
-                _mapInfoTile(TileType.wc.backgroundColor, 'トイレ及び給湯室'),
+                _mapInfoTile(MapTileType.wc.backgroundColor, 'トイレ及び給湯室'),
                 _mapInfoTile(Colors.red, '検索結果'),
               ],
             ),

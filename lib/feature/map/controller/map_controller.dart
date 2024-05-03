@@ -2,6 +2,8 @@ import 'package:dotto/importer.dart';
 
 import 'package:dotto/repository/get_firebase_realtime_db.dart';
 
+final StateProvider<Map<String, bool>> mapUsingMapProvider =
+    StateProvider((ref) => {});
 final onMapSearchProvider = StateProvider((ref) => false);
 final StateProvider<List<MapDetail>> mapSearchListProvider =
     StateProvider((ref) => []);

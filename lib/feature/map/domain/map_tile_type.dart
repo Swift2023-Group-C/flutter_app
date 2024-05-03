@@ -1,6 +1,6 @@
 import 'package:dotto/importer.dart';
 
-enum TileType {
+enum MapTileType {
   /// 講義室
   classroom(
     backgroundColor: Color(0xFF616161),
@@ -16,13 +16,13 @@ enum TileType {
   /// メインには使わないけど使う部屋
   subroom(
     backgroundColor: Colors.grey,
-    textColor: Colors.white,
+    textColor: Colors.black,
   ),
 
   /// 倉庫など
   otherroom(
     backgroundColor: Color(0xFFBDBDBD),
-    textColor: Colors.white,
+    textColor: Colors.black,
   ),
 
   /// トイレ
@@ -55,7 +55,7 @@ enum TileType {
     textColor: Colors.black,
   );
 
-  const TileType({
+  const MapTileType({
     required this.backgroundColor,
     required this.textColor,
   });
