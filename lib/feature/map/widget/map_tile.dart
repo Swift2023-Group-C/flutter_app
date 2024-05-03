@@ -308,31 +308,24 @@ class MapTile extends StatelessWidget {
       final mapSearchBarFocusNotifier =
           ref.watch(mapSearchBarFocusProvider.notifier);
       ref.watch(mapUsingMapProvider);
-      final mapDetailMap = ref.watch(mapDetailMapProvider);
-      if (mapDetailMap.mapDetailList != null) {
-        MapDetail? mapDetail =
-            mapDetailMap.searchOnce(floorBarString[mapPage], txt);
-        if (mapDetail != null) {
-          return GestureDetector(
-              onTap: () {
+      return GestureDetector(
+        onTap: (txt.isNotEmpty)
+            ? () {
                 showBottomSheet(
                   context: context,
                   builder: (BuildContext context) {
-                    return MapDetailBottomSheet(mapDetail: mapDetail);
+                    return MapDetailBottomSheet(
+                        floor: floorBarString[mapPage], roomName: txt);
                   },
                 );
                 mapSearchBarFocusNotifier.state.unfocus();
-              },
-              child: Stack(
-                  alignment: AlignmentDirectional.center,
-                  fit: StackFit.loose,
-                  children: widgetList));
-        }
-      }
-      return Stack(
-          alignment: AlignmentDirectional.center,
-          fit: StackFit.loose,
-          children: widgetList);
+              }
+            : null,
+        child: Stack(
+            alignment: AlignmentDirectional.center,
+            fit: StackFit.loose,
+            children: widgetList),
+      );
     });
   }
 }

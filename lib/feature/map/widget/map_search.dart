@@ -15,7 +15,9 @@ class MapSearchBar extends ConsumerWidget {
       mapSearchListNotifier.state = [];
     } else {
       onMapSearchNotifier.state = true;
-      mapSearchListNotifier.state = mapDetailMap.searchAll(text);
+      mapDetailMap.whenData((data) {
+        mapSearchListNotifier.state = data.searchAll(text);
+      });
     }
   }
 
