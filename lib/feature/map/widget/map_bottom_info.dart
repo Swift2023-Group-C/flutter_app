@@ -1,13 +1,11 @@
-import 'package:dotto/importer.dart';
-
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 
+import 'package:dotto/importer.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/domain/map_tile_type.dart';
+import 'package:dotto/feature/map/repository/map_repository.dart';
 import 'package:dotto/feature/map/widget/map_tile.dart';
-import 'package:dotto/repository/find_rooms_in_use.dart';
-import 'package:dotto/repository/read_json_file.dart';
 
 class MapBottomInfo extends ConsumerWidget {
   const MapBottomInfo({super.key});
@@ -55,16 +53,8 @@ class MapBottomInfo extends ConsumerWidget {
       "51": false
     };
 
-    String scheduleFilePath = 'map/oneweek_schedule.json';
-    Map<String, DateTime>? resourceIds;
-    try {
-      String fileContent = await readJsonFile(scheduleFilePath);
-      resourceIds = findRoomsInUse(fileContent, dateTime);
-    } catch (e) {
-      debugPrint(e.toString());
-      return classroomNoFloorMap;
-    }
-
+    Map<String, DateTime> resourceIds =
+        await MapRepository().getUsingRoom(dateTime);
     if (resourceIds.isNotEmpty) {
       resourceIds.forEach((String resourceId, DateTime useEndTime) {
         debugPrint(resourceId);
