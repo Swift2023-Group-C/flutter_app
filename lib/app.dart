@@ -1,22 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:uni_links/uni_links.dart';
+
+import 'package:dotto/importer.dart';
 import 'package:dotto/screens/app_tutorial.dart';
 import 'package:dotto/repository/download_file_from_firebase.dart';
-import 'package:dotto/repository/find_rooms_in_use.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
-import 'package:dotto/repository/read_json_file.dart';
 import 'package:dotto/screens/kadai_list.dart';
 import 'package:dotto/screens/kamoku.dart';
 import 'package:dotto/screens/home.dart';
-import 'package:dotto/screens/map.dart';
+import 'package:dotto/feature/map/map.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/screens/settings.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uni_links/uni_links.dart';
-
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/components/db_config.dart';
 
@@ -132,9 +129,6 @@ final Map<TabItem, GlobalKey<NavigatorState>> _navigatorKeys = {
   TabItem.kadai: GlobalKey<NavigatorState>(),
 };
 
-final StateProvider<Map<String, bool>> mapUsingMapProvider =
-    StateProvider((ref) => {});
-
 class BasePage extends ConsumerStatefulWidget {
   const BasePage({super.key});
 
@@ -222,61 +216,9 @@ class _BasePageState extends ConsumerState<BasePage> {
   TabItem currentTab = TabItem.home;
   String appBarTitle = '';
 
-  Future<Map<String, bool>> setUsingColor(DateTime dateTime) async {
-    final Map<String, bool> classroomNoFloorMap = {
-      "1": false,
-      "2": false,
-      "3": false,
-      "4": false,
-      "5": false,
-      "6": false,
-      "7": false,
-      "8": false,
-      "9": false,
-      "10": false,
-      "11": false,
-      "12": false,
-      "13": false,
-      "14": false,
-      "15": false,
-      "16": false,
-      "17": false,
-      "18": false,
-      "19": false,
-      "50": false,
-      "51": false
-    };
-
-    String scheduleFilePath = 'map/oneweek_schedule.json';
-    Map<String, DateTime>? resourceIds;
-    try {
-      String fileContent = await readJsonFile(scheduleFilePath);
-      resourceIds = findRoomsInUse(fileContent, dateTime);
-    } catch (e) {
-      debugPrint(e.toString());
-      return classroomNoFloorMap;
-    }
-
-    if (resourceIds.isNotEmpty) {
-      resourceIds.forEach((String resourceId, DateTime useEndTime) {
-        debugPrint(resourceId);
-        if (classroomNoFloorMap.containsKey(resourceId)) {
-          classroomNoFloorMap[resourceId] = true;
-        }
-      });
-    }
-    return classroomNoFloorMap;
-  }
-
   void _onItemTapped(int index) async {
     final selectedTab = TabItem.values[index];
 
-    if (selectedTab == TabItem.map) {
-      final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
-      final searchDatetimeNotifier = ref.watch(searchDatetimeProvider.notifier);
-      searchDatetimeNotifier.state = DateTime.now();
-      mapUsingMapNotifier.state = await setUsingColor(DateTime.now());
-    }
     if (currentTab == selectedTab) {
       if (_navigatorKeys[selectedTab] != null) {
         _navigatorKeys[selectedTab]!
