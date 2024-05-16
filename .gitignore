@@ -6,6 +6,10 @@
 
 test.dart
 
+# build runner
+*.freezed.dart
+*.g.dart 
+
 # Miscellaneous
 *.class
 *.log
