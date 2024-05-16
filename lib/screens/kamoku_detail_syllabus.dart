@@ -1,6 +1,20 @@
+import 'package:dotto/components/db_config.dart';
 import 'package:flutter/material.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
-import 'package:dotto/repository/kamoku_sort.dart';
+import 'package:sqflite/sqflite.dart';
+
+//授業名でdetailDBを検索
+Future<Map<String, dynamic>> fetchDetails(int lessonId) async {
+  Database database = await openDatabase(SyllabusDBConfig.dbPath);
+  List<Map<String, dynamic>> details = await database
+      .query('detail', where: 'LessonId = ?', whereArgs: [lessonId]);
+
+  if (details.isNotEmpty) {
+    return details.first;
+  } else {
+    throw Exception();
+  }
+}
 
 class KamokuDetailSyllabusScreen extends StatelessWidget {
   const KamokuDetailSyllabusScreen({super.key, required this.lessonId});

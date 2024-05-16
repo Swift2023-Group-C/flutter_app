@@ -9,7 +9,7 @@ import 'package:dotto/screens/app_tutorial.dart';
 import 'package:dotto/repository/download_file_from_firebase.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:dotto/screens/kadai_list.dart';
-import 'package:dotto/screens/kamoku.dart';
+import 'package:dotto/feature/kamoku_search/kamoku_search.dart';
 import 'package:dotto/screens/home.dart';
 import 'package:dotto/feature/map/map.dart';
 import 'package:dotto/components/color_fun.dart';
