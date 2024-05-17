@@ -20,7 +20,6 @@ class KamokuSearchBox extends ConsumerWidget {
         hintText: '科目名を検索',
       ),
       onChanged: (text) {
-        kamokuSearchController.searchBoxFocusNode.unfocus();
         kamokuSearchControllerNotifier.setSearchWord(text);
       },
     );
