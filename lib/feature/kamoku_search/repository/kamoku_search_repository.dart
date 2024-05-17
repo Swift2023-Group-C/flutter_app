@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 
-import 'package:dotto/components/db_config.dart';
+import 'package:dotto/repository/db_config.dart';
 
 class KamokuSearchRepository {
   static final KamokuSearchRepository _instance =

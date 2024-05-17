@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:dotto/importer.dart';
-import 'package:dotto/components/db_config.dart';
+import 'package:dotto/repository/db_config.dart';
 import 'package:dotto/feature/kamoku_search/domain/kamoku_search_choices.dart';
 
 part 'kamoku_search_controller.freezed.dart';

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+
 import 'package:dotto/screens/file_viewer.dart';
 
-class KakomonListObjects extends StatefulWidget {
-  const KakomonListObjects({super.key, required this.url});
+class KamokuDetailKakomonListObjects extends StatefulWidget {
+  const KamokuDetailKakomonListObjects({super.key, required this.url});
   final String url;
 
   @override
-  State<KakomonListObjects> createState() => _KakomonListObjectsState();
+  State<KamokuDetailKakomonListObjects> createState() =>
+      _KamokuDetailKakomonListObjectsState();
 }
 
-class _KakomonListObjectsState extends State<KakomonListObjects> {
+class _KamokuDetailKakomonListObjectsState
+    extends State<KamokuDetailKakomonListObjects> {
   bool _checkbox = false;
 
   @override

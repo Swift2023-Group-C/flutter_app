@@ -1,20 +1,7 @@
-import 'package:dotto/components/db_config.dart';
 import 'package:flutter/material.dart';
+
 import 'package:dotto/components/widgets/progress_indicator.dart';
-import 'package:sqflite/sqflite.dart';
-
-//授業名でdetailDBを検索
-Future<Map<String, dynamic>> fetchDetails(int lessonId) async {
-  Database database = await openDatabase(SyllabusDBConfig.dbPath);
-  List<Map<String, dynamic>> details = await database
-      .query('detail', where: 'LessonId = ?', whereArgs: [lessonId]);
-
-  if (details.isNotEmpty) {
-    return details.first;
-  } else {
-    throw Exception();
-  }
-}
+import 'package:dotto/feature/kamoku_detail/repository/kamoku_detail_repository.dart';
 
 class KamokuDetailSyllabusScreen extends StatelessWidget {
   const KamokuDetailSyllabusScreen({super.key, required this.lessonId});
@@ -25,7 +12,7 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<Map<String, dynamic>>(
-        future: fetchDetails(lessonId),
+        future: KamokuDetailRepository().fetchDetails(lessonId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             Map<String, dynamic> details = snapshot.data!;
@@ -38,7 +25,7 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
                   ...details.keys.map(
                     (e) {
                       if (details[e] is String) {
-                        return _buildRow(e, details[e]);
+                        return syllabusItem(e, details[e]);
                       }
                       return Container();
                     },
@@ -54,7 +41,7 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String title, String? value) {
+  Widget syllabusItem(String title, String? value) {
     if (value == null) {
       return Container();
     }

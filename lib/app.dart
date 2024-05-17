@@ -15,7 +15,7 @@ import 'package:dotto/feature/map/map.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/screens/settings.dart';
 import 'package:dotto/components/setting_user_info.dart';
-import 'package:dotto/components/db_config.dart';
+import 'package:dotto/repository/db_config.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -3,7 +3,7 @@ import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/kamoku_search/repository/kamoku_search_repository.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
-import 'package:dotto/screens/kamoku_detail_page_view.dart';
+import 'package:dotto/feature/kamoku_detail/kamoku_detail_page_view.dart';
 
 class KamokuSearchResults extends ConsumerWidget {
   final List<Map<String, dynamic>> records;
