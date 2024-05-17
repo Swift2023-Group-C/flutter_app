@@ -20,6 +20,7 @@ class KamokuSearchController with _$KamokuSearchController {
     Set<KamokuSearchChoices> visibilityStatus,
     required List<Map<String, dynamic>>? searchResults,
     required TextEditingController textEditingController,
+    required FocusNode searchBoxFocusNode,
     @Default("") String searchWord,
   }) = _KamokuSearchController;
 }
@@ -35,6 +36,7 @@ class KamokuSearchControllerProvider
                   .map((e) => List.filled(e.choice.length, false))),
           searchResults: null,
           textEditingController: TextEditingController(),
+          searchBoxFocusNode: FocusNode(),
         ));
 
   final List<String> checkboxSenmonKyoyo = ['専門', '教養'];

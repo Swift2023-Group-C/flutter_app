@@ -11,6 +11,7 @@ class KamokuSearchBox extends ConsumerWidget {
         ref.watch(kamokuSearchControllerProvider.notifier);
     return TextField(
       controller: kamokuSearchController.textEditingController,
+      focusNode: kamokuSearchController.searchBoxFocusNode,
       style: const TextStyle(
         fontSize: 18,
         color: Colors.black,
@@ -19,6 +20,7 @@ class KamokuSearchBox extends ConsumerWidget {
         hintText: '科目名を検索',
       ),
       onChanged: (text) {
+        kamokuSearchController.searchBoxFocusNode.unfocus();
         kamokuSearchControllerNotifier.setSearchWord(text);
       },
     );

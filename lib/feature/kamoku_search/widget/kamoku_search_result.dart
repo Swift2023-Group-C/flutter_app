@@ -1,9 +1,10 @@
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
-import 'package:dotto/feature/kamoku_search/repository/kamoku_search_repository.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:dotto/feature/kamoku_detail/kamoku_detail_page_view.dart';
+import 'package:dotto/feature/kamoku_search/controller/kamoku_search_controller.dart';
+import 'package:dotto/feature/kamoku_search/repository/kamoku_search_repository.dart';
 
 class KamokuSearchResults extends ConsumerWidget {
   final List<Map<String, dynamic>> records;
@@ -48,6 +49,7 @@ class KamokuSearchResults extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final personalLessonIdList = ref.watch(personalLessonIdListProvider);
+    final kamokuSearchController = ref.read(kamokuSearchControllerProvider);
     //loadPersonalTimeTableList();
     return FutureBuilder(
       future: getWeekPeriod(records.map((e) => e['LessonId'] as int).toList()),
@@ -64,8 +66,8 @@ class KamokuSearchResults extends ConsumerWidget {
               return ListTile(
                 title: Text(record['授業名'] ?? ''),
                 subtitle: Text(weekPeriodStringMap[lessonId] ?? ''),
-                onTap: () {
-                  Navigator.of(context).push(
+                onTap: () async {
+                  await Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) {
                         return KamokuDetailPageScreen(
@@ -77,6 +79,7 @@ class KamokuSearchResults extends ConsumerWidget {
                       transitionsBuilder: fromRightAnimation,
                     ),
                   );
+                  kamokuSearchController.searchBoxFocusNode.unfocus();
                 },
                 trailing: const Icon(Icons.chevron_right),
                 leading: IconButton(

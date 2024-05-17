@@ -15,7 +15,6 @@ class KamokuSearchScreen extends ConsumerWidget {
     final kamokuSearchController = ref.watch(kamokuSearchControllerProvider);
     final kamokuSearchControllerNotifier =
         ref.watch(kamokuSearchControllerProvider.notifier);
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
