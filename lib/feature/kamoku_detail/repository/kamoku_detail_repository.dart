@@ -38,10 +38,7 @@ class KamokuDetailRepository {
       if (querySnapshot.docs.isNotEmpty) {
         // 既存のフィードバックが存在してたらそれを更新
         final docId = querySnapshot.docs[0].id;
-        await FirebaseFirestore.instance
-            .collection('feedback')
-            .doc(docId)
-            .update(
+        FirebaseFirestore.instance.collection('feedback').doc(docId).update(
           {
             'score': selectedScore,
             'detail': text,
@@ -49,7 +46,7 @@ class KamokuDetailRepository {
         );
       } else {
         // 既存のフィードバックが存在しなかったら新しいドキュメントを作成
-        await FirebaseFirestore.instance.collection('feedback').add(
+        FirebaseFirestore.instance.collection('feedback').add(
           {
             'User': userKey,
             'lessonId': lessonId,
