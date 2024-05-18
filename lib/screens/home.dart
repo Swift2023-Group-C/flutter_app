@@ -278,10 +278,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget timeTablePeriod(
-      int period, List<TimeTableCourse> timeTableCourseList) {
+  Widget timeTablePeriod(int period, TimeOfDay beginTime, TimeOfDay finishTime,
+      List<TimeTableCourse> timeTableCourseList) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       margin: const EdgeInsets.symmetric(vertical: 5),
       height: timeTableCourseList.isEmpty
           ? 40
@@ -291,9 +291,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Container(
             height: 40,
-            width: 40,
-            alignment: Alignment.centerLeft,
-            child: Text('$period限'),
+            width: 70,
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('$period限'),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '${beginTime.format(context)} ~ ${finishTime.format(context)}',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 5,
           ),
           Expanded(
             child: Column(
@@ -313,6 +327,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget timeTable() {
+    const List<TimeOfDay> beginPeriod = [
+      TimeOfDay(hour: 9, minute: 0),
+      TimeOfDay(hour: 10, minute: 40),
+      TimeOfDay(hour: 13, minute: 10),
+      TimeOfDay(hour: 14, minute: 50),
+      TimeOfDay(hour: 16, minute: 30),
+      TimeOfDay(hour: 18, minute: 10),
+    ];
+    const List<TimeOfDay> finishPeriod = [
+      TimeOfDay(hour: 10, minute: 30),
+      TimeOfDay(hour: 12, minute: 10),
+      TimeOfDay(hour: 14, minute: 40),
+      TimeOfDay(hour: 16, minute: 20),
+      TimeOfDay(hour: 18, minute: 00),
+      TimeOfDay(hour: 19, minute: 40),
+    ];
     List<DateTime> dates = getDateRange();
     List<String> weekString = ['月', '火', '水', '木', '金', '土', '日'];
     List<Color> weekColors = [
@@ -408,7 +438,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             // 時間割表示
             for (int i = 1; i <= 6; i++) ...{
-              timeTablePeriod(i, focusTimeTableData[i] ?? [])
+              timeTablePeriod(i, beginPeriod[i - 1], finishPeriod[i - 1],
+                  focusTimeTableData[i] ?? [])
             },
           ],
         );
@@ -460,11 +491,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         .toList());
 
     return Scaffold(
-      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
             children: [
+              const SizedBox(
+                height: 5,
+              ),
               // 時間割
               timeTable(),
               Align(
