@@ -54,21 +54,31 @@ class _CourseCancellationScreenState extends State<CourseCancellationScreen> {
         actions: <Widget>[
           // フィルターのオン/オフを切り替えるボタン
           TextButton(
-            onPressed: () {
-              setState(() {
-                isFilterEnabled = !isFilterEnabled;
-              });
-            },
-            child: isFilterEnabled
-                ? const Text(
-                    '全科目表示',
-                    style: TextStyle(color: Colors.white),
-                  )
-                : const Text(
-                    '取得している科目のみ表示',
-                    style: TextStyle(color: Colors.white),
+              onPressed: () {
+                setState(() {
+                  isFilterEnabled = !isFilterEnabled;
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    isFilterEnabled ? '全て表示' : '時間割にある科目のみ表示',
+                    style: const TextStyle(color: Colors.white),
                   ),
-          ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  const Icon(
+                    Icons.sync_alt,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                ],
+              )),
         ],
       ),
       body: Consumer(
@@ -125,21 +135,27 @@ class _CourseCancellationScreenState extends State<CourseCancellationScreen> {
   }
 
   Widget createListView(List<dynamic> data) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: data.length,
-        itemBuilder: (context, index) {
-          Map<String, dynamic> item = data[index];
+    if (data.isNotEmpty) {
+      return Expanded(
+        child: ListView.builder(
+          itemCount: data.length,
+          itemBuilder: (context, index) {
+            Map<String, dynamic> item = data[index];
 
-          // 各データをリストタイルで表示
-          return ListTile(
-            title: Text('日付: ${item['date']}'),
-            subtitle: Text(
-                '時限: ${item['period']}\n授業名: ${item['lessonName']}\nキャンパス: ${item['campus']}\n担当教員: ${item['staff']}\nコメント: ${item['comment']}'),
-            // 他のウィジェットやアクションを追加することも可能
-          );
-        },
-      ),
-    );
+            // 各データをリストタイルで表示
+            return ListTile(
+              title: Text('日付: ${item['date']}'),
+              subtitle: Text(
+                  '時限: ${item['period']}\n授業名: ${item['lessonName']}\nキャンパス: ${item['campus']}\n担当教員: ${item['staff']}\nコメント: ${item['comment']}'),
+              // 他のウィジェットやアクションを追加することも可能
+            );
+          },
+        ),
+      );
+    } else {
+      return const Center(
+        child: Text('休講補講情報はありません。\n右上から表示を切り替えることができます。'),
+      );
+    }
   }
 }
