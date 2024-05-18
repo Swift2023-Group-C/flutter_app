@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dotto/components/db_config.dart';
+import 'package:dotto/repository/db_config.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/screens/personal_select_lesson.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:dotto/components/widgets/progress_indicator.dart';
-import 'package:dotto/repository/kamoku_sort.dart';
+import 'package:dotto/feature/kamoku_detail/repository/kamoku_detail_repository.dart';
 
 class KamokuDetailSyllabusScreen extends StatelessWidget {
   const KamokuDetailSyllabusScreen({super.key, required this.lessonId});
@@ -11,7 +12,7 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<Map<String, dynamic>>(
-        future: fetchDetails(lessonId),
+        future: KamokuDetailRepository().fetchDetails(lessonId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             Map<String, dynamic> details = snapshot.data!;
@@ -24,7 +25,7 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
                   ...details.keys.map(
                     (e) {
                       if (details[e] is String) {
-                        return _buildRow(e, details[e]);
+                        return syllabusItem(e, details[e]);
                       }
                       return Container();
                     },
@@ -40,7 +41,7 @@ class KamokuDetailSyllabusScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String title, String? value) {
+  Widget syllabusItem(String title, String? value) {
     if (value == null) {
       return Container();
     }

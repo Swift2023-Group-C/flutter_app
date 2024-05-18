@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class FeedbackList extends StatefulWidget {
-  const FeedbackList({super.key, required this.lessonId});
+import 'package:dotto/components/widgets/progress_indicator.dart';
+import 'package:dotto/feature/kamoku_detail/repository/kamoku_detail_repository.dart';
+
+class KamokuDetailFeedbackList extends StatefulWidget {
+  const KamokuDetailFeedbackList({super.key, required this.lessonId});
 
   final int lessonId;
 
   @override
-  State<FeedbackList> createState() => _FeedbackListState();
+  State<KamokuDetailFeedbackList> createState() =>
+      _KamokuDetailFeedbackListState();
 }
 
-class _FeedbackListState extends State<FeedbackList> {
+class _KamokuDetailFeedbackListState extends State<KamokuDetailFeedbackList> {
   double averageScore = 0.0;
 
   // 平均満足度の計算
@@ -58,11 +61,9 @@ class _FeedbackListState extends State<FeedbackList> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
-          .collection('feedback')
-          .where('lessonId', isEqualTo: widget.lessonId)
-          .snapshots(),
+    return StreamBuilder(
+      stream: KamokuDetailRepository()
+          .getFeedbackListFromFirestore(widget.lessonId),
       builder: (BuildContext context,
           AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
         if (snapshot.hasError) {
