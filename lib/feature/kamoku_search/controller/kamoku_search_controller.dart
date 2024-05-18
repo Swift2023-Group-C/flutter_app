@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:dotto/importer.dart';
+import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/repository/db_config.dart';
 import 'package:dotto/feature/kamoku_search/domain/kamoku_search_choices.dart';
 
@@ -37,7 +38,37 @@ class KamokuSearchControllerProvider
           searchResults: null,
           textEditingController: TextEditingController(),
           searchBoxFocusNode: FocusNode(),
-        ));
+        )) {
+    Future(
+      () async {
+        await updateCheckListFromPreferences();
+      },
+    );
+  }
+
+  Future<void> updateCheckListFromPreferences() async {
+    String? savedGrade =
+        await UserPreferences.getString(UserPreferenceKeys.grade);
+    String? savedCourse =
+        await UserPreferences.getString(UserPreferenceKeys.course);
+    Map<KamokuSearchChoices, List<bool>> checkboxStatusMap =
+        state.checkboxStatusMap;
+    if (savedGrade != null) {
+      int? index = KamokuSearchChoices.grade.choice.indexOf(savedGrade);
+      if (index != -1 &&
+          index < checkboxStatusMap[KamokuSearchChoices.grade]!.length) {
+        checkboxStatusMap[KamokuSearchChoices.grade]![index] = true;
+      }
+    }
+    if (savedCourse != null) {
+      int? index = KamokuSearchChoices.course.choice.indexOf(savedCourse);
+      if (index != -1 &&
+          index < checkboxStatusMap[KamokuSearchChoices.course]!.length) {
+        checkboxStatusMap[KamokuSearchChoices.course]![index] = true;
+      }
+    }
+    state = state.copyWith(checkboxStatusMap: checkboxStatusMap);
+  }
 
   final List<String> checkboxSenmonKyoyo = ['専門', '教養'];
 
