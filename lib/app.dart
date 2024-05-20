@@ -5,17 +5,19 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:dotto/importer.dart';
-import 'package:dotto/screens/app_tutorial.dart';
-import 'package:dotto/repository/download_file_from_firebase.dart';
-import 'package:dotto/repository/narrowed_lessons.dart';
-import 'package:dotto/screens/kadai_list.dart';
-import 'package:dotto/feature/kamoku_search/kamoku_search.dart';
-import 'package:dotto/screens/home.dart';
-import 'package:dotto/feature/map/map.dart';
 import 'package:dotto/components/color_fun.dart';
-import 'package:dotto/screens/settings.dart';
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/repository/db_config.dart';
+import 'package:dotto/repository/download_file_from_firebase.dart';
+import 'package:dotto/repository/narrowed_lessons.dart';
+import 'package:dotto/feature/map/map.dart';
+import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/repository/map_repository.dart';
+import 'package:dotto/feature/kamoku_search/kamoku_search.dart';
+import 'package:dotto/screens/app_tutorial.dart';
+import 'package:dotto/screens/home.dart';
+import 'package:dotto/screens/kadai_list.dart';
+import 'package:dotto/screens/settings.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -218,6 +220,14 @@ class _BasePageState extends ConsumerState<BasePage> {
 
   void _onItemTapped(int index) async {
     final selectedTab = TabItem.values[index];
+
+    if (selectedTab == TabItem.map) {
+      final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
+      final searchDatetimeNotifier = ref.watch(searchDatetimeProvider.notifier);
+      searchDatetimeNotifier.state = DateTime.now();
+      mapUsingMapNotifier.state =
+          await MapRepository().setUsingColor(DateTime.now());
+    }
 
     if (currentTab == selectedTab) {
       if (_navigatorKeys[selectedTab] != null) {

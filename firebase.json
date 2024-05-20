@@ -17,6 +17,14 @@
             "web": "1:107577467292:web:5dc6af0a958bb41d06e859"
           }
         }
+      },
+      "ios": {
+        "default": {
+          "projectId": "swift2023groupc",
+          "appId": "1:107577467292:ios:f2e02b1b0cf3bdea06e859",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
       }
     }
   }

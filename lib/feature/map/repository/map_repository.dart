@@ -84,4 +84,42 @@ class MapRepository {
     }
     return resourceIds;
   }
+
+  Future<Map<String, bool>> setUsingColor(DateTime dateTime) async {
+    final Map<String, bool> classroomNoFloorMap = {
+      "1": false,
+      "2": false,
+      "3": false,
+      "4": false,
+      "5": false,
+      "6": false,
+      "7": false,
+      "8": false,
+      "9": false,
+      "10": false,
+      "11": false,
+      "12": false,
+      "13": false,
+      "14": false,
+      "15": false,
+      "16": false,
+      "17": false,
+      "18": false,
+      "19": false,
+      "50": false,
+      "51": false
+    };
+
+    Map<String, DateTime> resourceIds =
+        await MapRepository().getUsingRoom(dateTime);
+    if (resourceIds.isNotEmpty) {
+      resourceIds.forEach((String resourceId, DateTime useEndTime) {
+        debugPrint(resourceId);
+        if (classroomNoFloorMap.containsKey(resourceId)) {
+          classroomNoFloorMap[resourceId] = true;
+        }
+      });
+    }
+    return classroomNoFloorMap;
+  }
 }
