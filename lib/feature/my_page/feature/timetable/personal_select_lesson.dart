@@ -1,4 +1,5 @@
 import 'package:dotto/components/color_fun.dart';
+import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,7 +52,7 @@ class PersonalSelectLessonScreen extends StatelessWidget {
                               //print(termList[index]['lessonId']);
                               personalLessonIdList.removeWhere((item) =>
                                   item == termList[index]['lessonId']);
-                              savePersonalTimeTableList(
+                              await savePersonalTimeTableList(
                                   personalLessonIdList, ref);
                               Navigator.of(context).pop();
                             },

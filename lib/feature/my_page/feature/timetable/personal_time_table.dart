@@ -1,7 +1,9 @@
+import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
+import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:dotto/repository/db_config.dart';
 import 'package:dotto/components/color_fun.dart';
-import 'package:dotto/screens/personal_select_lesson.dart';
+import 'package:dotto/feature/my_page/feature/timetable/personal_select_lesson.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:sqflite/sqflite.dart';
@@ -28,9 +30,9 @@ class _PersonalTimeTableScreenState
     return records;
   }
 
-  Future<void> seasonTimeTable(BuildContext context, WidgetRef ref,
-      List<Map<String, dynamic>> records) async {
-    final personalLessonIdList = await loadPersonalTimeTableList(ref);
+  Future<void> seasonTimeTable(
+      BuildContext context, List<Map<String, dynamic>> records) async {
+    final personalLessonIdList = ref.watch(personalLessonIdListProvider);
     List<Map<String, dynamic>> seasonList = records.where((record) {
       return personalLessonIdList.contains(record['lessonId']);
     }).toList();
@@ -229,7 +231,7 @@ class _PersonalTimeTableScreenState
             builder: (context, ref, child) {
               return IconButton(
                 onPressed: () {
-                  seasonTimeTable(context, ref, records);
+                  seasonTimeTable(context, records);
                   //print(records);
                 },
                 icon: const Icon(Icons.list),

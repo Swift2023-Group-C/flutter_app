@@ -4,7 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 Future<String> getApplicationFilePath(String path) async {
-  final appDocDir = await getApplicationSupportDirectory();
+  final appDocDir = await getTemporaryDirectory();
   final splitPath = split(path);
   if (splitPath.length > 1) {
     String p = appDocDir.path;

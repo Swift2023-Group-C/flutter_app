@@ -5,6 +5,7 @@ import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:dotto/feature/kamoku_detail/kamoku_detail_page_view.dart';
 import 'package:dotto/feature/kamoku_search/controller/kamoku_search_controller.dart';
 import 'package:dotto/feature/kamoku_search/repository/kamoku_search_repository.dart';
+import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 
 class KamokuSearchResults extends ConsumerWidget {
   final List<Map<String, dynamic>> records;
@@ -96,6 +97,7 @@ class KamokuSearchResults extends ConsumerWidget {
                           .removeWhere((item) => item == record['LessonId']);
                       savePersonalTimeTableList(personalLessonIdList, ref);
                     }
+                    ref.invalidate(twoWeekTimeTableDataProvider);
                   },
                 ),
               );

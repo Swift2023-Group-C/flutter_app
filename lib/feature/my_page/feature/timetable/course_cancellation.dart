@@ -1,9 +1,9 @@
+import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:dotto/repository/read_json_file.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dotto/repository/narrowed_lessons.dart';
 
 class CourseCancellationScreen extends StatefulWidget {
   const CourseCancellationScreen({super.key});
@@ -17,7 +17,7 @@ class _CourseCancellationScreenState extends State<CourseCancellationScreen> {
   Future<List<dynamic>> filterJsonDataByLessonNames(WidgetRef ref) async {
     // 個人のタイムテーブルマップをロード
     Map<String, int> personalTimeTableMap =
-        await loadPersonalTimeTableMapString(ref);
+        await TimetableRepository().loadPersonalTimeTableMapString();
 
     String jsonFileName = 'home/cancel_lecture.json';
     // JSONファイルを読み込む
