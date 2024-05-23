@@ -1,14 +1,15 @@
-import 'package:dotto/components/animation.dart';
-import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
-import 'package:dotto/feature/my_page/feature/timetable/my_page_timetable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:dotto/importer.dart';
+import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/screens/file_viewer.dart';
+import 'package:dotto/feature/my_page/feature/timetable/my_page_timetable.dart';
 import 'package:dotto/feature/my_page/feature/timetable/course_cancellation.dart';
 import 'package:dotto/feature/my_page/feature/timetable/personal_time_table.dart';
+import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
+import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -131,6 +132,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             }, Icons.picture_as_pdf, item.key))
         .toList());
 
+    final twoWeekTimeTableDataNotifier =
+        ref.read(twoWeekTimeTableDataProvider.notifier);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -157,8 +161,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         transitionsBuilder: fromRightAnimation,
                       ),
                     )
-                        .then((value) {
-                      ref.invalidate(twoWeekTimeTableDataProvider);
+                        .then((value) async {
+                      twoWeekTimeTableDataNotifier.state =
+                          await TimetableRepository().get2WeekLessonSchedule();
                     });
                   },
                   child: Text(

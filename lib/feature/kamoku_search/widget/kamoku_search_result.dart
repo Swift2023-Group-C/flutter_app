@@ -6,6 +6,8 @@ import 'package:dotto/feature/kamoku_detail/kamoku_detail_page_view.dart';
 import 'package:dotto/feature/kamoku_search/controller/kamoku_search_controller.dart';
 import 'package:dotto/feature/kamoku_search/repository/kamoku_search_repository.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
+import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
+import 'package:dotto/feature/my_page/feature/timetable/widget/timetable_is_over_selected_snack_bar.dart';
 
 class KamokuSearchResults extends ConsumerWidget {
   final List<Map<String, dynamic>> records;
@@ -51,6 +53,8 @@ class KamokuSearchResults extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final personalLessonIdList = ref.watch(personalLessonIdListProvider);
     final kamokuSearchController = ref.read(kamokuSearchControllerProvider);
+    final twoWeekTimeTableDataNotifier =
+        ref.read(twoWeekTimeTableDataProvider.notifier);
     //loadPersonalTimeTableList();
     return FutureBuilder(
       future: getWeekPeriod(records.map((e) => e['LessonId'] as int).toList()),
@@ -88,16 +92,24 @@ class KamokuSearchResults extends ConsumerWidget {
                       color: personalLessonIdList.contains(record['LessonId'])
                           ? Colors.green
                           : Colors.black),
-                  onPressed: () {
+                  onPressed: () async {
                     if (!personalLessonIdList.contains(record['LessonId'])) {
-                      personalLessonIdList.add(record['LessonId']);
-                      savePersonalTimeTableList(personalLessonIdList, ref);
+                      if (await TimetableRepository()
+                          .isOverSeleted(lessonId, ref)) {
+                        if (context.mounted) {
+                          timetableIsOverSelectedSnackBar(context);
+                        }
+                      } else {
+                        personalLessonIdList.add(record['LessonId']);
+                        savePersonalTimeTableList(personalLessonIdList, ref);
+                      }
                     } else {
                       personalLessonIdList
                           .removeWhere((item) => item == record['LessonId']);
                       savePersonalTimeTableList(personalLessonIdList, ref);
                     }
-                    ref.invalidate(twoWeekTimeTableDataProvider);
+                    twoWeekTimeTableDataNotifier.state =
+                        await TimetableRepository().get2WeekLessonSchedule();
                   },
                 ),
               );

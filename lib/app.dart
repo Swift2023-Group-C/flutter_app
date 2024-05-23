@@ -170,6 +170,8 @@ class _BasePageState extends ConsumerState<BasePage> {
   }
 
   Future<void> setPersonalLessonIdList() async {
+    ref.read(twoWeekTimeTableDataProvider.notifier).state =
+        await TimetableRepository().get2WeekLessonSchedule();
     ref.read(personalLessonIdListProvider.notifier).state =
         await TimetableRepository().loadPersonalTimeTableList();
   }
@@ -201,14 +203,12 @@ class _BasePageState extends ConsumerState<BasePage> {
   Future<void> downloadFiles() async {
     // Firebaseからファイルをダウンロード
     List<String> filePaths = [
+      'map/oneweek_schedule.json',
       'home/cancel_lecture.json',
       'home/sup_lecture.json',
-      'map/oneweek_schedule.json',
     ];
     for (var path in filePaths) {
-      print("download $path");
       await downloadFileFromFirebase(path);
-      print("finish $path");
     }
   }
 

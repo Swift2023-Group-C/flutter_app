@@ -1,9 +1,9 @@
-import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:intl/intl.dart';
 
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/color_fun.dart';
+import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/kamoku_detail/kamoku_detail_page_view.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/domain/timetable_course.dart';
@@ -201,9 +201,7 @@ class MyPageTimetable extends ConsumerWidget {
   }
 
   void setFocusTimeTableDay(DateTime dt, WidgetRef ref) {
-    final focusTimeTableDayNotifier =
-        ref.read(focusTimeTableDayProvider.notifier);
-    focusTimeTableDayNotifier.state = dt;
+    ref.read(focusTimeTableDayProvider.notifier).state = dt;
   }
 
   @override
@@ -316,31 +314,18 @@ class MyPageTimetable extends ConsumerWidget {
                 ),
               ),
             ),
-            // 時間割表示
-            twoWeekTimeTableData.when(
-              data: (data) {
-                print(data.keys);
-                print(focusTimeTableDay);
-                return Column(
-                  children: [
-                    for (int i = 1; i <= 6; i++) ...{
-                      timeTablePeriod(
-                          context,
-                          i,
-                          beginPeriod[i - 1],
-                          finishPeriod[i - 1],
-                          data[focusTimeTableDay]![i] ?? [])
-                    }
-                  ],
-                );
-              },
-              error: (error, stackTrace) {
-                print(stackTrace);
-                print(error);
-                return const Text("Error");
-              },
-              loading: () => createProgressIndicator(),
-            ),
+            if (twoWeekTimeTableData.isNotEmpty)
+              // 時間割表示
+              for (int i = 1; i <= 6; i++) ...{
+                timeTablePeriod(
+                    context,
+                    i,
+                    beginPeriod[i - 1],
+                    finishPeriod[i - 1],
+                    twoWeekTimeTableData[focusTimeTableDay]![i] ?? [])
+              }
+            else
+              createProgressIndicator(),
           ],
         );
       },
