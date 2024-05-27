@@ -21,3 +21,23 @@ final FutureProvider<List<Map<String, dynamic>>> weekPeriodAllRecordsProvider =
     return records;
   },
 );
+final StateProvider<int> currentTimetablePageIndexProvider =
+    StateProvider((ref) {
+  DateTime now = DateTime.now();
+  if ((now.month >= 9) || (now.month <= 2)) {
+    return 1;
+  }
+  return 0;
+});
+final StateProvider<PageController> timetablePageControllerProvider =
+    StateProvider((ref) {
+  DateTime now = DateTime.now();
+  if ((now.month >= 9) || (now.month <= 2)) {
+    return PageController(initialPage: 1);
+  }
+  return PageController(initialPage: 0);
+});
+final StateProvider<bool> courseCancellationFilterEnabledProvider =
+    StateProvider((ref) => true);
+final StateProvider<String> courseCancellationSelectedTypeProvider =
+    StateProvider((ref) => "すべて");

@@ -5,7 +5,7 @@ import 'package:dotto/importer.dart';
 import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/screens/file_viewer.dart';
-import 'package:dotto/feature/my_page/feature/timetable/my_page_timetable.dart';
+import 'package:dotto/feature/my_page/feature/timetable/widget/my_page_timetable.dart';
 import 'package:dotto/feature/my_page/feature/timetable/course_cancellation.dart';
 import 'package:dotto/feature/my_page/feature/timetable/personal_time_table.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';

@@ -5,20 +5,10 @@ import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/my_page/feature/timetable/personal_select_lesson.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 
-class PersonalTimeTableScreen extends ConsumerStatefulWidget {
+class PersonalTimeTableScreen extends ConsumerWidget {
   const PersonalTimeTableScreen({super.key});
 
-  @override
-  ConsumerState<PersonalTimeTableScreen> createState() =>
-      _PersonalTimeTableScreenState();
-}
-
-class _PersonalTimeTableScreenState
-    extends ConsumerState<PersonalTimeTableScreen> {
-  PageController _pageController = PageController();
-  int _currentPageIndex = 0;
-
-  Future<void> seasonTimeTable(BuildContext context) async {
+  Future<void> seasonTimeTable(BuildContext context, WidgetRef ref) async {
     final personalLessonIdList = ref.watch(personalLessonIdListProvider);
     final weekPeriodAllRecords = ref.watch(weekPeriodAllRecordsProvider);
     if (context.mounted) {
@@ -58,6 +48,8 @@ class _PersonalTimeTableScreenState
   }
 
   Widget tableText(
+    BuildContext context,
+    WidgetRef ref,
     String name,
     int week,
     period,
@@ -101,10 +93,6 @@ class _PersonalTimeTableScreenState
                     )
                     .toList(),
               )
-            // Text(
-            //   textAlign: TextAlign.center,
-            //   style: const TextStyle(fontSize: 10),
-            // );
             : Container(
                 decoration: BoxDecoration(
                   color: Colors.grey.shade200,
@@ -112,25 +100,24 @@ class _PersonalTimeTableScreenState
                 ),
                 padding: const EdgeInsets.all(2),
                 child: Center(
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.grey.shade400,
-                  ),
+                  child: Icon(Icons.add, color: Colors.grey.shade400),
                 ),
               ),
       ),
       onTap: () {
         Navigator.of(context).push(
           PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  PersonalSelectLessonScreen(term, week, period),
-              transitionsBuilder: fromRightAnimation),
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                PersonalSelectLessonScreen(term, week, period),
+            transitionsBuilder: fromRightAnimation,
+          ),
         );
       },
     );
   }
 
-  Widget seasonTimeTableList(int seasonnumber, WidgetRef ref) {
+  Widget seasonTimeTableList(
+      BuildContext context, WidgetRef ref, int seasonnumber) {
     final weekPeriodAllRecords = ref.watch(weekPeriodAllRecordsProvider);
     final weekString = ['月', '火', '水', '木', '金'];
     return SingleChildScrollView(
@@ -149,21 +136,24 @@ class _PersonalTimeTableScreenState
             children: <TableRow>[
               TableRow(
                 children: weekString
-                    .map((e) => TableCell(
-                            child: Center(
-                                child: Text(
-                          e,
-                          style: const TextStyle(fontSize: 10),
-                        ))))
+                    .map(
+                      (e) => TableCell(
+                        child: Center(
+                          child: Text(e, style: const TextStyle(fontSize: 10)),
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
               for (int i = 1; i <= 6; i++) ...{
-                TableRow(children: [
-                  for (int j = 1; j <= 5; j++) ...{
-                    tableText(
-                        "${weekString[j - 1]}曜$i限", j, i, seasonnumber, data),
-                  }
-                ])
+                TableRow(
+                  children: [
+                    for (int j = 1; j <= 5; j++) ...{
+                      tableText(context, ref, "${weekString[j - 1]}曜$i限", j, i,
+                          seasonnumber, data),
+                    }
+                  ],
+                )
               }
             ],
           ),
@@ -178,24 +168,15 @@ class _PersonalTimeTableScreenState
     );
   }
 
-  void initShowPage() {
-    DateTime now = DateTime.now();
-    if ((now.month >= 9) || (now.month <= 2)) {
-      _pageController = PageController(initialPage: 1);
-      _currentPageIndex = 1;
-    }
-  }
-
   @override
-  void initState() {
-    super.initState();
-    initShowPage();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
+    final currentTimetablePageIndex =
+        ref.watch(currentTimetablePageIndexProvider);
+    final currentTimetablePageIndexNotifier =
+        ref.read(currentTimetablePageIndexProvider.notifier);
+    final timetablePageController = ref.read(timetablePageControllerProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('時間割 設定'),
@@ -204,7 +185,7 @@ class _PersonalTimeTableScreenState
             builder: (context, ref, child) {
               return IconButton(
                 onPressed: () {
-                  seasonTimeTable(context);
+                  seasonTimeTable(context, ref);
                   //print(records);
                 },
                 icon: const Icon(Icons.list),
@@ -223,7 +204,7 @@ class _PersonalTimeTableScreenState
                 2,
                 (index) => GestureDetector(
                   onTap: () {
-                    _pageController.animateToPage(
+                    timetablePageController.animateToPage(
                       index,
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.ease,
@@ -235,7 +216,7 @@ class _PersonalTimeTableScreenState
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: index == _currentPageIndex
+                          color: index == currentTimetablePageIndex
                               ? customFunColor.shade400
                               : Colors.transparent, // 非選択時は透明
                           width: deviceWidth * 0.005,
@@ -247,7 +228,7 @@ class _PersonalTimeTableScreenState
                       style: TextStyle(
                         fontSize: deviceWidth / 25,
                         fontWeight: FontWeight.bold,
-                        color: index == _currentPageIndex
+                        color: index == currentTimetablePageIndex
                             ? customFunColor.shade400
                             : Colors.black,
                       ),
@@ -259,15 +240,13 @@ class _PersonalTimeTableScreenState
           ),
           Expanded(
             child: PageView(
-              controller: _pageController,
+              controller: timetablePageController,
               onPageChanged: (index) {
-                setState(() {
-                  _currentPageIndex = index;
-                });
+                currentTimetablePageIndexNotifier.state = index;
               },
               children: [
-                seasonTimeTableList(10, ref),
-                seasonTimeTableList(20, ref),
+                seasonTimeTableList(context, ref, 10),
+                seasonTimeTableList(context, ref, 20),
               ],
             ),
           ),

@@ -34,62 +34,62 @@ class PersonalSelectLessonScreen extends StatelessWidget {
               }).toList();
               if (termList.isNotEmpty) {
                 return ListView.builder(
-                    itemCount: termList.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(termList[index]['授業名']),
-                        trailing: personalLessonIdList
-                                .contains(termList[index]['lessonId'])
-                            ? ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                ),
-                                onPressed: () async {
-                                  //print(termList[index]['lessonId']);
-                                  personalLessonIdList.removeWhere((item) =>
-                                      item == termList[index]['lessonId']);
-                                  await savePersonalTimeTableList(
-                                      personalLessonIdList, ref);
+                  itemCount: termList.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(termList[index]['授業名']),
+                      trailing: personalLessonIdList
+                              .contains(termList[index]['lessonId'])
+                          ? ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                              ),
+                              onPressed: () async {
+                                //print(termList[index]['lessonId']);
+                                personalLessonIdList.removeWhere((item) =>
+                                    item == termList[index]['lessonId']);
+                                await savePersonalTimeTableList(
+                                    personalLessonIdList, ref);
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              child: const Text("削除する"))
+                          : ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: customFunColor,
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                              ),
+                              onPressed: () async {
+                                if (await TimetableRepository().isOverSeleted(
+                                    termList[index]['lessonId'], ref)) {
+                                  if (context.mounted) {
+                                    timetableIsOverSelectedSnackBar(context);
+                                  }
+                                } else {
+                                  final lessonId = termList[index]['lessonId'];
+                                  if (lessonId != null) {
+                                    savePersonalTimeTableList(
+                                        [...personalLessonIdList, lessonId],
+                                        ref);
+                                  } else {
+                                    // LessonIdがnullの場合の処理（エラーメッセージの表示など）
+                                  }
                                   if (context.mounted) {
                                     Navigator.of(context).pop();
                                   }
-                                },
-                                child: const Text("削除する"))
-                            : ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: customFunColor,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                ),
-                                onPressed: () async {
-                                  if (await TimetableRepository().isOverSeleted(
-                                      termList[index]['lessonId'], ref)) {
-                                    if (context.mounted) {
-                                      timetableIsOverSelectedSnackBar(context);
-                                    }
-                                  } else {
-                                    final lessonId =
-                                        termList[index]['lessonId'];
-                                    if (lessonId != null) {
-                                      savePersonalTimeTableList(
-                                          [...personalLessonIdList, lessonId],
-                                          ref);
-                                    } else {
-                                      // LessonIdがnullの場合の処理（エラーメッセージの表示など）
-                                    }
-                                    if (context.mounted) {
-                                      Navigator.of(context).pop();
-                                    }
-                                  }
-                                  //}
-                                },
-                                child: const Text("追加する")),
-                      );
-                    });
+                                }
+                              },
+                              child: const Text("追加する"),
+                            ),
+                    );
+                  },
+                );
               } else {
                 return const Center(
                   child: Text('対象の科目はありません'),
