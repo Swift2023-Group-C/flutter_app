@@ -1,145 +1,19 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:dotto/importer.dart';
+import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/color_fun.dart';
-import 'package:dotto/repository/db_config.dart';
+import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/kamoku_detail/kamoku_detail_page_view.dart';
-import 'package:dotto/repository/narrowed_lessons.dart';
-import 'package:dotto/screens/file_viewer.dart';
-import 'package:dotto/screens/course_cancellation.dart';
-import 'package:dotto/screens/personal_time_table.dart';
+import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
+import 'package:dotto/feature/my_page/feature/timetable/domain/timetable_course.dart';
+import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class MyPageTimetable extends ConsumerWidget {
+  const MyPageTimetable({super.key});
 
-  @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
-
-final StateProvider<Map<int, List<TimeTableCourse>>>
-    focusTimeTableDataProvider = StateProvider((ref) => {});
-final StateProvider<DateTime> focusTimeTableDayProvider =
-    StateProvider((ref) => DateTime.now());
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  User? currentUser = FirebaseAuth.instance.currentUser;
-  List<int> personalTimeTableList = [];
-
-  void launchUrlInExternal(Uri url) async {
-    if (await canLaunchUrl(url)) {
-      launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-  Widget animation(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
-    const Offset begin = Offset(1.0, 0.0);
-    const Offset end = Offset.zero;
-    final Animatable<Offset> tween = Tween(begin: begin, end: end)
-        .chain(CurveTween(curve: Curves.easeInOut));
-    final Animation<Offset> offsetAnimation = animation.drive(tween);
-    return SlideTransition(
-      position: offsetAnimation,
-      child: child,
-    );
-  }
-
-  Widget infoTile(List<Widget> children) {
-    final length = children.length;
-    return Padding(
-      padding: const EdgeInsets.all(5),
-      child: Column(
-        children: [
-          for (int i = 0; i < length; i += 3) ...{
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (int j = i; j < i + 3 && j < length; j++) ...{
-                  children[j],
-                }
-              ],
-            ),
-          },
-        ],
-      ),
-    );
-  }
-
-  Widget infoButton(BuildContext context, void Function() onPressed,
-      IconData icon, String title) {
-    final double width = MediaQuery.sizeOf(context).width * 0.26;
-    const double height = 100;
-    return Container(
-      margin: const EdgeInsets.all(5),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.black,
-          surfaceTintColor: Colors.white,
-          fixedSize: Size(width, height),
-        ),
-        onPressed: onPressed,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          width: width,
-          height: height,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ClipOval(
-                  child: Container(
-                width: 45,
-                height: 45,
-                color: customFunColor,
-                child: Center(
-                    child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 25,
-                )),
-              )),
-              const SizedBox(height: 5),
-              Text(
-                title,
-                style: const TextStyle(fontSize: 11),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> getOneDayTimeTable(WidgetRef ref) async {
-    final focusTimeTableDay = ref.read(focusTimeTableDayProvider);
-    final focusTimeTableDataNotifier =
-        ref.read(focusTimeTableDataProvider.notifier);
-    focusTimeTableDataNotifier.state =
-        await dailyLessonSchedule(ref, focusTimeTableDay);
-  }
-
-  void setFocusTimeTableDay(DateTime dt) {
-    final focusTimeTableDayNotifier =
-        ref.read(focusTimeTableDayProvider.notifier);
-    focusTimeTableDayNotifier.state = dt;
-  }
-
-  Future<Map<String, dynamic>?> fetchDB(int lessonId) async {
-    Database database = await openDatabase(SyllabusDBConfig.dbPath);
-
-    List<Map<String, dynamic>> records = await database.rawQuery(
-        'SELECT LessonId, 過去問, 授業名 FROM sort where LessonId = ?', [lessonId]);
-    if (records.isEmpty) {
-      return null;
-    }
-    return records.first;
-  }
-
-  Widget timeTableLessonButton(TimeTableCourse? timeTableCourse) {
+  Widget timeTableLessonButton(
+      BuildContext context, TimeTableCourse? timeTableCourse) {
     Color foregroundColor = Colors.black;
     if (timeTableCourse != null) {
       if (timeTableCourse.cancel) {
@@ -177,10 +51,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onTap: (timeTableCourse == null)
             ? null
             : () async {
-                Map<String, dynamic>? record =
-                    await fetchDB(timeTableCourse.lessonId);
+                Map<String, dynamic>? record = await TimetableRepository()
+                    .fetchDB(timeTableCourse.lessonId);
                 if (record == null) return;
-                if (mounted) {
+                if (context.mounted) {
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) {
@@ -190,7 +64,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           kakomonLessonId: record['過去問'],
                         );
                       },
-                      transitionsBuilder: animation,
+                      transitionsBuilder: fromRightAnimation,
                     ),
                   );
                 }
@@ -278,8 +152,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget timeTablePeriod(int period, TimeOfDay beginTime, TimeOfDay finishTime,
-      List<TimeTableCourse> timeTableCourseList) {
+  Widget timeTablePeriod(BuildContext context, int period, TimeOfDay beginTime,
+      TimeOfDay finishTime, List<TimeTableCourse> timeTableCourseList) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       margin: const EdgeInsets.symmetric(vertical: 5),
@@ -314,10 +188,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (timeTableCourseList.isEmpty)
-                  timeTableLessonButton(null)
+                  timeTableLessonButton(context, null)
                 else
                   ...timeTableCourseList.map((timeTableCourse) =>
-                      timeTableLessonButton(timeTableCourse)),
+                      timeTableLessonButton(context, timeTableCourse)),
               ],
             ),
           ),
@@ -326,7 +200,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget timeTable() {
+  void setFocusTimeTableDay(DateTime dt, WidgetRef ref) {
+    ref.read(focusTimeTableDayProvider.notifier).state = dt;
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     const List<TimeOfDay> beginPeriod = [
       TimeOfDay(hour: 9, minute: 0),
       TimeOfDay(hour: 10, minute: 40),
@@ -343,7 +222,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       TimeOfDay(hour: 18, minute: 00),
       TimeOfDay(hour: 19, minute: 40),
     ];
-    List<DateTime> dates = getDateRange();
+    List<DateTime> dates = TimetableRepository().getDateRange();
     List<String> weekString = ['月', '火', '水', '木', '金', '土', '日'];
     List<Color> weekColors = [
       Colors.black,
@@ -366,7 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ScrollController(initialScrollOffset: initialScrollOffset);
     return Consumer(
       builder: (context, ref, child) {
-        final focusTimeTableData = ref.watch(focusTimeTableDataProvider);
+        final twoWeekTimeTableData = ref.watch(twoWeekTimeTableDataProvider);
         final focusTimeTableDay = ref.watch(focusTimeTableDayProvider);
         return Column(
           children: [
@@ -384,8 +263,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           EdgeInsets.symmetric(horizontal: buttonPadding / 2),
                       child: ElevatedButton(
                         onPressed: () async {
-                          setFocusTimeTableDay(date);
-                          await getOneDayTimeTable(ref);
+                          setFocusTimeTableDay(date, ref);
                         },
                         style: ElevatedButton.styleFrom(
                           surfaceTintColor: Colors.white,
@@ -436,131 +314,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
-            // 時間割表示
-            for (int i = 1; i <= 6; i++) ...{
-              timeTablePeriod(i, beginPeriod[i - 1], finishPeriod[i - 1],
-                  focusTimeTableData[i] ?? [])
-            },
+            if (twoWeekTimeTableData.isNotEmpty)
+              // 時間割表示
+              for (int i = 1; i <= 6; i++) ...{
+                timeTablePeriod(
+                    context,
+                    i,
+                    beginPeriod[i - 1],
+                    finishPeriod[i - 1],
+                    twoWeekTimeTableData[focusTimeTableDay]![i] ?? [])
+              }
+            else
+              createProgressIndicator(),
           ],
         );
       },
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getOneDayTimeTable(ref);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final double infoBoxWidth = MediaQuery.sizeOf(context).width * 0.4;
-
-    const Map<String, String> fileNamePath = {
-      'バス時刻表': 'home/hakodatebus55.pdf',
-      '学年暦': 'home/academic_calendar.pdf',
-      '前期時間割': 'home/timetable_first.pdf',
-      '後期時間割': 'home/timetable_second.pdf',
-    };
-    List<Widget> infoTiles = [];
-    infoTiles.add(infoButton(context, () {
-      Navigator.of(context).push(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return const CourseCancellationScreen();
-          },
-          transitionsBuilder: animation,
-        ),
-      );
-    }, Icons.event_busy, '休講情報'));
-    infoTiles.addAll(fileNamePath.entries
-        .map((item) => infoButton(context, () {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) {
-                    return FileViewerScreen(
-                        filename: item.key,
-                        url: item.value,
-                        storage: StorageService.firebase);
-                  },
-                  transitionsBuilder: animation,
-                ),
-              );
-            }, Icons.picture_as_pdf, item.key))
-        .toList());
-
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 5,
-              ),
-              // 時間割
-              timeTable(),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context)
-                        .push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) {
-                          return const PersonalTimeTableScreen();
-                        },
-                        transitionsBuilder: animation,
-                      ),
-                    )
-                        .then((value) async {
-                      await getOneDayTimeTable(ref);
-                    });
-                  },
-                  child: Text(
-                    "時間割を設定する ⇀",
-                    style: TextStyle(
-                      color: Colors.blue.shade700,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      const formUrl = 'https://forms.gle/ruo8iBxLMmvScNMFA';
-                      final url = Uri.parse(formUrl);
-                      launchUrlInExternal(url);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      fixedSize: Size(infoBoxWidth, 80),
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text(
-                      '意見要望\nお聞かせください！',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              infoTile(infoTiles),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
