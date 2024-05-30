@@ -6,5 +6,6 @@
   "files.watcherExclude": {
     "**/.fvm": true
   },
-  "cmake.ignoreCMakeListsMissing": true
+  "cmake.ignoreCMakeListsMissing": true,
+  "dart.lineLength": 100
 }

@@ -13,7 +13,7 @@ class MyPageTimetable extends ConsumerWidget {
   const MyPageTimetable({super.key});
 
   Widget timeTableLessonButton(
-      BuildContext context, TimeTableCourse? timeTableCourse) {
+      BuildContext context, TimeTableCourse? timeTableCourse, bool loading) {
     Color foregroundColor = Colors.black;
     if (timeTableCourse != null) {
       if (timeTableCourse.cancel) {
@@ -51,8 +51,8 @@ class MyPageTimetable extends ConsumerWidget {
         onTap: (timeTableCourse == null)
             ? null
             : () async {
-                Map<String, dynamic>? record = await TimetableRepository()
-                    .fetchDB(timeTableCourse.lessonId);
+                Map<String, dynamic>? record =
+                    await TimetableRepository().fetchDB(timeTableCourse.lessonId);
                 if (record == null) return;
                 if (context.mounted) {
                   Navigator.of(context).push(
@@ -87,33 +87,40 @@ class MyPageTimetable extends ConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        (timeTableCourse != null) ? timeTableCourse.title : '-',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: foregroundColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      if (timeTableCourse != null)
-                        Text(
-                          timeTableCourse.resourseIds
-                              .map((resourceId) =>
-                                  roomName.containsKey(resourceId)
-                                      ? roomName[resourceId]
-                                      : null)
-                              .toList()
-                              .join(', '),
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                    ],
+                    children: loading
+                        ? [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: createProgressIndicator(),
+                            )
+                          ]
+                        : [
+                            Text(
+                              (timeTableCourse != null) ? timeTableCourse.title : '-',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: foregroundColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            if (timeTableCourse != null)
+                              Text(
+                                timeTableCourse.resourseIds
+                                    .map((resourceId) => roomName.containsKey(resourceId)
+                                        ? roomName[resourceId]
+                                        : null)
+                                    .toList()
+                                    .join(', '),
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                          ],
                   ),
                 ),
                 // 休講情報など
@@ -153,13 +160,11 @@ class MyPageTimetable extends ConsumerWidget {
   }
 
   Widget timeTablePeriod(BuildContext context, int period, TimeOfDay beginTime,
-      TimeOfDay finishTime, List<TimeTableCourse> timeTableCourseList) {
+      TimeOfDay finishTime, List<TimeTableCourse> timeTableCourseList, bool loading) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       margin: const EdgeInsets.symmetric(vertical: 5),
-      height: timeTableCourseList.isEmpty
-          ? 40
-          : timeTableCourseList.length * 50 - 10,
+      height: timeTableCourseList.isEmpty ? 40 : timeTableCourseList.length * 50 - 10,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -188,10 +193,10 @@ class MyPageTimetable extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (timeTableCourseList.isEmpty)
-                  timeTableLessonButton(context, null)
+                  timeTableLessonButton(context, null, loading)
                 else
-                  ...timeTableCourseList.map((timeTableCourse) =>
-                      timeTableLessonButton(context, timeTableCourse)),
+                  ...timeTableCourseList.map(
+                      (timeTableCourse) => timeTableLessonButton(context, timeTableCourse, false)),
               ],
             ),
           ),
@@ -237,12 +242,10 @@ class MyPageTimetable extends ConsumerWidget {
     double buttonSize = 50;
     double buttonPadding = 8;
     final deviceCenter = deviceWidth / 2 - (buttonSize / 2 + buttonPadding);
-    final buttonPosition =
-        (DateTime.now().weekday - 1) * (buttonSize + buttonPadding);
+    final buttonPosition = (DateTime.now().weekday - 1) * (buttonSize + buttonPadding);
     double initialScrollOffset =
         (buttonPosition > deviceCenter) ? buttonPosition - deviceCenter : 0;
-    ScrollController controller =
-        ScrollController(initialScrollOffset: initialScrollOffset);
+    ScrollController controller = ScrollController(initialScrollOffset: initialScrollOffset);
     return Consumer(
       builder: (context, ref, child) {
         final twoWeekTimeTableData = ref.watch(twoWeekTimeTableDataProvider);
@@ -253,26 +256,23 @@ class MyPageTimetable extends ConsumerWidget {
               controller: controller,
               scrollDirection: Axis.horizontal,
               child: Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: buttonPadding, horizontal: buttonPadding / 2),
+                padding:
+                    EdgeInsets.symmetric(vertical: buttonPadding, horizontal: buttonPadding / 2),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: dates.map((date) {
                     return Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: buttonPadding / 2),
+                      padding: EdgeInsets.symmetric(horizontal: buttonPadding / 2),
                       child: ElevatedButton(
                         onPressed: () async {
                           setFocusTimeTableDay(date, ref);
                         },
                         style: ElevatedButton.styleFrom(
                           surfaceTintColor: Colors.white,
-                          backgroundColor: focusTimeTableDay.day == date.day
-                              ? customFunColor
-                              : Colors.white,
-                          foregroundColor: focusTimeTableDay.day == date.day
-                              ? Colors.white
-                              : Colors.black,
+                          backgroundColor:
+                              focusTimeTableDay.day == date.day ? customFunColor : Colors.white,
+                          foregroundColor:
+                              focusTimeTableDay.day == date.day ? Colors.white : Colors.black,
                           shape: const CircleBorder(
                             side: BorderSide(
                               color: Colors.black,
@@ -291,9 +291,8 @@ class MyPageTimetable extends ConsumerWidget {
                             Text(
                               DateFormat('dd').format(date),
                               style: TextStyle(
-                                fontWeight: (focusTimeTableDay.day == date.day)
-                                    ? FontWeight.bold
-                                    : null,
+                                fontWeight:
+                                    (focusTimeTableDay.day == date.day) ? FontWeight.bold : null,
                                 fontSize: 13,
                               ),
                             ),
@@ -314,18 +313,20 @@ class MyPageTimetable extends ConsumerWidget {
                 ),
               ),
             ),
-            if (twoWeekTimeTableData.isNotEmpty)
-              // 時間割表示
-              for (int i = 1; i <= 6; i++) ...{
-                timeTablePeriod(
-                    context,
-                    i,
-                    beginPeriod[i - 1],
-                    finishPeriod[i - 1],
-                    twoWeekTimeTableData[focusTimeTableDay]![i] ?? [])
-              }
-            else
-              createProgressIndicator(),
+            // 時間割表示
+            for (int i = 1; i <= 6; i++) ...{
+              timeTablePeriod(
+                  context,
+                  i,
+                  beginPeriod[i - 1],
+                  finishPeriod[i - 1],
+                  twoWeekTimeTableData != null
+                      ? twoWeekTimeTableData.isNotEmpty
+                          ? twoWeekTimeTableData[focusTimeTableDay]![i] ?? []
+                          : []
+                      : [],
+                  twoWeekTimeTableData == null)
+            },
           ],
         );
       },
