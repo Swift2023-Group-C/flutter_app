@@ -51,8 +51,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget infoButton(BuildContext context, void Function() onPressed,
-      IconData icon, String title) {
+  Widget infoButton(BuildContext context, void Function() onPressed, IconData icon, String title) {
     final double width = MediaQuery.sizeOf(context).width * 0.26;
     const double height = 100;
     return Container(
@@ -122,9 +121,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) {
                     return FileViewerScreen(
-                        filename: item.key,
-                        url: item.value,
-                        storage: StorageService.firebase);
+                      filename: item.key,
+                      url: item.value,
+                      storage: StorageService.firebase,
+                    );
                   },
                   transitionsBuilder: fromRightAnimation,
                 ),
@@ -132,8 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             }, Icons.picture_as_pdf, item.key))
         .toList());
 
-    final twoWeekTimeTableDataNotifier =
-        ref.read(twoWeekTimeTableDataProvider.notifier);
+    final twoWeekTimeTableDataNotifier = ref.read(twoWeekTimeTableDataProvider.notifier);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -176,6 +175,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
+              infoTile(infoTiles),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -200,8 +201,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              infoTile(infoTiles),
               const SizedBox(height: 20),
             ],
           ),
