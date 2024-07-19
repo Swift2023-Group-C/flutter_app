@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:dotto/repository/app_status.dart';
+
 import 'package:dotto/importer.dart';
 import 'package:dotto/feature/map/domain/map_detail.dart';
 import 'package:dotto/repository/get_firebase_realtime_db.dart';
@@ -12,8 +14,7 @@ class MapRepository {
   }
   MapRepository._internal();
 
-  Future<Map<String, Map<String, MapDetail>>>
-      getMapDetailMapFromFirebase() async {
+  Future<Map<String, Map<String, MapDetail>>> getMapDetailMapFromFirebase() async {
     final snapshot = await GetFirebaseRealtimeDB.getData('map');
     Map<String, Map<String, MapDetail>> returnList = {
       '1': {},
@@ -27,8 +28,7 @@ class MapRepository {
     if (snapshot.exists) {
       (snapshot.value as Map).forEach((floor, value) {
         (value as Map).forEach((roomName, value2) {
-          returnList[floor]!.addAll(
-              {roomName: MapDetail.fromFirebase(floor, roomName, value2)});
+          returnList[floor]!.addAll({roomName: MapDetail.fromFirebase(floor, roomName, value2)});
         });
       });
     } else {
@@ -52,8 +52,7 @@ class MapRepository {
       if (item is Map<String, dynamic>) {
         // スタート時間・エンド時間をDateTimeにかえる
         // スタートを10分前から
-        DateTime startTime =
-            DateTime.parse(item['start']).add(const Duration(minutes: -10));
+        DateTime startTime = DateTime.parse(item['start']).add(const Duration(minutes: -10));
         DateTime endTime = DateTime.parse(item['end']);
 
         //現在時刻が開始時刻と終了時刻の間であればresourceIdを取得
@@ -86,6 +85,9 @@ class MapRepository {
   }
 
   Future<Map<String, bool>> setUsingColor(DateTime dateTime) async {
+    if (!AppStatus().isLoggedinGoogle) {
+      return {};
+    }
     final Map<String, bool> classroomNoFloorMap = {
       "1": false,
       "2": false,
@@ -110,8 +112,7 @@ class MapRepository {
       "51": false
     };
 
-    Map<String, DateTime> resourceIds =
-        await MapRepository().getUsingRoom(dateTime);
+    Map<String, DateTime> resourceIds = await MapRepository().getUsingRoom(dateTime);
     if (resourceIds.isNotEmpty) {
       resourceIds.forEach((String resourceId, DateTime useEndTime) {
         debugPrint(resourceId);
