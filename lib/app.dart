@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:dotto/app/controller/tab_controller.dart';
+import 'package:dotto/app/domain/tab_item.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,13 +12,9 @@ import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/repository/db_config.dart';
 import 'package:dotto/repository/download_file_from_firebase.dart';
-import 'package:dotto/feature/map/map.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/repository/map_repository.dart';
-import 'package:dotto/feature/kamoku_search/kamoku_search.dart';
 import 'package:dotto/screens/app_tutorial.dart';
-import 'package:dotto/feature/my_page/home.dart';
-import 'package:dotto/screens/kadai_list.dart';
 import 'package:dotto/screens/settings.dart';
 
 class MyApp extends StatelessWidget {
@@ -72,64 +70,11 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('English'), Locale('ja')],
+      supportedLocales: const [Locale('ja'), Locale('en')],
       locale: const Locale('ja'),
     );
   }
 }
-
-enum TabItem {
-  home(
-    title: 'ホーム',
-    icon: Icons.home_outlined,
-    activeIcon: Icons.home,
-    page: HomeScreen(),
-  ),
-  map(
-    title: 'マップ',
-    icon: Icons.map_outlined,
-    activeIcon: Icons.map,
-    page: MapScreen(),
-  ),
-  kamoku(
-    title: '科目情報',
-    icon: Icons.search_outlined,
-    activeIcon: Icons.search,
-    page: KamokuSearchScreen(),
-  ),
-  kadai(
-    title: '課題',
-    icon: Icons.assignment_outlined,
-    activeIcon: Icons.assignment,
-    page: KadaiListScreen(),
-  ),
-  setting(
-    title: '設定',
-    icon: Icons.settings_outlined,
-    activeIcon: Icons.settings,
-    page: SettingsScreen(),
-  );
-
-  const TabItem({
-    required this.title,
-    required this.icon,
-    required this.activeIcon,
-    required this.page,
-  });
-
-  // タイトル
-  final String title;
-  final IconData icon;
-  final IconData activeIcon;
-  final Widget page;
-}
-
-final Map<TabItem, GlobalKey<NavigatorState>> _navigatorKeys = {
-  TabItem.home: GlobalKey<NavigatorState>(),
-  TabItem.map: GlobalKey<NavigatorState>(),
-  TabItem.kamoku: GlobalKey<NavigatorState>(),
-  TabItem.kadai: GlobalKey<NavigatorState>(),
-};
 
 class BasePage extends ConsumerStatefulWidget {
   const BasePage({super.key});
@@ -151,8 +96,7 @@ class _BasePageState extends ConsumerState<BasePage> {
           final RegExp userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
           if (userKeyPattern.hasMatch(userKey)) {
             _onItemTapped(4);
-            await UserPreferences.setString(
-                UserPreferenceKeys.userKey, userKey);
+            await UserPreferences.setString(UserPreferenceKeys.userKey, userKey);
             ref.read(settingsUserKeyProvider.notifier).state = userKey;
           }
         }
@@ -191,8 +135,8 @@ class _BasePageState extends ConsumerState<BasePage> {
       Animation<double> secondaryAnimation, Widget child) {
     const Offset begin = Offset(0.0, 1.0);
     const Offset end = Offset.zero;
-    final Animatable<Offset> tween = Tween(begin: begin, end: end)
-        .chain(CurveTween(curve: Curves.easeInOut));
+    final Animatable<Offset> tween =
+        Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOut));
     final Animation<Offset> offsetAnimation = animation.drive(tween);
     return SlideTransition(
       position: offsetAnimation,
@@ -212,9 +156,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     }
   }
 
-  TabItem currentTab = TabItem.home;
-  String appBarTitle = '';
-
   void _onItemTapped(int index) async {
     final selectedTab = TabItem.values[index];
 
@@ -222,35 +163,22 @@ class _BasePageState extends ConsumerState<BasePage> {
       final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
       final searchDatetimeNotifier = ref.watch(searchDatetimeProvider.notifier);
       searchDatetimeNotifier.state = DateTime.now();
-      mapUsingMapNotifier.state =
-          await MapRepository().setUsingColor(DateTime.now());
+      mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now());
     }
 
-    if (currentTab == selectedTab) {
-      if (_navigatorKeys[selectedTab] != null) {
-        _navigatorKeys[selectedTab]!
-            .currentState!
-            .popUntil((route) => route.isFirst);
-      }
-    } else {
-      setState(() {
-        currentTab = selectedTab;
-      });
-    }
+    final tabItemNotifier = ref.read(tabItemProvider.notifier);
+    tabItemNotifier.selected(selectedTab);
   }
 
   Future<bool> isAppTutorialCompleted() async {
-    return await UserPreferences.getBool(
-            UserPreferenceKeys.isAppTutorialComplete) ??
-        false;
+    return await UserPreferences.getBool(UserPreferenceKeys.isAppTutorialComplete) ?? false;
   }
 
   void _showAppTutorial(BuildContext context) async {
     if (!await isAppTutorialCompleted()) {
       if (context.mounted) {
         Navigator.of(context).push(PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const AppTutorial(),
+          pageBuilder: (context, animation, secondaryAnimation) => const AppTutorial(),
           fullscreenDialog: true,
           transitionsBuilder: animation,
         ));
@@ -261,8 +189,8 @@ class _BasePageState extends ConsumerState<BasePage> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _showAppTutorial(context));
+    WidgetsBinding.instance.addPostFrameCallback((_) => _showAppTutorial(context));
+    final tabItem = ref.watch(tabItemProvider);
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
@@ -270,8 +198,7 @@ class _BasePageState extends ConsumerState<BasePage> {
           return;
         }
         final NavigatorState navigator = Navigator.of(context);
-        final bool shouldPop =
-            !await _navigatorKeys[currentTab]!.currentState!.maybePop();
+        final bool shouldPop = !await tabNavigatorKeyMaps[tabItem]!.currentState!.maybePop();
         if (shouldPop) {
           if (navigator.canPop()) {
             navigator.pop();
@@ -284,13 +211,13 @@ class _BasePageState extends ConsumerState<BasePage> {
           body: SafeArea(
             child: Stack(
               children: TabItem.values
-                  .map((tabItem) => Offstage(
-                        offstage: currentTab != tabItem,
+                  .map((tabItemOnce) => Offstage(
+                        offstage: tabItem != tabItemOnce,
                         child: Navigator(
-                          key: _navigatorKeys[tabItem],
+                          key: tabNavigatorKeyMaps[tabItemOnce],
                           onGenerateRoute: (settings) {
                             return MaterialPageRoute(
-                              builder: (context) => tabItem.page,
+                              builder: (context) => tabItemOnce.page,
                             );
                           },
                         ),
@@ -301,7 +228,7 @@ class _BasePageState extends ConsumerState<BasePage> {
           bottomNavigationBar: BottomNavigationBar(
             selectedItemColor: customFunColor,
             type: BottomNavigationBarType.fixed,
-            currentIndex: TabItem.values.indexOf(currentTab),
+            currentIndex: TabItem.values.indexOf(tabItem),
             items: TabItem.values
                 .map((tabItem) => BottomNavigationBarItem(
                     icon: Icon(tabItem.icon),
