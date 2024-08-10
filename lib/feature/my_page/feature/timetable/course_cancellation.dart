@@ -4,6 +4,7 @@ import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_con
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
+import 'package:dotto/repository/app_status.dart';
 import 'package:dotto/repository/read_json_file.dart';
 
 class CourseCancellationScreen extends ConsumerWidget {
@@ -28,8 +29,7 @@ class CourseCancellationScreen extends ConsumerWidget {
   }
 
   Future<List<dynamic>> loadData(WidgetRef ref) async {
-    final courseCancellationFilterEnabled =
-        ref.watch(courseCancellationFilterEnabledProvider);
+    final courseCancellationFilterEnabled = ref.watch(courseCancellationFilterEnabledProvider);
     String jsonData = await readJsonFile('home/cancel_lecture.json');
     List<dynamic> decodedData = jsonDecode(jsonData);
 
@@ -42,12 +42,20 @@ class CourseCancellationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final courseCancellationFilterEnabled =
-        ref.watch(courseCancellationFilterEnabledProvider);
+    if (!AppStatus().isLoggedinGoogle) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('休講情報'),
+        ),
+        body: const Center(
+          child: Text("未来大Googleアカウントでログインすると閲覧できます。"),
+        ),
+      );
+    }
+    final courseCancellationFilterEnabled = ref.watch(courseCancellationFilterEnabledProvider);
     final courseCancellationFilterEnabledNotifier =
         ref.watch(courseCancellationFilterEnabledProvider.notifier);
-    final courseCancellationSelectedType =
-        ref.watch(courseCancellationSelectedTypeProvider);
+    final courseCancellationSelectedType = ref.watch(courseCancellationSelectedTypeProvider);
     final courseCancellationSelectedTypeNotifier =
         ref.watch(courseCancellationSelectedTypeProvider.notifier);
     return Scaffold(
@@ -57,8 +65,7 @@ class CourseCancellationScreen extends ConsumerWidget {
           // フィルターのオン/オフを切り替えるボタン
           TextButton(
             onPressed: () {
-              courseCancellationFilterEnabledNotifier.state =
-                  !courseCancellationFilterEnabled;
+              courseCancellationFilterEnabledNotifier.state = !courseCancellationFilterEnabled;
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -93,21 +100,18 @@ class CourseCancellationScreen extends ConsumerWidget {
               List<dynamic> displayData = snapshot.data ?? [];
 
               // タイプごとにフィルタリング
-              List<dynamic> filteredData =
-                  courseCancellationSelectedType == "すべて"
-                      ? displayData
-                      : displayData
-                          .where((item) =>
-                              item['type'] == courseCancellationSelectedType)
-                          .toList();
+              List<dynamic> filteredData = courseCancellationSelectedType == "すべて"
+                  ? displayData
+                  : displayData
+                      .where((item) => item['type'] == courseCancellationSelectedType)
+                      .toList();
 
               return Column(
                 children: [
                   DropdownButton<String>(
                     value: courseCancellationSelectedType,
                     onChanged: (String? newValue) {
-                      courseCancellationSelectedTypeNotifier.state =
-                          newValue ?? 'すべて';
+                      courseCancellationSelectedTypeNotifier.state = newValue ?? 'すべて';
                     },
                     items: <String>[
                       'すべて',

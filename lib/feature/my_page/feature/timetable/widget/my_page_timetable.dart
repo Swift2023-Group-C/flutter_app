@@ -1,3 +1,4 @@
+import 'package:dotto/repository/app_status.dart';
 import 'package:intl/intl.dart';
 
 import 'package:dotto/importer.dart';
@@ -15,7 +16,7 @@ class MyPageTimetable extends ConsumerWidget {
   Widget timeTableLessonButton(
       BuildContext context, TimeTableCourse? timeTableCourse, bool loading) {
     Color foregroundColor = Colors.black;
-    if (timeTableCourse != null) {
+    if (timeTableCourse != null && AppStatus().isLoggedinGoogle) {
       if (timeTableCourse.cancel) {
         foregroundColor = Colors.grey;
       }
@@ -124,7 +125,7 @@ class MyPageTimetable extends ConsumerWidget {
                   ),
                 ),
                 // 休講情報など
-                if (timeTableCourse != null)
+                if (timeTableCourse != null && AppStatus().isLoggedinGoogle)
                   if (timeTableCourse.cancel)
                     const Row(
                       children: [
