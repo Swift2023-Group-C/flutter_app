@@ -1,3 +1,4 @@
+import 'package:dotto/feature/my_page/feature/lunch/lunch.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -132,9 +133,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             }, Icons.picture_as_pdf, item.key))
         .toList());
 
+    infoTiles.add(infoButton(context, () {
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return const LunchScreen();
+          },
+          transitionsBuilder: fromRightAnimation,
+        ),
+      );
+    }, Icons.restaurant, '学食メニュー'));
+
     final twoWeekTimeTableDataNotifier = ref.read(twoWeekTimeTableDataProvider.notifier);
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LunchScreen()),
+              );
+            },
+            icon: const Icon(Icons.restaurant),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
