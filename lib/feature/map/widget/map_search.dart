@@ -21,11 +21,10 @@ class MapSearchBar extends ConsumerWidget {
     }
   }
 
+  /// サーチバーのテキストフィールド
   Widget _mapSearchTextField(WidgetRef ref) {
-    final textEditingControllerNotifier =
-        ref.watch(textEditingControllerProvider.notifier);
-    final mapSearchBarFocusNotifier =
-        ref.watch(mapSearchBarFocusProvider.notifier);
+    final textEditingControllerNotifier = ref.watch(textEditingControllerProvider.notifier);
+    final mapSearchBarFocusNotifier = ref.watch(mapSearchBarFocusProvider.notifier);
     return TextField(
       focusNode: mapSearchBarFocusNotifier.state,
       controller: textEditingControllerNotifier.state,
@@ -48,12 +47,9 @@ class MapSearchBar extends ConsumerWidget {
     final onMapSearchNotifier = ref.watch(onMapSearchProvider.notifier);
     final mapSearchList = ref.watch(mapSearchListProvider);
     final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
-    final textEditingControllerNotifier =
-        ref.watch(textEditingControllerProvider.notifier);
+    final textEditingControllerNotifier = ref.watch(textEditingControllerProvider.notifier);
     return Container(
-        color: (mapSearchList.isNotEmpty)
-            ? Colors.grey.withOpacity(0.5)
-            : Colors.transparent,
+        color: (mapSearchList.isNotEmpty) ? Colors.grey.withOpacity(0.5) : Colors.transparent,
         child: Container(
           margin: const EdgeInsets.only(top: 15, right: 5, left: 5),
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -68,9 +64,11 @@ class MapSearchBar extends ConsumerWidget {
               surfaceTintColor: Colors.white,
               backgroundColor: Colors.grey.shade100,
               foregroundColor: Colors.black87,
+              //文字が入力されたときのボタンの動作
               actions: onMapSearch
                   ? [
                       IconButton(
+                          //×が押されたときの動作
                           onPressed: () {
                             mapSearchListNotifier.state = [];
                             onMapSearchNotifier.state = false;
@@ -88,6 +86,7 @@ class MapSearchBar extends ConsumerWidget {
   }
 }
 
+/// 画面がグレーになる
 class MapBarrierOnSearch extends ConsumerWidget {
   const MapBarrierOnSearch({super.key});
 
@@ -112,30 +111,21 @@ class MapBarrierOnSearch extends ConsumerWidget {
   }
 }
 
+/// 検索予測結果
 class MapSearchListView extends ConsumerWidget {
   const MapSearchListView({super.key});
 
-  static const List<String> floorBarString = [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    'R6',
-    'R7'
-  ];
+  static const List<String> floorBarString = ['1', '2', '3', '4', '5', 'R6', 'R7'];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
     final mapSearchList = ref.watch(mapSearchListProvider);
     final mapPageNotifier = ref.watch(mapPageProvider.notifier);
-    final mapFocusMapDetailNotifier =
-        ref.watch(mapFocusMapDetailProvider.notifier);
+    final mapFocusMapDetailNotifier = ref.watch(mapFocusMapDetailProvider.notifier);
     final mapViewTransformationControllerProviderNotifier =
         ref.watch(mapViewTransformationControllerProvider.notifier);
-    final mapSearchBarFocusNotifier =
-        ref.watch(mapSearchBarFocusProvider.notifier);
+    final mapSearchBarFocusNotifier = ref.watch(mapSearchBarFocusProvider.notifier);
     if (mapSearchList.isNotEmpty) {
       return Padding(
         padding: const EdgeInsets.only(top: 5, right: 15, left: 15),
@@ -151,9 +141,7 @@ class MapSearchListView extends ConsumerWidget {
             ],
           ),
           width: double.infinity,
-          height: (mapSearchList.length * 60 < 200)
-              ? mapSearchList.length * 60
-              : 200,
+          height: (mapSearchList.length * 60 < 200) ? mapSearchList.length * 60 : 200,
           child: ListView.separated(
             itemCount: mapSearchList.length,
             itemBuilder: (context, int index) {
@@ -162,15 +150,13 @@ class MapSearchListView extends ConsumerWidget {
                 onTap: () {
                   mapSearchListNotifier.state = [];
                   FocusScope.of(context).unfocus();
-                  mapViewTransformationControllerProviderNotifier.state.value
-                      .setIdentity();
+                  mapViewTransformationControllerProviderNotifier.state.value.setIdentity();
                   mapFocusMapDetailNotifier.state = item;
                   mapPageNotifier.state = floorBarString.indexOf(item.floor);
                   showBottomSheet(
                     context: context,
                     builder: (BuildContext context) {
-                      return MapDetailBottomSheet(
-                          floor: item.floor, roomName: item.roomName);
+                      return MapDetailBottomSheet(floor: item.floor, roomName: item.roomName);
                     },
                   );
                   mapSearchBarFocusNotifier.state.unfocus();
