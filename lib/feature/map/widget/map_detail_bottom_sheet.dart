@@ -60,7 +60,7 @@ class MapDetailBottomSheet extends ConsumerWidget {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                  "・${DateFormat('MM/dd hh:mm:ss').format(e.begin)} ~ ${DateFormat('MM/dd hh:mm:ss').format(e.end)}"),
+                                                  "・${DateFormat('MM/dd HH:mm').format(e.begin)} ~ ${DateFormat('MM/dd HH:mm').format(e.end)}"),
                                               Padding(
                                                 padding: const EdgeInsets.only(left: 15),
                                                 child: SelectableText(e.title),
