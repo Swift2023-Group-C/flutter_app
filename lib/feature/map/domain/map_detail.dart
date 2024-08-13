@@ -23,6 +23,11 @@ class MapDetail {
       roomScheduleList = scheduleList.map((e) {
         return RoomSchedule.fromFirebase(e);
       }).toList();
+      roomScheduleList.sort(
+        (a, b) {
+          return a.begin.compareTo(b.begin);
+        },
+      );
     }
     return MapDetail(floor, roomName, value['classroomNo'], value['header'], value['detail'],
         value['mail'], sWordList,

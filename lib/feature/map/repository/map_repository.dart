@@ -29,8 +29,9 @@ class MapRepository {
     if (snapshot.exists && snapshotRoom.exists) {
       (snapshot.value as Map).forEach((floor, value) {
         (value as Map).forEach((roomName, value2) {
-          returnList[floor]!.addAll(
-              {roomName: MapDetail.fromFirebase(floor, roomName, value2, (snapshotRoom as Map))});
+          returnList[floor]!.addAll({
+            roomName: MapDetail.fromFirebase(floor, roomName, value2, (snapshotRoom.value as Map))
+          });
         });
       });
     } else {
