@@ -5,6 +5,7 @@ import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/domain/map_detail.dart';
 import 'package:dotto/repository/app_status.dart';
+import 'package:intl/intl.dart';
 
 class MapDetailBottomSheet extends ConsumerWidget {
   const MapDetailBottomSheet({super.key, required this.floor, required this.roomName});
@@ -14,6 +15,7 @@ class MapDetailBottomSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mapDetailMap = ref.watch(mapDetailMapProvider);
+    final searchDatetime = ref.watch(searchDatetimeProvider);
     return Container(
         height: 200,
         width: MediaQuery.of(context).size.width,
@@ -48,7 +50,28 @@ class MapDetailBottomSheet extends ConsumerWidget {
                                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(width: double.infinity, height: 10),
-                              if (mapDetail.detail != null) SelectableText(mapDetail.detail!),
+                              if (mapDetail.scheduleList != null)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("${DateFormat('MM/dd').format(searchDatetime)}の予定"),
+                                    ...mapDetail.getScheduleListByDate(searchDatetime).map(
+                                          (e) => Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  "・${DateFormat('MM/dd HH:mm').format(e.begin)} ~ ${DateFormat('MM/dd HH:mm').format(e.end)}"),
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 15),
+                                                child: SelectableText(e.title),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                  ],
+                                )
+                              else if (mapDetail.detail != null)
+                                SelectableText(mapDetail.detail!),
                               if (mapDetail.mail != null)
                                 SelectableText('${mapDetail.mail}@fun.ac.jp'),
                             ];

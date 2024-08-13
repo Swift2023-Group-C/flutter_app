@@ -72,10 +72,8 @@ class MapBottomInfo extends ConsumerWidget {
               child: Consumer(
                 builder: (context, ref, child) {
                   final searchDatetime = ref.watch(searchDatetimeProvider);
-                  final searchDatetimeNotifier =
-                      ref.watch(searchDatetimeProvider.notifier);
-                  final mapUsingMapNotifier =
-                      ref.watch(mapUsingMapProvider.notifier);
+                  final searchDatetimeNotifier = ref.read(searchDatetimeProvider.notifier);
+                  final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
                   return Row(
                     children: [
                       ...timeMap.entries.map((item) => Expanded(
@@ -93,10 +91,9 @@ class MapBottomInfo extends ConsumerWidget {
                                   if (setDate.hour == 0) {
                                     setDate = DateTime.now();
                                   }
-                                  searchDatetimeNotifier.state = setDate;
+                                  searchDatetimeNotifier.set(setDate);
                                   mapUsingMapNotifier.state =
-                                      await MapRepository()
-                                          .setUsingColor(setDate);
+                                      await MapRepository().setUsingColor(setDate);
                                 },
                                 child: Center(
                                   child: Text(item.key),
@@ -121,7 +118,7 @@ class MapBottomInfo extends ConsumerWidget {
                                 maxTime: nextSunday,
                                 showTitleActions: true,
                                 onConfirm: (date) async {
-                                  searchDatetimeNotifier.state = date;
+                                  searchDatetimeNotifier.set(date);
                                   mapUsingMapNotifier.state =
                                       await MapRepository().setUsingColor(date);
                                 },
@@ -133,10 +130,8 @@ class MapBottomInfo extends ConsumerWidget {
                                 child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(DateFormat('MM月dd日')
-                                    .format(searchDatetime)),
-                                Text(
-                                    DateFormat('HH:mm').format(searchDatetime)),
+                                Text(DateFormat('MM月dd日').format(searchDatetime)),
+                                Text(DateFormat('HH:mm').format(searchDatetime)),
                               ],
                             )),
                           ),

@@ -161,8 +161,8 @@ class _BasePageState extends ConsumerState<BasePage> {
 
     if (selectedTab == TabItem.map) {
       final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
-      final searchDatetimeNotifier = ref.watch(searchDatetimeProvider.notifier);
-      searchDatetimeNotifier.state = DateTime.now();
+      final searchDatetimeNotifier = ref.read(searchDatetimeProvider.notifier);
+      searchDatetimeNotifier.reset();
       mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now());
     }
 
