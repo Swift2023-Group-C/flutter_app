@@ -96,7 +96,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double infoBoxWidth = MediaQuery.sizeOf(context).width * 0.4;
+    final double infoBoxWidth = MediaQuery.sizeOf(context).width * 0.5;
 
     const Map<String, String> fileNamePath = {
       'バス時刻表': 'home/hakodatebus55.pdf',
@@ -105,6 +105,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       '後期時間割': 'home/timetable_second.pdf',
     };
     List<Widget> infoTiles = [];
+
     infoTiles.add(infoButton(context, () {
       Navigator.of(context).push(
         PageRouteBuilder(
@@ -115,6 +116,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     }, Icons.event_busy, '休講情報'));
+
     infoTiles.addAll(fileNamePath.entries
         .map((item) => infoButton(context, () {
               Navigator.of(context).push(
@@ -131,6 +133,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               );
             }, Icons.picture_as_pdf, item.key))
         .toList());
+
+    infoTiles.add(infoButton(context, () {
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return const FileViewerScreen(
+              filename: 'lunch.jpg',
+              displayName: 'メニュー',
+              url: 'home/lunch.jpg',
+              storage: StorageService.firebase,
+            );
+          },
+          transitionsBuilder: fromRightAnimation,
+        ),
+      );
+    }, Icons.restaurant_outlined, '学食メニュー'));
 
     final twoWeekTimeTableDataNotifier = ref.read(twoWeekTimeTableDataProvider.notifier);
 

@@ -14,14 +14,17 @@ import 'package:share_plus/share_plus.dart';
 enum StorageService { cloudflare, firebase }
 
 class FileViewerScreen extends StatefulWidget {
-  const FileViewerScreen(
-      {super.key,
-      required this.url,
-      required this.filename,
-      required this.storage});
+  const FileViewerScreen({
+    super.key,
+    required this.url,
+    required this.filename,
+    required this.storage,
+    this.displayName,
+  });
   final String url;
   final String filename;
   final StorageService storage;
+  final String? displayName;
 
   @override
   State<FileViewerScreen> createState() => _FileViewerScreenState();
@@ -34,13 +37,12 @@ class _FileViewerScreenState extends State<FileViewerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.filename),
+          title: Text(widget.displayName ?? widget.filename),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.share),
               onPressed: () async {
-                if (dataUint != null ||
-                    widget.storage == StorageService.firebase) {
+                if (dataUint != null || widget.storage == StorageService.firebase) {
                   String path = '';
                   if (widget.storage == StorageService.cloudflare) {
                     final temp = await getTemporaryDirectory();
@@ -58,11 +60,9 @@ class _FileViewerScreenState extends State<FileViewerScreen> {
         body: (widget.storage == StorageService.cloudflare)
             ? FutureBuilder(
                 future: getListObjectsString(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
                   if (snapshot.hasData) {
-                    return KakomonObjectIfType(
-                        url: widget.url, data: snapshot.data!);
+                    return KakomonObjectIfType(url: widget.url, data: snapshot.data!);
                   } else {
                     return Center(child: createProgressIndicator());
                   }
@@ -73,8 +73,7 @@ class _FileViewerScreenState extends State<FileViewerScreen> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasData) {
                       debugPrint(snapshot.data);
-                      return KakomonObjectIfType(
-                          url: widget.url, filepath: snapshot.data!);
+                      return KakomonObjectIfType(url: widget.url, filepath: snapshot.data!);
                     } else {
                       return const Center(child: Text("エラー"));
                     }
@@ -104,8 +103,7 @@ class _FileViewerScreenState extends State<FileViewerScreen> {
 }
 
 class KakomonObjectIfType extends StatelessWidget {
-  const KakomonObjectIfType(
-      {super.key, required this.url, this.data, this.filepath});
+  const KakomonObjectIfType({super.key, required this.url, this.data, this.filepath});
   final String url;
   final Uint8List? data;
   final String? filepath;
