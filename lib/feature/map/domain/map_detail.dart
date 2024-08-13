@@ -35,6 +35,19 @@ class MapDetail {
   }
 
   static const MapDetail none = MapDetail('1', '0', null, '0', null, null, null);
+
+  List<RoomSchedule> getScheduleListByDate(DateTime dateTime) {
+    final list = scheduleList;
+    if (list == null) {
+      return [];
+    }
+    final targetDay = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final targetTomorrowDay = targetDay.add(const Duration(days: 1));
+    return list
+        .where((roomSchedule) =>
+            roomSchedule.begin.isBefore(targetTomorrowDay) && roomSchedule.end.isAfter(targetDay))
+        .toList();
+  }
 }
 
 class RoomSchedule {
