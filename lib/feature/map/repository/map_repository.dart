@@ -15,7 +15,8 @@ class MapRepository {
   MapRepository._internal();
 
   Future<Map<String, Map<String, MapDetail>>> getMapDetailMapFromFirebase() async {
-    final snapshot = await GetFirebaseRealtimeDB.getData('map');
+    final snapshot = await GetFirebaseRealtimeDB.getData('map'); //firebaseから情報取得
+    final snapshotRoom = await GetFirebaseRealtimeDB.getData('map_room_schedule'); //firebaseから情報取得
     Map<String, Map<String, MapDetail>> returnList = {
       '1': {},
       '2': {},
@@ -25,10 +26,11 @@ class MapRepository {
       'R6': {},
       'R7': {}
     };
-    if (snapshot.exists) {
+    if (snapshot.exists && snapshotRoom.exists) {
       (snapshot.value as Map).forEach((floor, value) {
         (value as Map).forEach((roomName, value2) {
-          returnList[floor]!.addAll({roomName: MapDetail.fromFirebase(floor, roomName, value2)});
+          returnList[floor]!.addAll(
+              {roomName: MapDetail.fromFirebase(floor, roomName, value2, (snapshotRoom as Map))});
         });
       });
     } else {
@@ -84,6 +86,7 @@ class MapRepository {
     return resourceIds;
   }
 
+//使用されているかどうかで色を変える設定をする
   Future<Map<String, bool>> setUsingColor(DateTime dateTime) async {
     if (!AppStatus().isLoggedinGoogle) {
       return {};
