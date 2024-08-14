@@ -1,3 +1,4 @@
+import 'package:dotto/feature/my_page/feature/bus/bus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -115,6 +116,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     }, Icons.event_busy, '休講情報'));
+    infoTiles.add(infoButton(context, () {
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return const BusScreen();
+          },
+          transitionsBuilder: fromRightAnimation,
+        ),
+      );
+    }, Icons.event_busy, 'バス'));
     infoTiles.addAll(fileNamePath.entries
         .map((item) => infoButton(context, () {
               Navigator.of(context).push(
