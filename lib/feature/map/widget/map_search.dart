@@ -49,7 +49,7 @@ class MapSearchBar extends ConsumerWidget {
     final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
     final textEditingControllerNotifier = ref.watch(textEditingControllerProvider.notifier);
     return Container(
-        color: (mapSearchList.isNotEmpty) ? Colors.grey.withOpacity(0.5) : Colors.transparent,
+        color: (mapSearchList.isNotEmpty) ? Colors.white.withOpacity(0.9) : Colors.transparent,
         child: Container(
           margin: const EdgeInsets.only(top: 15, right: 5, left: 5),
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -86,7 +86,7 @@ class MapSearchBar extends ConsumerWidget {
   }
 }
 
-/// 画面がグレーになる
+/// 背景の色を設定
 class MapBarrierOnSearch extends ConsumerWidget {
   const MapBarrierOnSearch({super.key});
 
@@ -96,7 +96,7 @@ class MapBarrierOnSearch extends ConsumerWidget {
     final mapSearchListNotifier = ref.watch(mapSearchListProvider.notifier);
     if (mapSearchList.isNotEmpty) {
       return Container(
-        color: Colors.grey.withOpacity(0.5),
+        color: Colors.white.withOpacity(0.9),
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           child: const SizedBox.expand(),
@@ -129,47 +129,48 @@ class MapSearchListView extends ConsumerWidget {
     if (mapSearchList.isNotEmpty) {
       return Padding(
         padding: const EdgeInsets.only(top: 5, right: 15, left: 15),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 2,
-                offset: Offset(2, 2),
-              )
-            ],
-          ),
-          width: double.infinity,
-          height: (mapSearchList.length * 60 < 200) ? mapSearchList.length * 60 : 200,
-          child: ListView.separated(
-            itemCount: mapSearchList.length,
-            itemBuilder: (context, int index) {
-              final MapDetail item = mapSearchListNotifier.state[index];
-              return ListTile(
-                onTap: () {
-                  mapSearchListNotifier.state = [];
-                  FocusScope.of(context).unfocus();
-                  mapViewTransformationControllerProviderNotifier.state.value.setIdentity();
-                  mapFocusMapDetailNotifier.state = item;
-                  mapPageNotifier.state = floorBarString.indexOf(item.floor);
-                  showBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return MapDetailBottomSheet(floor: item.floor, roomName: item.roomName);
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("検索結果"),
+            Flexible(
+              child: ListView.separated(
+                itemCount: mapSearchList.length,
+                itemBuilder: (context, int index) {
+                  final MapDetail item = mapSearchListNotifier.state[index];
+                  return ListTile(
+                    onTap: () {
+                      mapSearchListNotifier.state = [];
+                      FocusScope.of(context).unfocus();
+                      mapViewTransformationControllerProviderNotifier.state.value.setIdentity();
+                      mapFocusMapDetailNotifier.state = item;
+                      mapPageNotifier.state = floorBarString.indexOf(item.floor);
+                      showBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return MapDetailBottomSheet(floor: item.floor, roomName: item.roomName);
+                        },
+                      );
+                      mapSearchBarFocusNotifier.state.unfocus();
                     },
+                    title: Text(item.header),
+                    leading: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 10,
+                      children: [
+                        const Icon(Icons.search),
+                        Text('${item.floor}階'),
+                      ],
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
                   );
-                  mapSearchBarFocusNotifier.state.unfocus();
                 },
-                title: Text(item.header),
-                leading: Text('${item.floor}階'),
-                trailing: const Icon(Icons.chevron_right),
-              );
-            },
-            separatorBuilder: (context, index) => const Divider(
-              height: 1,
+                separatorBuilder: (context, index) => const Divider(
+                  height: 1,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       );
     } else {
