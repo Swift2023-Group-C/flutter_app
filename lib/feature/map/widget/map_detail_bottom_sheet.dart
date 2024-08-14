@@ -30,25 +30,30 @@ class MapDetailBottomSheet extends ConsumerWidget {
         ),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(DateFormat('MM/dd').format(begin)),
+          SelectableText(
+            title,
+            style: const TextStyle(
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              Text(
+                DateFormat('MM/dd').format(begin),
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(width: 5),
               Text(
                 "${DateFormat('HH:mm').format(begin)} ~ ${DateFormat('HH:mm').format(end)}",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                ),
-              ),
-              const SizedBox(width: 5),
-              Flexible(
-                child: SelectableText(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
                 ),
               ),
             ],
