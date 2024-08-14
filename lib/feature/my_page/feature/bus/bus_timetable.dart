@@ -1,20 +1,29 @@
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
+import 'package:dotto/feature/my_page/feature/bus/domain/bus_trip.dart';
+import 'package:dotto/feature/my_page/feature/bus/repository/bus_repository.dart';
 import 'package:dotto/importer.dart';
 
 class BusTimetableScreen extends ConsumerWidget {
-  const BusTimetableScreen({super.key});
+  final BusTrip busTrip;
+  const BusTimetableScreen(this.busTrip, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allBusStops = ref.watch(allBusStopsProvider);
-    final busData = ref.watch(busDataProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("test"),
+        title: Text(busTrip.route),
       ),
-      body: busData.when(
+      body: allBusStops.when(
         data: (data) {
-          return Text(data.toString());
+          return ListView(
+            children: busTrip.stops
+                .map((busTripStop) => ListTile(
+                      title: Text(busTripStop.stop.name),
+                      subtitle: Text(BusRepository().formatDuration(busTripStop.time)),
+                    ))
+                .toList(),
+          );
         },
         error: (error, stackTrace) => Column(
           children: [
@@ -22,7 +31,7 @@ class BusTimetableScreen extends ConsumerWidget {
             Text(stackTrace.toString()),
           ],
         ),
-        loading: () => Center(
+        loading: () => const Center(
           child: Text("Loading"),
         ),
       ),

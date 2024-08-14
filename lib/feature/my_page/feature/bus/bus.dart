@@ -1,88 +1,11 @@
 import 'package:dotto/feature/my_page/feature/bus/bus_timetable.dart';
+import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
+import 'package:dotto/feature/my_page/feature/bus/widget/bus_card.dart';
 import 'package:dotto/importer.dart';
-import 'package:flutter/material.dart';
-
-class BusScreen extends StatelessWidget {
-  const BusScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bus Screen'),
-      ),
-      body: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TimeTableList()),
-          );
-        },
-        child: Card(
-          margin: const EdgeInsets.all(15),
-          color: Colors.white,
-          shadowColor: Colors.black,
-          child: SizedBox(
-            width: 370,
-            height: 120,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(10, 3, 0, 0),
-                  child: Text(
-                    '亀田 → 未来大',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ),
-                Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: Text('09:23', style: TextStyle(fontSize: 40)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(3, 0, 0, 0),
-                      child: Transform.translate(
-                        offset: const Offset(0, 5),
-                        child: const Text('発', style: TextStyle(fontSize: 15)),
-                      ),
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                      child: Transform.translate(
-                        offset: const Offset(0, 10),
-                        child: const Text('9:15着', style: TextStyle(fontSize: 15)),
-                      ),
-                    )
-                  ],
-                ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                  child: LinearProgressIndicator(
-                    value: 0.5,
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(266, 3, 10, 0),
-                  child: Text(
-                    '出発まで15分',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 //make by zaki
-class TimeTableList extends StatelessWidget {
-  const TimeTableList({super.key});
+class BusScreen extends ConsumerWidget {
+  const BusScreen({super.key});
 
   Widget infoButton(BuildContext context, void Function() onPressed, IconData icon, String title) {
     //final double width = MediaQuery.sizeOf(context).width * 0.26;
@@ -130,27 +53,30 @@ class TimeTableList extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final busData = ref.watch(busDataProvider);
     Widget departure = infoButton(context, () {}, Icons.directions_bus, '亀田');
-
     Widget destination = infoButton(context, () {}, Icons.school, '未来大');
 
-    final btn_change = IconButton(
+    final btnChange = IconButton(
         iconSize: 20,
         color: Colors.blue,
         onPressed: () {},
-        icon: Icon(
+        icon: const Icon(
           Icons.autorenew,
         ));
 
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text("時刻表一覧"),
-        ),
-        body: Column(children: [
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text("時刻表一覧"),
+      ),
+      body: Column(
+        children: [
+          // Icon(Icons.line_start,
+          //   size: 50, color: Colors.blue), // ここにアイコンを追加
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30),
+            padding: const EdgeInsets.all(20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -158,12 +84,7 @@ class TimeTableList extends StatelessWidget {
                 Stack(
                   alignment: AlignmentDirectional.center,
                   children: [
-                    // Container(
-                    //   width: 86,
-                    //   height: 30,
-                    //   child: Image.asset('images/arrowPicture.jpg'),
-                    // ),
-                    btn_change,
+                    btnChange,
                   ],
                 ),
                 destination,
@@ -171,70 +92,44 @@ class TimeTableList extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: 10, // 実際のデータ数に応じて調整
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const BusTimetableScreen()),
+            child: busData.when(
+              data: (allData) {
+                final data = allData["to_fun"]!["holiday"]!;
+
+                return ListView.builder(
+                  itemCount: data.length, // 実際のデータ数に応じて調整
+                  itemBuilder: (context, index) {
+                    final funBusTripStop =
+                        data[index].stops.firstWhere((element) => element.stop.id == 14023);
+                    final targetBusTripStop =
+                        data[index].stops.firstWhere((element) => element.stop.id == 14013);
+                    final now = DateTime.now();
+                    final nowDuration = Duration(hours: now.hour, minutes: now.minute);
+                    final arriveAt = targetBusTripStop.time - nowDuration;
+                    if (arriveAt.isNegative) {
+                      return const SizedBox.shrink();
+                    }
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BusTimetableScreen(data[index]),
+                          ),
+                        );
+                      },
+                      child: BusCard(
+                          data[index].route, targetBusTripStop.time, funBusTripStop.time, arriveAt),
                     );
                   },
-                  child: Card(
-                    margin: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                    color: Colors.white,
-                    shadowColor: Colors.black,
-                    child: SizedBox(
-                      width: 370,
-                      height: 100,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                child: Text('09:55', style: TextStyle(fontSize: 40)),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(3, 0, 0, 0),
-                                child: Transform.translate(
-                                  offset: const Offset(0, 5),
-                                  child: const Text('発', style: TextStyle(fontSize: 15)),
-                                ),
-                              ),
-                              const Spacer(),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                                child: Transform.translate(
-                                  offset: const Offset(0, 10),
-                                  child: const Text('9:39着', style: TextStyle(fontSize: 15)),
-                                ),
-                              )
-                            ],
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            child: LinearProgressIndicator(
-                              value: 0.5,
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.fromLTRB(266, 3, 10, 0),
-                            child: Text(
-                              '出発まで15分',
-                              style: TextStyle(fontSize: 15),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 );
               },
+              error: (error, stackTrace) => const Text("Error"),
+              loading: () => const Text("Loading"),
             ),
           ),
-        ]));
+        ],
+      ),
+    );
   }
 }

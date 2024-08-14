@@ -7,6 +7,9 @@ final allBusStopsProvider = FutureProvider(
   },
 );
 
+/// Map<String, Map<String, List<BusTrip>>>
+/// 1つ目のStringキー: from_fun, to_fun
+/// 2つ目のStringキー: holiday, weekday
 final busDataProvider = FutureProvider(
   (ref) async {
     final allBusStop = await ref.watch(allBusStopsProvider.future);
