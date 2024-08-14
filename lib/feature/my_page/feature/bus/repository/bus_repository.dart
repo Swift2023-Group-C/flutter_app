@@ -33,9 +33,8 @@ class BusRepository {
           final String fromTo = key;
           (value as Map).forEach((key2, value2) {
             final String week = key2;
-            allBusTrips[fromTo]![week] = (value2 as List)
-                .map((e) => BusTrip.fromFirebase(value2 as Map, allBusStops))
-                .toList();
+            allBusTrips[fromTo]![week] =
+                (value2 as List).map((e) => BusTrip.fromFirebase(e as Map, allBusStops)).toList();
           });
         },
       );

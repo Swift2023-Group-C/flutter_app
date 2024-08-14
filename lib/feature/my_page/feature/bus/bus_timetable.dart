@@ -12,14 +12,10 @@ class BusTimetableScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text("test"),
       ),
-      body: allBusStops.when(
-        data: (data) => ListView(
-          children: data
-              .map((e) => ListTile(
-                    title: Text(e.name),
-                  ))
-              .toList(),
-        ),
+      body: busData.when(
+        data: (data) {
+          return Text(data.toString());
+        },
         error: (error, stackTrace) => Column(
           children: [
             Text(error.toString()),
