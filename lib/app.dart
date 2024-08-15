@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dotto/app/controller/tab_controller.dart';
 import 'package:dotto/app/domain/tab_item.dart';
+import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -120,6 +121,10 @@ class _BasePageState extends ConsumerState<BasePage> {
         await TimetableRepository().loadPersonalTimeTableList();
   }
 
+  Future<void> initBus() async {
+    ref.read(myBusStopProvider.notifier).init();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -128,6 +133,7 @@ class _BasePageState extends ConsumerState<BasePage> {
       await SyllabusDBConfig.setDB();
       await downloadFiles();
       await setPersonalLessonIdList();
+      await initBus();
     });
   }
 

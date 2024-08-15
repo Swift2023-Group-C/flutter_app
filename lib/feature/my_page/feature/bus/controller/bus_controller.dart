@@ -1,3 +1,6 @@
+import 'package:collection/collection.dart';
+import 'package:dotto/components/setting_user_info.dart';
+import 'package:dotto/feature/my_page/feature/bus/domain/bus_stop.dart';
 import 'package:dotto/feature/my_page/feature/bus/repository/bus_repository.dart';
 import 'package:dotto/importer.dart';
 
@@ -16,3 +19,38 @@ final busDataProvider = FutureProvider(
     return await BusRepository().getBusDataFromFirebase(allBusStop);
   },
 );
+
+final myBusStopProvider = NotifierProvider<MyBusStopNotifier, BusStop>(() {
+  return MyBusStopNotifier();
+});
+
+class MyBusStopNotifier extends Notifier<BusStop> {
+  @override
+  BusStop build() {
+    return const BusStop(
+        14013, "亀田支所前", ["50", "55", "55A", "55B", "55C", "55E", "55F", "55G", "55H"]);
+  }
+
+  Future<void> init() async {
+    final myBusStopPreference = await UserPreferences.getInt(UserPreferenceKeys.myBusStop);
+    final allBusStop = await ref.watch(allBusStopsProvider.future);
+    state = allBusStop.firstWhere((busStop) => busStop.id == (myBusStopPreference ?? 14013));
+  }
+
+  void set(BusStop myBusStop) {
+    state = myBusStop;
+  }
+}
+
+final busIsToProvider = NotifierProvider<BusIsToNotifier, bool>(() => BusIsToNotifier());
+
+class BusIsToNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    return true;
+  }
+
+  void change() {
+    state = !state;
+  }
+}

@@ -17,12 +17,18 @@ class BusTimetableScreen extends ConsumerWidget {
       body: allBusStops.when(
         data: (data) {
           return ListView(
-            children: busTrip.stops
-                .map((busTripStop) => ListTile(
-                      title: Text(busTripStop.stop.name),
-                      subtitle: Text(BusRepository().formatDuration(busTripStop.time)),
-                    ))
-                .toList(),
+            children: busTrip.stops.map((busTripStop) {
+              final terminal = busTripStop.terminal;
+              print(terminal);
+              return ListTile(
+                title: Text(busTripStop.stop.name),
+                trailing: Text(
+                  BusRepository().formatDuration(busTripStop.time),
+                  style: const TextStyle(fontSize: 14),
+                ),
+                subtitle: terminal != null ? Text("$terminal番乗り場") : null,
+              );
+            }).toList(),
           );
         },
         error: (error, stackTrace) => Column(
