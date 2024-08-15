@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:dotto/components/app_color.dart';
 import 'package:dotto/feature/my_page/feature/bus/widget/bus_timetable.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/bus/domain/bus_trip.dart';
@@ -55,6 +56,7 @@ class BusScreen extends ConsumerWidget {
     final busData = ref.watch(busDataProvider);
     final myBusStop = ref.watch(myBusStopProvider);
     final busIsTo = ref.watch(busIsToProvider);
+    final busRefresh = ref.watch(busRefreshProvider);
 
     Widget myBusStopButton = busStopButton(context, () {
       Navigator.of(context).push(MaterialPageRoute(
@@ -68,12 +70,12 @@ class BusScreen extends ConsumerWidget {
 
     final btnChange = IconButton(
       iconSize: 20,
-      color: Colors.blue,
+      color: AppColor.linkTextBlue,
       onPressed: () {
         ref.read(busIsToProvider.notifier).change();
       },
       icon: const Icon(
-        Icons.autorenew,
+        Icons.swap_horiz_outlined,
       ),
     );
 
@@ -84,8 +86,6 @@ class BusScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          // Icon(Icons.line_start,
-          //   size: 50, color: Colors.blue), // ここにアイコンを追加
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -132,7 +132,7 @@ class BusScreen extends ConsumerWidget {
                     }
                     final fromBusTripStop = busIsTo ? targetBusTripStop : funBusTripStop;
                     final toBusTripStop = busIsTo ? funBusTripStop : targetBusTripStop;
-                    final now = DateTime.now();
+                    final now = busRefresh;
                     final nowDuration = Duration(hours: now.hour, minutes: now.minute);
                     final arriveAt = fromBusTripStop.time - nowDuration;
                     if (arriveAt.isNegative) {

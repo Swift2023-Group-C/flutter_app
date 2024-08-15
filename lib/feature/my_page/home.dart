@@ -1,4 +1,5 @@
 import 'package:dotto/feature/my_page/feature/bus/bus.dart';
+import 'package:dotto/feature/my_page/feature/bus/widget/bus_card_home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -185,6 +186,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
+              const BusCardHome(),
               const SizedBox(height: 20),
               infoTile(infoTiles),
               const SizedBox(height: 20),

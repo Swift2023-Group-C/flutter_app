@@ -123,6 +123,7 @@ class _BasePageState extends ConsumerState<BasePage> {
 
   Future<void> initBus() async {
     ref.read(myBusStopProvider.notifier).init();
+    ref.read(busRefreshProvider.notifier).start();
   }
 
   @override

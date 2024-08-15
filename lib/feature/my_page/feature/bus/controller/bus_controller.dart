@@ -1,4 +1,5 @@
-import 'package:collection/collection.dart';
+import 'dart:async';
+
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/feature/my_page/feature/bus/domain/bus_stop.dart';
 import 'package:dotto/feature/my_page/feature/bus/repository/bus_repository.dart';
@@ -52,5 +53,21 @@ class BusIsToNotifier extends Notifier<bool> {
 
   void change() {
     state = !state;
+  }
+}
+
+final busRefreshProvider =
+    NotifierProvider<BusRefreshNotifier, DateTime>(() => BusRefreshNotifier());
+
+class BusRefreshNotifier extends Notifier<DateTime> {
+  @override
+  DateTime build() {
+    return DateTime.now();
+  }
+
+  void start() {
+    Timer.periodic(const Duration(seconds: 30), (_) async {
+      state = DateTime.now();
+    });
   }
 }
