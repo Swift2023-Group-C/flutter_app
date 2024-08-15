@@ -7,10 +7,10 @@ enum UserPreferenceKeys {
   kadaiFinishList(keyName: 'finishListKey', type: String),
   kadaiAlertList(keyName: 'alertListKey', type: String),
   kadaiDeleteList(keyName: 'deleteListKey', type: String),
-  personalTimetableListKey(
-      keyName: 'personalTimeTableListKey2024', type: String),
+  personalTimetableListKey(keyName: 'personalTimeTableListKey2024', type: String),
   isAppTutorialComplete(keyName: 'isAppTutorialCompleted', type: bool),
-  isKadaiTutorialComplete(keyName: 'isKadaiTutorialCompleted', type: bool);
+  isKadaiTutorialComplete(keyName: 'isKadaiTutorialCompleted', type: bool),
+  myBusStop(keyName: 'myBusStop', type: int);
 
   const UserPreferenceKeys({
     required this.keyName,
@@ -47,6 +47,20 @@ class UserPreferences {
   static Future<String?> getString(UserPreferenceKeys key) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(key.keyName);
+  }
+
+  static Future<void> setInt(UserPreferenceKeys key, int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (key.type == int) {
+      await prefs.setInt(key.keyName, value);
+    } else {
+      throw TypeError();
+    }
+  }
+
+  static Future<int?> getInt(UserPreferenceKeys key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(key.keyName);
   }
 
   // 半角英数16桁の正規表現パターン

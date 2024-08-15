@@ -122,6 +122,7 @@ flutter:
   assets:
     - images/
     - .env.dev
+    - assets/bus.png
     - assets/syllabus.db
     - assets/tutorial/home.png
     - assets/tutorial/kadai.png
