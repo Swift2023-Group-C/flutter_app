@@ -14,12 +14,13 @@ class BusCardHome extends ConsumerWidget {
     final myBusStop = ref.watch(myBusStopProvider);
     final busIsTo = ref.watch(busIsToProvider);
     final busRefresh = ref.watch(busRefreshProvider);
+    final busIsWeekday = ref.watch(busIsWeekdayNotifier);
 
     String fromToString = busIsTo ? "to_fun" : "from_fun";
 
     return busData.when(
       data: (allData) {
-        final data = allData[fromToString]!["weekday"]!;
+        final data = allData[fromToString]![busIsWeekday ? "weekday" : "holiday"]!;
         for (var busTrip in data) {
           final funBusTripStop =
               busTrip.stops.firstWhereOrNull((element) => element.stop.id == 14023);

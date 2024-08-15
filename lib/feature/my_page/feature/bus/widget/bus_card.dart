@@ -38,7 +38,7 @@ class BusCard extends ConsumerWidget {
       color: Colors.white,
       shadowColor: Colors.black,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.only(left: 10, right: 10, bottom: 10, top: (home ? 0 : 10)),
         width: MediaQuery.of(context).size.width * 0.8,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,14 +53,18 @@ class BusCard extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  IconButton(
-                    iconSize: 20,
-                    color: AppColor.linkTextBlue,
-                    onPressed: () {
-                      ref.read(busIsToProvider.notifier).change();
-                    },
-                    icon: const Icon(
-                      Icons.swap_horiz_outlined,
+                  Transform.translate(
+                    offset: const Offset(0, 5),
+                    child: IconButton(
+                      iconSize: 20,
+                      color: AppColor.linkTextBlue,
+                      onPressed: () {
+                        ref.read(busIsToProvider.notifier).change();
+                      },
+                      icon: const Icon(
+                        Icons.swap_horiz_outlined,
+                      ),
+                      padding: EdgeInsets.zero,
                     ),
                   ),
                 ],

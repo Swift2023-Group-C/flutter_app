@@ -19,7 +19,7 @@ class BusStopSelectScreen extends ConsumerWidget {
       ),
       body: allBusStop.when(
         data: (allBusStops) {
-          final selectableBusStops = allBusStops.where((busStop) => busStop.reverse != true);
+          final selectableBusStops = allBusStops.where((busStop) => busStop.selectable != false);
           return ListView(
             children: selectableBusStops
                 .map(

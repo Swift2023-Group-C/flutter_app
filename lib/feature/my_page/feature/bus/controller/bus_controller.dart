@@ -71,3 +71,18 @@ class BusRefreshNotifier extends Notifier<DateTime> {
     });
   }
 }
+
+final busIsWeekdayNotifier =
+    NotifierProvider<BusIsWeekdayNotifier, bool>(() => BusIsWeekdayNotifier());
+
+class BusIsWeekdayNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    final now = DateTime.now().weekday;
+    return now <= 5;
+  }
+
+  void change() {
+    state = !state;
+  }
+}
