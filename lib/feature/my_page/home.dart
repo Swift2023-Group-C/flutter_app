@@ -117,16 +117,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     }, Icons.event_busy, '休講情報'));
-    infoTiles.add(infoButton(context, () {
-      Navigator.of(context).push(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return const BusScreen();
-          },
-          transitionsBuilder: fromRightAnimation,
-        ),
-      );
-    }, Icons.event_busy, 'バス'));
     infoTiles.addAll(fileNamePath.entries
         .map((item) => infoButton(context, () {
               Navigator.of(context).push(
