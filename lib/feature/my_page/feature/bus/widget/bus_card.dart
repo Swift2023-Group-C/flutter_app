@@ -4,12 +4,13 @@ import 'package:dotto/importer.dart';
 
 class BusCard extends ConsumerWidget {
   const BusCard(this.route, this.beginTime, this.endTime, this.arriveAt,
-      {super.key, this.isKameda = false});
+      {super.key, this.isKameda = false, this.home = false});
   final String route;
   final Duration beginTime;
   final Duration endTime;
   final Duration arriveAt;
   final bool isKameda;
+  final bool home;
 
   String getHeader(bool busIsTo) {
     String s = "";
@@ -25,7 +26,7 @@ class BusCard extends ConsumerWidget {
     if (s.isNotEmpty) {
       s += busIsTo ? "から" : "行き";
     }
-    return s;
+    return "$route $s";
   }
 
   @override

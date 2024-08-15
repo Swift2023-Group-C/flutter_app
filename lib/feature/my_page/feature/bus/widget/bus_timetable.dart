@@ -12,14 +12,13 @@ class BusTimetableScreen extends ConsumerWidget {
     final allBusStops = ref.watch(allBusStopsProvider);
     return Scaffold(
       appBar: AppBar(
-        title: Text(busTrip.route),
+        title: Text("${busTrip.route} 時刻表"),
       ),
       body: allBusStops.when(
         data: (data) {
           return ListView(
             children: busTrip.stops.map((busTripStop) {
               final terminal = busTripStop.terminal;
-              print(terminal);
               return ListTile(
                 title: Text(busTripStop.stop.name),
                 trailing: Text(

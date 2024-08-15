@@ -80,7 +80,7 @@ class BusScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("時刻表一覧"),
+        title: const Text("バス一覧"),
       ),
       body: Column(
         children: [
