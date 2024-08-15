@@ -77,17 +77,25 @@ class BusScreen extends ConsumerWidget {
           //   size: 50, color: Colors.blue), // ここにアイコンを追加
           Padding(
             padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            child: Column(
               children: [
-                departure,
-                Stack(
-                  alignment: AlignmentDirectional.center,
+                Image.asset(
+                  "assets/bus.png",
+                  width: MediaQuery.of(context).size.width * 0.6,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    btnChange,
+                    departure,
+                    Stack(
+                      alignment: AlignmentDirectional.center,
+                      children: [
+                        btnChange,
+                      ],
+                    ),
+                    destination,
                   ],
                 ),
-                destination,
               ],
             ),
           ),
