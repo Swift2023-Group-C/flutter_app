@@ -43,6 +43,9 @@ class MapTile extends StatelessWidget {
   final MapStairType stairType;
   DateTime? useEndTime;
   final Widget? innerWidget;
+  final bool? food;
+  final bool? drink;
+  final int? outlet;
 
   MapTile(
     this.width,
@@ -62,6 +65,9 @@ class MapTile extends StatelessWidget {
     this.stairType = const MapStairType(Axis.horizontal, true, true),
     this.useEndTime,
     this.innerWidget,
+    this.food,
+    this.drink,
+    this.outlet,
   }) {
     setColors();
     if (width == 1) {
@@ -103,10 +109,8 @@ class MapTile extends StatelessWidget {
 
   Widget stackTextIcon() {
     double iconSize = 8;
-    int iconLength = (wc & 0x0001) +
-        (wc & 0x0010) ~/ 0x0010 +
-        (wc & 0x0100) ~/ 0x0100 +
-        (wc & 0x1000) ~/ 0x1000;
+    int iconLength =
+        (wc & 0x0001) + (wc & 0x0010) ~/ 0x0010 + (wc & 0x0100) ~/ 0x0100 + (wc & 0x1000) ~/ 0x1000;
     if (width == 1) {
       iconSize = 6;
     } else if (width * height / iconLength <= 2) {
@@ -249,9 +253,7 @@ class MapTile extends StatelessWidget {
                   right: oneBorderSide(right, focus),
                   bottom: oneBorderSide(bottom, focus),
                   left: oneBorderSide(left, focus)),
-              color: (ttype == MapTileType.empty)
-                  ? tileColor
-                  : MapTileType.road.backgroundColor,
+              color: (ttype == MapTileType.empty) ? tileColor : MapTileType.road.backgroundColor,
             ),
             child: SizedBox.expand(
               child: (innerWidget == null)
@@ -303,8 +305,7 @@ class MapTile extends StatelessWidget {
     }
     return Consumer(builder: (context, ref, child) {
       final mapPage = ref.watch(mapPageProvider);
-      final mapSearchBarFocusNotifier =
-          ref.watch(mapSearchBarFocusProvider.notifier);
+      final mapSearchBarFocusNotifier = ref.watch(mapSearchBarFocusProvider.notifier);
       ref.watch(mapUsingMapProvider);
       return GestureDetector(
         onTap: (txt.isNotEmpty && ttype.index <= MapTileType.subroom.index)
@@ -312,17 +313,14 @@ class MapTile extends StatelessWidget {
                 showBottomSheet(
                   context: context,
                   builder: (BuildContext context) {
-                    return MapDetailBottomSheet(
-                        floor: floorBarString[mapPage], roomName: txt);
+                    return MapDetailBottomSheet(floor: floorBarString[mapPage], roomName: txt);
                   },
                 );
                 mapSearchBarFocusNotifier.state.unfocus();
               }
             : null,
         child: Stack(
-            alignment: AlignmentDirectional.center,
-            fit: StackFit.loose,
-            children: widgetList),
+            alignment: AlignmentDirectional.center, fit: StackFit.loose, children: widgetList),
       );
     });
   }

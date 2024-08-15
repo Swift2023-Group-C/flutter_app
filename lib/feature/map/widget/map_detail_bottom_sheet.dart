@@ -1,6 +1,8 @@
 import 'package:dotto/app/controller/tab_controller.dart';
 import 'package:dotto/app/domain/tab_item.dart';
 import 'package:dotto/feature/map/domain/map_room_available_type.dart';
+import 'package:dotto/feature/map/widget/fun_grid_map.dart';
+import 'package:dotto/feature/map/widget/map_tile.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
@@ -64,8 +66,14 @@ class MapDetailBottomSheet extends ConsumerWidget {
     );
   }
 
-  Widget roomAvailable(RoomAvailableType type, bool status) {
+  Widget roomAvailable(RoomAvailableType type, int status) {
     const fontColor = Colors.white;
+    IconData icon = Icons.close_outlined;
+    if (status == 1) {
+      icon = Icons.change_history_outlined;
+    } else if (status == 2) {
+      icon = Icons.circle_outlined;
+    }
     return Container(
       width: 140,
       decoration: BoxDecoration(
@@ -73,6 +81,7 @@ class MapDetailBottomSheet extends ConsumerWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.all(5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -89,7 +98,7 @@ class MapDetailBottomSheet extends ConsumerWidget {
             ),
           ),
           Icon(
-            status ? Icons.circle_outlined : Icons.close_outlined,
+            icon,
             color: fontColor,
             size: 20,
           ),
@@ -102,6 +111,12 @@ class MapDetailBottomSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mapDetailMap = ref.watch(mapDetailMapProvider);
     final searchDatetime = ref.watch(searchDatetimeProvider);
+    MapTile? gridMap;
+    try {
+      gridMap = FunGridMaps.mapTileListMap[floor]!.firstWhere((element) => element.txt == roomName);
+    } catch (e) {
+      gridMap = null;
+    }
     return Container(
         height: 250,
         width: MediaQuery.of(context).size.width,
@@ -137,16 +152,30 @@ class MapDetailBottomSheet extends ConsumerWidget {
                                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(width: double.infinity, height: 10),
-                              Row(
-                                children: [
-                                  roomAvailable(RoomAvailableType.outlet, true),
-                                  const SizedBox(width: 10),
-                                  roomAvailable(RoomAvailableType.food, false),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
+                              if (gridMap != null)
+                                Column(
+                                  children: [
+                                    if (gridMap.food != null && gridMap.drink != null)
+                                      Row(
+                                        children: [
+                                          roomAvailable(
+                                              RoomAvailableType.food, gridMap.food! ? 2 : 0),
+                                          const SizedBox(width: 10),
+                                          roomAvailable(
+                                              RoomAvailableType.drink, gridMap.drink! ? 2 : 0),
+                                        ],
+                                      ),
+                                    if (gridMap.outlet != null)
+                                      Row(
+                                        children: [
+                                          roomAvailable(RoomAvailableType.outlet, gridMap.outlet!),
+                                        ],
+                                      ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                  ],
+                                ),
                               if (mapDetail.scheduleList != null)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,

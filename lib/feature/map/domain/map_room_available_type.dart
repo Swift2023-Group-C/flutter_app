@@ -6,8 +6,12 @@ enum RoomAvailableType {
     "コンセント",
   ),
   food(
-    Icons.fastfood,
-    "飲食",
+    Icons.lunch_dining,
+    "食べ物",
+  ),
+  drink(
+    Icons.local_drink,
+    "飲み物",
   );
 
   const RoomAvailableType(this.icon, this.title);
