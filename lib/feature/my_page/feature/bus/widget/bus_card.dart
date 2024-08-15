@@ -43,12 +43,16 @@ class BusCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text("${DateFormat('yyyy-MM-dd').format(busRefresh)}のバス"),
             if (home)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(busIsTo ? "${myBusStop.name} → 未来大" : "未来大 → ${myBusStop.name}"),
+                  Expanded(
+                    child: Text(
+                      busIsTo ? "${myBusStop.name} → 未来大" : "未来大 → ${myBusStop.name}",
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                   IconButton(
                     iconSize: 20,
                     color: AppColor.linkTextBlue,

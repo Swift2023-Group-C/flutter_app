@@ -92,7 +92,7 @@ class BusScreen extends ConsumerWidget {
               children: [
                 Image.asset(
                   "assets/bus.png",
-                  width: MediaQuery.of(context).size.width * 0.6,
+                  width: MediaQuery.of(context).size.width * 0.57,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
