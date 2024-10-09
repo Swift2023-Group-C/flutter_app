@@ -17,7 +17,7 @@ class NewsRepository {
       final d = snapshot.data();
       final news = News(snapshot.id, d["title"], List<String>.from(d["body"] as List),
           (d["date"] as Timestamp).toDate(),
-          imageUrl: d["imageUrl"]);
+          image: d["image"] ?? false);
       return news;
     }).toList();
   }

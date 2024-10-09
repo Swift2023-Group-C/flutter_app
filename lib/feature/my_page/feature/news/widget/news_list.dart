@@ -16,14 +16,18 @@ class NewsList extends ConsumerWidget {
     return newsList.when(
       data: (data) {
         return ListView.separated(
+          physics: isHome ? const NeverScrollableScrollPhysics() : null,
           itemCount: isHome && data.length > 3 ? 3 : data.length,
           itemBuilder: (context, index) {
             final news = data[index];
             return ListTile(
-              title: Text(news.title),
+              title: Text(
+                news.title,
+                style: TextStyle(fontSize: isHome ? 14 : null),
+              ),
               subtitle: Text(
                 formatter.format(news.date),
-                style: const TextStyle(fontSize: 12),
+                style: TextStyle(fontSize: isHome ? 10 : 12),
               ),
               onTap: () => Navigator.of(context).push(
                 PageRouteBuilder(
@@ -34,7 +38,9 @@ class NewsList extends ConsumerWidget {
               trailing: const Icon(Icons.chevron_right_outlined),
             );
           },
-          separatorBuilder: (context, index) => const Divider(),
+          separatorBuilder: (context, index) => const Divider(
+            height: 0,
+          ),
           shrinkWrap: isHome,
         );
       },

@@ -29,22 +29,22 @@ class MyPageNews extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
             child: Text("Dottoからのお知らせ"),
           ),
           const NewsList(
             isHome: true,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => const NewsScreen(),
-                  transitionsBuilder: fromRightAnimation,
-                ),
+          GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => const NewsScreen(),
+                transitionsBuilder: fromRightAnimation,
               ),
-              child: const Row(
+            ),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(

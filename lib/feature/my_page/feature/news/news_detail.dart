@@ -1,10 +1,21 @@
 import 'package:dotto/feature/my_page/feature/news/domain/news_model.dart';
 import 'package:dotto/importer.dart';
+import 'package:dotto/repository/download_file_from_firebase.dart';
 import 'package:intl/intl.dart';
 
 class NewsDetailScreen extends StatelessWidget {
   final News news;
   const NewsDetailScreen(this.news, {super.key});
+
+  Future<Image?> _getNewsImage() async {
+    if (news.image) {
+      final data = await getFileFromFirebase("news/${news.id}.png");
+      if (data != null) {
+        return Image.memory(data);
+      }
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +45,19 @@ class NewsDetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 15),
               const Divider(),
+              if (news.image)
+                FutureBuilder(
+                  future: _getNewsImage(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final data = snapshot.data;
+                      if (data != null) {
+                        return data;
+                      }
+                    }
+                    return Container();
+                  },
+                ),
               const SizedBox(height: 15),
               Wrap(
                 // direction: Axis.vertical,
