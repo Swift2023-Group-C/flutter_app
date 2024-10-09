@@ -14,28 +14,30 @@ class NewsList extends ConsumerWidget {
     final newsList = ref.watch(newsListProvider);
     final formatter = DateFormat('yyyy年M月d日 HH:mm');
     return newsList.when(
-      data: (data) => ListView.separated(
-        itemCount: isHome && data.length > 3 ? 3 : data.length,
-        itemBuilder: (context, index) {
-          final news = data[index];
-          return ListTile(
-            title: Text(news.title),
-            subtitle: Text(
-              formatter.format(news.date),
-              style: const TextStyle(fontSize: 12),
-            ),
-            onTap: () => Navigator.of(context).push(
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) => NewsDetailScreen(news),
-                transitionsBuilder: fromRightAnimation,
+      data: (data) {
+        return ListView.separated(
+          itemCount: isHome && data.length > 3 ? 3 : data.length,
+          itemBuilder: (context, index) {
+            final news = data[index];
+            return ListTile(
+              title: Text(news.title),
+              subtitle: Text(
+                formatter.format(news.date),
+                style: const TextStyle(fontSize: 12),
               ),
-            ),
-            trailing: const Icon(Icons.chevron_right_outlined),
-          );
-        },
-        separatorBuilder: (context, index) => const Divider(),
-        shrinkWrap: isHome,
-      ),
+              onTap: () => Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => NewsDetailScreen(news),
+                  transitionsBuilder: fromRightAnimation,
+                ),
+              ),
+              trailing: const Icon(Icons.chevron_right_outlined),
+            );
+          },
+          separatorBuilder: (context, index) => const Divider(),
+          shrinkWrap: isHome,
+        );
+      },
       error: (error, stackTrace) => const Column(
         children: [Text("読み込みに失敗しました。")],
       ),

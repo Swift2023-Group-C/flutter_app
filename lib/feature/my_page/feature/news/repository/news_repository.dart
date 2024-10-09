@@ -15,9 +15,10 @@ class NewsRepository {
         .get();
     return data.docs.map((snapshot) {
       final d = snapshot.data();
-      return News(
-          d["title"], List<String>.from(d["body"] as List), (d["date"] as Timestamp).toDate(),
+      final news = News(snapshot.id, d["title"], List<String>.from(d["body"] as List),
+          (d["date"] as Timestamp).toDate(),
           imageUrl: d["imageUrl"]);
+      return news;
     }).toList();
   }
 }

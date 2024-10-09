@@ -1,5 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:dotto/feature/my_page/feature/bus/widget/bus_card_home.dart';
+import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
 import 'package:dotto/feature/my_page/feature/news/news.dart';
+import 'package:dotto/feature/my_page/feature/news/news_detail.dart';
 import 'package:dotto/feature/my_page/feature/news/widget/my_page_news.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -99,8 +102,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  void _showPushNotificationNews(BuildContext context, WidgetRef ref) {
+    final newsList = ref.watch(newsListProvider);
+    newsList.when(
+      data: (data) {
+        final newsId = ref.watch(newsFromPushNotificationProvider);
+        if (newsId != null) {
+          final pushNews = data.firstWhereOrNull((element) => element.id == newsId);
+          if (pushNews != null) {
+            Navigator.of(context)
+                .push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => NewsDetailScreen(pushNews),
+                transitionsBuilder: fromRightAnimation,
+              ),
+            )
+                .whenComplete(() {
+              ref.read(newsFromPushNotificationProvider.notifier).reset();
+            });
+          }
+        }
+      },
+      error: (error, stackTrace) {},
+      loading: () {},
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _showPushNotificationNews(context, ref));
+
     final double infoBoxWidth = MediaQuery.sizeOf(context).width * 0.4;
 
     const Map<String, String> fileNamePath = {

@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:dotto/app/controller/tab_controller.dart';
 import 'package:dotto/app/domain/tab_item.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
+import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
+import 'package:dotto/repository/notification.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -135,6 +137,7 @@ class _BasePageState extends ConsumerState<BasePage> {
       await downloadFiles();
       await setPersonalLessonIdList();
       await initBus();
+      await NotificationRepository().setupInteractedMessage(ref);
     });
   }
 
@@ -164,6 +167,7 @@ class _BasePageState extends ConsumerState<BasePage> {
   }
 
   void _onItemTapped(int index) async {
+    ref.read(newsFromPushNotificationProvider.notifier).reset();
     final selectedTab = TabItem.values[index];
 
     if (selectedTab == TabItem.map) {
