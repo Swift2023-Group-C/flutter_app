@@ -46,6 +46,8 @@ dependencies:
   firebase_app_check: ^0.2.2+2
   firebase_auth: ^4.19.2
   firebase_database: ^10.5.2
+  firebase_in_app_messaging: ^0.7.5+7
+  firebase_messaging: ^14.9.4
   firebase_storage: ^11.7.2
   google_sign_in: ^6.2.1
 

@@ -1,4 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:dotto/feature/my_page/feature/bus/widget/bus_card_home.dart';
+import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
+import 'package:dotto/feature/my_page/feature/news/news.dart';
+import 'package:dotto/feature/my_page/feature/news/news_detail.dart';
+import 'package:dotto/feature/my_page/feature/news/widget/my_page_news.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -72,17 +77,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ClipOval(
-                  child: Container(
-                width: 45,
-                height: 45,
-                color: customFunColor,
-                child: Center(
+                child: Container(
+                  width: 45,
+                  height: 45,
+                  color: customFunColor,
+                  child: Center(
                     child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 25,
-                )),
-              )),
+                      icon,
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 5),
               Text(
                 title,
@@ -95,12 +102,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  void _showPushNotificationNews(BuildContext context, WidgetRef ref) {
+    final newsList = ref.watch(newsListProvider);
+    newsList.when(
+      data: (data) {
+        final newsId = ref.watch(newsFromPushNotificationProvider);
+        if (newsId != null) {
+          final pushNews = data.firstWhereOrNull((element) => element.id == newsId);
+          if (pushNews != null) {
+            Navigator.of(context)
+                .push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => NewsDetailScreen(pushNews),
+                transitionsBuilder: fromRightAnimation,
+              ),
+            )
+                .whenComplete(() {
+              ref.read(newsFromPushNotificationProvider.notifier).reset();
+            });
+          }
+        }
+      },
+      error: (error, stackTrace) {},
+      loading: () {},
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _showPushNotificationNews(context, ref));
+
     final double infoBoxWidth = MediaQuery.sizeOf(context).width * 0.4;
 
     const Map<String, String> fileNamePath = {
-      'バス時刻表': 'home/hakodatebus55.pdf',
+      // 'バス時刻表': 'home/hakodatebus55.pdf',
       '学年暦': 'home/academic_calendar.pdf',
       '前期時間割': 'home/timetable_first.pdf',
       '後期時間割': 'home/timetable_second.pdf',
@@ -116,6 +151,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     }, Icons.event_busy, '休講情報'));
+    infoTiles.add(infoButton(context, () {
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return const NewsScreen();
+          },
+          transitionsBuilder: fromRightAnimation,
+        ),
+      );
+    }, Icons.newspaper, 'お知らせ'));
     infoTiles.addAll(fileNamePath.entries
         .map((item) => infoButton(context, () {
               Navigator.of(context).push(
@@ -177,6 +222,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(height: 20),
               const BusCardHome(),
+              const SizedBox(height: 20),
+              const MyPageNews(),
               const SizedBox(height: 20),
               infoTile(infoTiles),
               const SizedBox(height: 20),

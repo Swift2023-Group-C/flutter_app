@@ -39,7 +39,7 @@ class BusCard extends ConsumerWidget {
       shadowColor: Colors.black,
       child: Container(
         padding: EdgeInsets.only(left: 10, right: 10, bottom: 10, top: (home ? 0 : 10)),
-        width: MediaQuery.of(context).size.width * 0.8,
+        width: MediaQuery.of(context).size.width * 0.85,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
