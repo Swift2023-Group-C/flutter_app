@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:dotto/components/animation.dart';
 import 'package:dotto/feature/my_page/feature/bus/bus.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/bus/domain/bus_trip.dart';
@@ -46,8 +47,9 @@ class BusCardHome extends ConsumerWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const BusScreen(),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => const BusScreen(),
+                  transitionsBuilder: fromRightAnimation,
                 ),
               );
             },
