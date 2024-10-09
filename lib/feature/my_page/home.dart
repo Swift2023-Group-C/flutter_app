@@ -104,28 +104,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _showPushNotificationNews(BuildContext context, WidgetRef ref) {
     final newsList = ref.watch(newsListProvider);
-    newsList.when(
-      data: (data) {
-        final newsId = ref.watch(newsFromPushNotificationProvider);
-        if (newsId != null) {
-          final pushNews = data.firstWhereOrNull((element) => element.id == newsId);
-          if (pushNews != null) {
-            Navigator.of(context)
-                .push(
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) => NewsDetailScreen(pushNews),
-                transitionsBuilder: fromRightAnimation,
-              ),
-            )
-                .whenComplete(() {
-              ref.read(newsFromPushNotificationProvider.notifier).reset();
-            });
-          }
+
+    if (newsList != null) {
+      final newsId = ref.watch(newsFromPushNotificationProvider);
+      if (newsId != null) {
+        final pushNews = newsList.firstWhereOrNull((element) => element.id == newsId);
+        if (pushNews != null) {
+          Navigator.of(context)
+              .push(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => NewsDetailScreen(pushNews),
+              transitionsBuilder: fromRightAnimation,
+            ),
+          )
+              .whenComplete(() {
+            ref.read(newsFromPushNotificationProvider.notifier).reset();
+          });
         }
-      },
-      error: (error, stackTrace) {},
-      loading: () {},
-    );
+      }
+    }
   }
 
   @override

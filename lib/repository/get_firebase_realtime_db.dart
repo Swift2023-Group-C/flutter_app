@@ -1,3 +1,4 @@
+import 'package:dotto/importer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -11,6 +12,11 @@ class GetFirebaseRealtimeDB {
             databaseURL:
                 "https://swift2023groupc-default-rtdb.asia-southeast1.firebasedatabase.app")
         .ref();
-    return await ref.child(path).get();
+    try {
+      return await ref.child(path).get();
+    } on FirebaseException catch (e) {
+      debugPrintStack(stackTrace: e.stackTrace);
+      return await getData(path);
+    }
   }
 }

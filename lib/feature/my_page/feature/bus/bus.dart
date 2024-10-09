@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:dotto/components/app_color.dart';
+import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/my_page/feature/bus/widget/bus_timetable.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/bus/domain/bus_trip.dart';
@@ -130,52 +131,47 @@ class BusScreen extends ConsumerWidget {
             ),
           ),
           Expanded(
-            child: busData.when(
-              data: (allData) {
-                final data = allData[fromToString]![busIsWeekday ? "weekday" : "holiday"]!;
-
-                return ListView(
-                  children: data.map((busTrip) {
-                    final funBusTripStop =
-                        busTrip.stops.firstWhereOrNull((element) => element.stop.id == 14023);
-                    if (funBusTripStop == null) {
-                      return Container();
-                    }
-                    BusTripStop? targetBusTripStop = busTrip.stops
-                        .firstWhereOrNull((element) => element.stop.id == myBusStop.id);
-                    bool kameda = false;
-                    if (targetBusTripStop == null) {
-                      targetBusTripStop =
-                          busTrip.stops.firstWhere((element) => element.stop.id == 14013);
-                      kameda = true;
-                    }
-                    final fromBusTripStop = busIsTo ? targetBusTripStop : funBusTripStop;
-                    final toBusTripStop = busIsTo ? funBusTripStop : targetBusTripStop;
-                    final now = busRefresh;
-                    final nowDuration = Duration(hours: now.hour, minutes: now.minute);
-                    final arriveAt = fromBusTripStop.time - nowDuration;
-                    if (arriveAt.isNegative) {
-                      return const SizedBox.shrink();
-                    }
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BusTimetableScreen(busTrip),
-                          ),
-                        );
-                      },
-                      child: BusCard(
-                          busTrip.route, fromBusTripStop.time, toBusTripStop.time, arriveAt,
-                          isKameda: kameda),
-                    );
-                  }).toList(),
-                );
-              },
-              error: (error, stackTrace) => const Text("Error"),
-              loading: () => const Text("Loading"),
-            ),
+            child: busData != null
+                ? ListView(
+                    children: busData[fromToString]![busIsWeekday ? "weekday" : "holiday"]!
+                        .map((busTrip) {
+                      final funBusTripStop =
+                          busTrip.stops.firstWhereOrNull((element) => element.stop.id == 14023);
+                      if (funBusTripStop == null) {
+                        return Container();
+                      }
+                      BusTripStop? targetBusTripStop = busTrip.stops
+                          .firstWhereOrNull((element) => element.stop.id == myBusStop.id);
+                      bool kameda = false;
+                      if (targetBusTripStop == null) {
+                        targetBusTripStop =
+                            busTrip.stops.firstWhere((element) => element.stop.id == 14013);
+                        kameda = true;
+                      }
+                      final fromBusTripStop = busIsTo ? targetBusTripStop : funBusTripStop;
+                      final toBusTripStop = busIsTo ? funBusTripStop : targetBusTripStop;
+                      final now = busRefresh;
+                      final nowDuration = Duration(hours: now.hour, minutes: now.minute);
+                      final arriveAt = fromBusTripStop.time - nowDuration;
+                      if (arriveAt.isNegative) {
+                        return const SizedBox.shrink();
+                      }
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BusTimetableScreen(busTrip),
+                            ),
+                          );
+                        },
+                        child: BusCard(
+                            busTrip.route, fromBusTripStop.time, toBusTripStop.time, arriveAt,
+                            isKameda: kameda),
+                      );
+                    }).toList(),
+                  )
+                : createProgressIndicator(),
           ),
         ],
       ),

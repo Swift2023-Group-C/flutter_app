@@ -4,6 +4,7 @@ import 'package:dotto/app/controller/tab_controller.dart';
 import 'package:dotto/app/domain/tab_item.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
+import 'package:dotto/feature/my_page/feature/news/repository/news_repository.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:dotto/repository/notification.dart';
@@ -124,20 +125,31 @@ class _BasePageState extends ConsumerState<BasePage> {
   }
 
   Future<void> initBus() async {
+    await ref.read(allBusStopsProvider.notifier).init();
+    await ref.read(busDataProvider.notifier).init();
     ref.read(myBusStopProvider.notifier).init();
     ref.read(busRefreshProvider.notifier).start();
+  }
+
+  Future<void> getNews() async {
+    ref.read(newsListProvider.notifier).update(await NewsRepository().getNewsListFromFirestore());
+  }
+
+  Future<void> init() async {
+    initUniLinks();
+    initBus();
+    NotificationRepository().setupInteractedMessage(ref);
+    await SyllabusDBConfig.setDB();
+    setPersonalLessonIdList();
+    await downloadFiles();
+    await getNews();
   }
 
   @override
   void initState() {
     super.initState();
     Future(() async {
-      await initUniLinks();
-      await SyllabusDBConfig.setDB();
-      await downloadFiles();
-      await setPersonalLessonIdList();
-      await initBus();
-      await NotificationRepository().setupInteractedMessage(ref);
+      await init();
     });
   }
 
@@ -155,15 +167,19 @@ class _BasePageState extends ConsumerState<BasePage> {
   }
 
   Future<void> downloadFiles() async {
-    // Firebaseからファイルをダウンロード
-    List<String> filePaths = [
-      'map/oneweek_schedule.json',
-      'home/cancel_lecture.json',
-      'home/sup_lecture.json',
-    ];
-    for (var path in filePaths) {
-      await downloadFileFromFirebase(path);
-    }
+    await Future(
+      () {
+        // Firebaseからファイルをダウンロード
+        List<String> filePaths = [
+          'map/oneweek_schedule.json',
+          'home/cancel_lecture.json',
+          'home/sup_lecture.json',
+        ];
+        for (var path in filePaths) {
+          downloadFileFromFirebase(path);
+        }
+      },
+    );
   }
 
   void _onItemTapped(int index) async {

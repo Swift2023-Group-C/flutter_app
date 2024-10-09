@@ -2,24 +2,45 @@ import 'dart:async';
 
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/feature/my_page/feature/bus/domain/bus_stop.dart';
+import 'package:dotto/feature/my_page/feature/bus/domain/bus_trip.dart';
 import 'package:dotto/feature/my_page/feature/bus/repository/bus_repository.dart';
 import 'package:dotto/importer.dart';
 
-final allBusStopsProvider = FutureProvider(
-  (ref) async {
-    return await BusRepository().getAllBusStopsFromFirebase();
-  },
-);
+final allBusStopsProvider =
+    NotifierProvider<AllBusStopsNotifier, List<BusStop>?>(() => AllBusStopsNotifier());
+
+class AllBusStopsNotifier extends Notifier<List<BusStop>?> {
+  @override
+  List<BusStop>? build() {
+    return null;
+  }
+
+  Future<void> init() async {
+    state = await BusRepository().getAllBusStopsFromFirebase();
+  }
+}
 
 /// Map<String, Map<String, List<BusTrip>>>
 /// 1つ目のStringキー: from_fun, to_fun
 /// 2つ目のStringキー: holiday, weekday
-final busDataProvider = FutureProvider(
-  (ref) async {
-    final allBusStop = await ref.watch(allBusStopsProvider.future);
-    return await BusRepository().getBusDataFromFirebase(allBusStop);
-  },
-);
+final busDataProvider = NotifierProvider<BusDataNotifier, Map<String, Map<String, List<BusTrip>>>?>(
+    () => BusDataNotifier());
+
+class BusDataNotifier extends Notifier<Map<String, Map<String, List<BusTrip>>>?> {
+  @override
+  Map<String, Map<String, List<BusTrip>>>? build() {
+    return null;
+  }
+
+  Future<void> init() async {
+    final allBusStop = ref.watch(allBusStopsProvider);
+    if (allBusStop != null) {
+      state = await BusRepository().getBusDataFromFirebase(allBusStop);
+    } else {
+      await init();
+    }
+  }
+}
 
 final myBusStopProvider = NotifierProvider<MyBusStopNotifier, BusStop>(() {
   return MyBusStopNotifier();
@@ -34,8 +55,12 @@ class MyBusStopNotifier extends Notifier<BusStop> {
 
   Future<void> init() async {
     final myBusStopPreference = await UserPreferences.getInt(UserPreferenceKeys.myBusStop);
-    final allBusStop = await ref.watch(allBusStopsProvider.future);
-    state = allBusStop.firstWhere((busStop) => busStop.id == (myBusStopPreference ?? 14013));
+    final allBusStop = ref.watch(allBusStopsProvider);
+    if (allBusStop != null) {
+      state = allBusStop.firstWhere((busStop) => busStop.id == (myBusStopPreference ?? 14013));
+    } else {
+      await init();
+    }
   }
 
   void set(BusStop myBusStop) {

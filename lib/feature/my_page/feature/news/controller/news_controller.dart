@@ -1,12 +1,15 @@
-import 'package:dotto/feature/my_page/feature/news/repository/news_repository.dart';
+import 'package:dotto/feature/my_page/feature/news/domain/news_model.dart';
 import 'package:dotto/importer.dart';
 
-final newsListProvider = FutureProvider((ref) => NewsRepository().getNewsListFromFirestore());
-final newsFromPushNotificationProvider = NotifierProvider<MyBusStopNotifier, String?>(() {
-  return MyBusStopNotifier();
+final newsFromPushNotificationProvider =
+    NotifierProvider<NewsFromPushNotificationNotifier, String?>(() {
+  return NewsFromPushNotificationNotifier();
+});
+final newsListProvider = NotifierProvider<NewsListNotifier, List<News>?>(() {
+  return NewsListNotifier();
 });
 
-class MyBusStopNotifier extends Notifier<String?> {
+class NewsFromPushNotificationNotifier extends Notifier<String?> {
   @override
   String? build() {
     return null;
@@ -18,5 +21,16 @@ class MyBusStopNotifier extends Notifier<String?> {
 
   void reset() {
     state = null;
+  }
+}
+
+class NewsListNotifier extends Notifier<List<News>?> {
+  @override
+  List<News>? build() {
+    return null;
+  }
+
+  void update(List<News> news) {
+    state = news;
   }
 }
