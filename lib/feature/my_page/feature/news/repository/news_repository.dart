@@ -12,6 +12,7 @@ class NewsRepository {
     final data = await FirebaseFirestore.instance
         .collection('news')
         .where('isactive', isEqualTo: true)
+        .orderBy("date", descending: true)
         .get();
     return data.docs.map((snapshot) {
       final d = snapshot.data();
