@@ -143,6 +143,7 @@ class KamokuSearchControllerProvider extends StateNotifier<KamokuSearchControlle
       // 大学院
       visibilityStatus = {
         KamokuSearchChoices.term,
+        KamokuSearchChoices.masterField,
       };
     }
     return visibilityStatus;
@@ -172,6 +173,8 @@ class KamokuSearchControllerProvider extends StateNotifier<KamokuSearchControlle
         state.checkboxStatusMap[KamokuSearchChoices.classification] ?? [];
     final List<bool> educationCheckList =
         state.checkboxStatusMap[KamokuSearchChoices.education] ?? [];
+    final List<bool> masterFieldCheckList =
+        state.checkboxStatusMap[KamokuSearchChoices.masterField] ?? [];
 
     // 開講時期
     // ['前期', '後期', '通年']
@@ -269,6 +272,18 @@ class KamokuSearchControllerProvider extends StateNotifier<KamokuSearchControlle
         }
       }
       sqlWhereList.add("(${sqlWhereListKyoyo.join(" AND ")})");
+    } else if (state.senmonKyoyoStatus == 2) {
+      sqlWhereList.add("(sort.LessonId LIKE '5_____')");
+      int masterFieldInt = 0;
+      for (var i = 0; i < masterFieldCheckList.length; i++) {
+        if (masterFieldCheckList[i]) {
+          masterFieldInt |= 1 << masterFieldCheckList.length - i - 1;
+        }
+      }
+      if (masterFieldInt == 0) {
+        masterFieldInt = 31;
+      }
+      sqlWhereList.add("(sort.大学院 & ${masterFieldInt.toString()})");
     }
 
     if (sqlWhereList.isNotEmpty) {
@@ -280,7 +295,6 @@ class KamokuSearchControllerProvider extends StateNotifier<KamokuSearchControlle
     sqlWhere = (sqlWhere == "") ? "1" : sqlWhere;
     records = await database.rawQuery(
         'SELECT * FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId WHERE $sqlWhere');
-
     state = state.copyWith(
         searchResults: records
             .where((record) => record['授業名'].toString().contains(state.searchWord))
