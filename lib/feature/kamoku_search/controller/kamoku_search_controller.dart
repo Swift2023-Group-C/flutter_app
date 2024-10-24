@@ -8,17 +8,16 @@ import 'package:dotto/feature/kamoku_search/domain/kamoku_search_choices.dart';
 
 part 'kamoku_search_controller.freezed.dart';
 
-final kamokuSearchControllerProvider = StateNotifierProvider<
-    KamokuSearchControllerProvider,
-    KamokuSearchController>((ref) => KamokuSearchControllerProvider());
+final kamokuSearchControllerProvider =
+    StateNotifierProvider<KamokuSearchControllerProvider, KamokuSearchController>(
+        (ref) => KamokuSearchControllerProvider());
 
 @freezed
 class KamokuSearchController with _$KamokuSearchController {
   const factory KamokuSearchController({
     required int senmonKyoyoStatus,
     required Map<KamokuSearchChoices, List<bool>> checkboxStatusMap,
-    @Default({KamokuSearchChoices.term})
-    Set<KamokuSearchChoices> visibilityStatus,
+    @Default({KamokuSearchChoices.term}) Set<KamokuSearchChoices> visibilityStatus,
     required List<Map<String, dynamic>>? searchResults,
     required TextEditingController textEditingController,
     required FocusNode searchBoxFocusNode,
@@ -26,15 +25,12 @@ class KamokuSearchController with _$KamokuSearchController {
   }) = _KamokuSearchController;
 }
 
-class KamokuSearchControllerProvider
-    extends StateNotifier<KamokuSearchController> {
+class KamokuSearchControllerProvider extends StateNotifier<KamokuSearchController> {
   KamokuSearchControllerProvider()
       : super(KamokuSearchController(
           senmonKyoyoStatus: -1,
-          checkboxStatusMap: Map.fromIterables(
-              KamokuSearchChoices.values,
-              KamokuSearchChoices.values
-                  .map((e) => List.filled(e.choice.length, false))),
+          checkboxStatusMap: Map.fromIterables(KamokuSearchChoices.values,
+              KamokuSearchChoices.values.map((e) => List.filled(e.choice.length, false))),
           searchResults: null,
           textEditingController: TextEditingController(),
           searchBoxFocusNode: FocusNode(),
@@ -47,36 +43,31 @@ class KamokuSearchControllerProvider
   }
 
   Future<void> updateCheckListFromPreferences() async {
-    String? savedGrade =
-        await UserPreferences.getString(UserPreferenceKeys.grade);
-    String? savedCourse =
-        await UserPreferences.getString(UserPreferenceKeys.course);
-    Map<KamokuSearchChoices, List<bool>> checkboxStatusMap =
-        state.checkboxStatusMap;
+    String? savedGrade = await UserPreferences.getString(UserPreferenceKeys.grade);
+    String? savedCourse = await UserPreferences.getString(UserPreferenceKeys.course);
+    Map<KamokuSearchChoices, List<bool>> checkboxStatusMap = state.checkboxStatusMap;
     if (savedGrade != null) {
       int? index = KamokuSearchChoices.grade.choice.indexOf(savedGrade);
-      if (index != -1 &&
-          index < checkboxStatusMap[KamokuSearchChoices.grade]!.length) {
+      if (index != -1 && index < checkboxStatusMap[KamokuSearchChoices.grade]!.length) {
         checkboxStatusMap[KamokuSearchChoices.grade]![index] = true;
       }
     }
     if (savedCourse != null) {
       int? index = KamokuSearchChoices.course.choice.indexOf(savedCourse);
-      if (index != -1 &&
-          index < checkboxStatusMap[KamokuSearchChoices.course]!.length) {
+      if (index != -1 && index < checkboxStatusMap[KamokuSearchChoices.course]!.length) {
         checkboxStatusMap[KamokuSearchChoices.course]![index] = true;
       }
     }
     state = state.copyWith(checkboxStatusMap: checkboxStatusMap);
   }
 
-  final List<String> checkboxSenmonKyoyo = ['専門', '教養'];
+  // Radioボタン Text
+  final List<String> checkboxSenmonKyoyo = ['専門', '教養', '大学院'];
 
   void reset() {
     Map<KamokuSearchChoices, List<bool>> checkboxStatusMap = Map.fromIterables(
         KamokuSearchChoices.values,
-        KamokuSearchChoices.values
-            .map((e) => List.filled(e.choice.length, false)));
+        KamokuSearchChoices.values.map((e) => List.filled(e.choice.length, false)));
     Set<KamokuSearchChoices> visibilityStatus = {KamokuSearchChoices.term};
     String searchWord = "";
     state.textEditingController.clear();
@@ -92,55 +83,48 @@ class KamokuSearchControllerProvider
     state = state.copyWith(searchWord: word);
   }
 
-  void checkboxOnChanged(
-      bool? value, KamokuSearchChoices kamokuSearchChoices, int index) {
-    Map<KamokuSearchChoices, List<bool>> checkboxStatusMap =
-        state.checkboxStatusMap;
+  void checkboxOnChanged(bool? value, KamokuSearchChoices kamokuSearchChoices, int index) {
+    Map<KamokuSearchChoices, List<bool>> checkboxStatusMap = state.checkboxStatusMap;
     checkboxStatusMap[kamokuSearchChoices]![index] = value ?? false;
     if (kamokuSearchChoices == KamokuSearchChoices.grade &&
         index > 0 &&
         checkboxStatusMap[KamokuSearchChoices.grade]![0]) {
       checkboxStatusMap[KamokuSearchChoices.grade]![0] = false;
     }
-    if (checkboxStatusMap[KamokuSearchChoices.grade]!
-        .any((element) => element)) {
+    if (checkboxStatusMap[KamokuSearchChoices.grade]!.any((element) => element)) {
       if (checkboxStatusMap[KamokuSearchChoices.grade]![0]) {
-        for (var i = 1;
-            i < checkboxStatusMap[KamokuSearchChoices.grade]!.length;
-            i++) {
+        for (var i = 1; i < checkboxStatusMap[KamokuSearchChoices.grade]!.length; i++) {
           checkboxStatusMap[KamokuSearchChoices.grade]![i] = false;
         }
       }
     }
     state = state.copyWith(
       checkboxStatusMap: checkboxStatusMap,
-      visibilityStatus:
-          setVisibilityStatus(checkboxStatusMap, state.senmonKyoyoStatus),
+      visibilityStatus: setVisibilityStatus(checkboxStatusMap, state.senmonKyoyoStatus),
     );
   }
 
+  // Radioボタンが押されたときの処理
   void radioOnChanged(int? value) {
     int senmonKyoyoStatus = value ?? -1;
     state = state.copyWith(
       senmonKyoyoStatus: senmonKyoyoStatus,
-      visibilityStatus:
-          setVisibilityStatus(state.checkboxStatusMap, senmonKyoyoStatus),
+      visibilityStatus: setVisibilityStatus(state.checkboxStatusMap, senmonKyoyoStatus),
     );
   }
 
+  // Radioボタンが押されたときの処理 2
   Set<KamokuSearchChoices> setVisibilityStatus(
-      Map<KamokuSearchChoices, List<bool>> checkboxStatusMap,
-      int senmonKyoyoStatus) {
+      Map<KamokuSearchChoices, List<bool>> checkboxStatusMap, int senmonKyoyoStatus) {
     Set<KamokuSearchChoices> visibilityStatus = state.visibilityStatus;
     if (senmonKyoyoStatus == 0) {
+      // 専門
       visibilityStatus = {
         KamokuSearchChoices.term,
         KamokuSearchChoices.grade,
       };
-      if (checkboxStatusMap[KamokuSearchChoices.grade]!
-              .any((element) => element) ||
-          checkboxStatusMap[KamokuSearchChoices.course]!
-              .any((element) => element)) {
+      if (checkboxStatusMap[KamokuSearchChoices.grade]!.any((element) => element) ||
+          checkboxStatusMap[KamokuSearchChoices.course]!.any((element) => element)) {
         visibilityStatus.add(KamokuSearchChoices.classification);
         if (!checkboxStatusMap[KamokuSearchChoices.grade]![0]) {
           visibilityStatus.add(KamokuSearchChoices.course);
@@ -149,10 +133,17 @@ class KamokuSearchControllerProvider
         visibilityStatus.remove(KamokuSearchChoices.classification);
       }
     } else if (senmonKyoyoStatus == 1) {
+      // 教養
       visibilityStatus = {
         KamokuSearchChoices.term,
         KamokuSearchChoices.education,
         KamokuSearchChoices.classification
+      };
+    } else if (senmonKyoyoStatus == 2) {
+      // 大学院
+      visibilityStatus = {
+        KamokuSearchChoices.term,
+        KamokuSearchChoices.masterField,
       };
     }
     return visibilityStatus;
@@ -168,22 +159,22 @@ class KamokuSearchControllerProvider
     }
   }
 
+  // 科目検索ボタンが押されたときの処理
   Future<void> search() async {
     Database database = await openDatabase(SyllabusDBConfig.dbPath);
     List<String> sqlWhereList = [];
     List<String> sqlWhereListKyoyo = [];
     String sqlWhere = "";
 
-    final List<bool> termCheckList =
-        state.checkboxStatusMap[KamokuSearchChoices.term] ?? [];
-    final List<bool> gradeCheckList =
-        state.checkboxStatusMap[KamokuSearchChoices.grade] ?? [];
-    final List<bool> courseCheckList =
-        state.checkboxStatusMap[KamokuSearchChoices.course] ?? [];
+    final List<bool> termCheckList = state.checkboxStatusMap[KamokuSearchChoices.term] ?? [];
+    final List<bool> gradeCheckList = state.checkboxStatusMap[KamokuSearchChoices.grade] ?? [];
+    final List<bool> courseCheckList = state.checkboxStatusMap[KamokuSearchChoices.course] ?? [];
     final List<bool> classificationCheckList =
         state.checkboxStatusMap[KamokuSearchChoices.classification] ?? [];
     final List<bool> educationCheckList =
         state.checkboxStatusMap[KamokuSearchChoices.education] ?? [];
+    final List<bool> masterFieldCheckList =
+        state.checkboxStatusMap[KamokuSearchChoices.masterField] ?? [];
 
     // 開講時期
     // ['前期', '後期', '通年']
@@ -198,6 +189,7 @@ class KamokuSearchControllerProvider
       sqlWhereList.add("(sort.開講時期 IN (${sqlWhereTerm.join(", ")}))");
     }
 
+    // 専門・教養・大学院の分岐
     if (state.senmonKyoyoStatus == 0) {
       // 学年
       // ['1年', '2年', '3年', '4年']
@@ -240,8 +232,8 @@ class KamokuSearchControllerProvider
                 if (isNotAllTrueOrAllFalse(classificationCheckList)) {
                   for (int j = 0; j < classificationCheckList.length; j++) {
                     if (classificationCheckList[j]) {
-                      sqlWhereCourseClassification.add(
-                          "sort.${courseName[i]}=${classificationName[j]}");
+                      sqlWhereCourseClassification
+                          .add("sort.${courseName[i]}=${classificationName[j]}");
                     }
                   }
                 } else {
@@ -280,6 +272,18 @@ class KamokuSearchControllerProvider
         }
       }
       sqlWhereList.add("(${sqlWhereListKyoyo.join(" AND ")})");
+    } else if (state.senmonKyoyoStatus == 2) {
+      sqlWhereList.add("(sort.LessonId LIKE '5_____')");
+      int masterFieldInt = 0;
+      for (var i = 0; i < masterFieldCheckList.length; i++) {
+        if (masterFieldCheckList[i]) {
+          masterFieldInt |= 1 << masterFieldCheckList.length - i - 1;
+        }
+      }
+      if (masterFieldInt == 0) {
+        masterFieldInt = 31;
+      }
+      sqlWhereList.add("(sort.大学院 & ${masterFieldInt.toString()})");
     }
 
     if (sqlWhereList.isNotEmpty) {
@@ -291,11 +295,9 @@ class KamokuSearchControllerProvider
     sqlWhere = (sqlWhere == "") ? "1" : sqlWhere;
     records = await database.rawQuery(
         'SELECT * FROM sort detail INNER JOIN sort ON sort.LessonId=detail.LessonId WHERE $sqlWhere');
-
     state = state.copyWith(
         searchResults: records
-            .where(
-                (record) => record['授業名'].toString().contains(state.searchWord))
+            .where((record) => record['授業名'].toString().contains(state.searchWord))
             .toList());
   }
 }
