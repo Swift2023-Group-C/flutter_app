@@ -87,6 +87,7 @@ dev_dependencies:
   freezed: ^2.5.2
   build_runner: ^2.4.9
   json_serializable: ^6.8.0
+  flutter_native_splash: ^2.4.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -161,3 +162,8 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/icon_logo.png"
   remove_alpha_ios: true
+
+flutter_native_splash:
+  color: '#ffffff'
+  image: 'assets/dotto_icon.png'
+  fullscreen: true
