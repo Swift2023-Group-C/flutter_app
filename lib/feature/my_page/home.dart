@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:dotto/feature/my_page/feature/bus/widget/bus_card_home.dart';
+import 'package:dotto/feature/my_page/feature/funch/funch.dart';
 import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
-import 'package:dotto/feature/my_page/feature/news/news.dart';
 import 'package:dotto/feature/my_page/feature/news/news_detail.dart';
 import 'package:dotto/feature/my_page/feature/news/widget/my_page_news.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -152,12 +152,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       Navigator.of(context).push(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) {
-            return const NewsScreen();
+            return const FunchScreen();
           },
           transitionsBuilder: fromRightAnimation,
         ),
       );
-    }, Icons.newspaper, 'お知らせ'));
+    }, Icons.lunch_dining_outlined, '学食'));
     infoTiles.addAll(fileNamePath.entries
         .map((item) => infoButton(context, () {
               Navigator.of(context).push(
