@@ -7,10 +7,28 @@ import 'package:intl/intl.dart';
 class FunchScreen extends ConsumerWidget {
   const FunchScreen({super.key});
 
+  //指定した月の曜日を返す
+  List<DateTime> getDateMonth(DateTime selectedDate) {
+    DateTime startDate = DateTime(selectedDate.year, selectedDate.month, 1);
+
+    // if (selectedDate < now.month) {
+    //   startDate = DateTime(now.year + 1, selectedDate, 1); //過去の月は来年にする
+    // }
+    List<DateTime> dates = [];
+    final nextMonthFirst = DateTime(startDate.year, startDate.month + 1, 1);
+    final monthDays = nextMonthFirst.subtract(const Duration(days: 1)).day;
+
+    for (int i = 0; i < monthDays; i++) {
+      final date = startDate.add(Duration(days: i));
+      if (date.weekday < 6) dates.add(date); //土日は除外
+    }
+    return dates;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final funchDate = ref.watch(funchDateProvider);
-    List<DateTime> dates = ref.watch(funchMonthDateProvider);
+    final dates = getDateMonth(funchDate);
 
     double buttonSize = 50;
     double buttonPadding = 8;
@@ -33,15 +51,17 @@ class FunchScreen extends ConsumerWidget {
         child: Column(
           children: [
             // 月選択 プルダウン
-            DropdownButton<String>(
-              value: dates[0].month.toString(),
-              onChanged: (String? value) {
-                ref.read(funchMonthDateProvider.notifier).setDateMonth(int.parse(value!));
+            DropdownButton<int>(
+              value: funchDate.month,
+              onChanged: (int? value) {
+                if (value != null) {
+                  final nextMonthDate = DateTime(funchDate.year, value, 1);
+                  ref.read(funchDateProvider.notifier).set(nextMonthDate);
+                }
               },
-              items:
-                  <int>[for (int i = 1; i <= 12; i++) i].map<DropdownMenuItem<String>>((int value) {
-                return DropdownMenuItem<String>(
-                  value: value.toString(),
+              items: <int>[for (int i = 1; i <= 12; i++) i].map<DropdownMenuItem<int>>((int value) {
+                return DropdownMenuItem<int>(
+                  value: value,
                   child: Text("$value月"),
                 );
               }).toList(),
@@ -99,9 +119,10 @@ class FunchScreen extends ConsumerWidget {
                 }).toList(),
               ),
             ),
+            Text(funchDate.toString()),
             // List<日替わりメニュー> 写真 メニュー名 値段（大中小）
             Column(
-              children: FunchRepository().get1DayMenu(DateTime.now()).map((menu) {
+              children: FunchRepository().get1DayMenu(funchDate, ref).map((menu) {
                 return Row(
                   children: [
                     SizedBox(

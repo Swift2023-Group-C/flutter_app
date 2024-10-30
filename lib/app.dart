@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dotto/app/controller/tab_controller.dart';
 import 'package:dotto/app/domain/tab_item.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
+import 'package:dotto/feature/my_page/feature/funch/controller/funch_controller.dart';
+import 'package:dotto/feature/my_page/feature/funch/repository/funch_repository.dart';
 import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
 import 'package:dotto/feature/my_page/feature/news/repository/news_repository.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
@@ -135,6 +137,11 @@ class _BasePageState extends ConsumerState<BasePage> {
     ref.read(newsListProvider.notifier).update(await NewsRepository().getNewsListFromFirestore());
   }
 
+  Future<void> initFunch() async {
+    ref.read(funchAllMenuProvider.notifier).set(await FunchRepository().getAllMenu());
+    ref.read(funchDaysMenuProvider.notifier).set(await FunchRepository().getDaysMenu(ref));
+  }
+
   Future<void> init() async {
     initUniLinks();
     initBus();
@@ -143,6 +150,7 @@ class _BasePageState extends ConsumerState<BasePage> {
     setPersonalLessonIdList();
     await downloadFiles();
     await getNews();
+    initFunch();
   }
 
   @override
@@ -174,6 +182,7 @@ class _BasePageState extends ConsumerState<BasePage> {
           'map/oneweek_schedule.json',
           'home/cancel_lecture.json',
           'home/sup_lecture.json',
+          'funch/menu.json',
         ];
         for (var path in filePaths) {
           downloadFileFromFirebase(path);
