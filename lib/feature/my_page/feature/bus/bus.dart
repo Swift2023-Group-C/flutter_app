@@ -83,6 +83,67 @@ class BusScreen extends ConsumerWidget {
         Icons.swap_horiz_outlined,
       ),
     );
+    final busKey = GlobalKey();
+    bool arriveAtSoon = true;
+    final busListWidget = busData != null
+        ? busData[fromToString]![busIsWeekday ? "weekday" : "holiday"]!.map((busTrip) {
+            final funBusTripStop =
+                busTrip.stops.firstWhereOrNull((element) => element.stop.id == 14023);
+            if (funBusTripStop == null) {
+              return Container();
+            }
+            BusTripStop? targetBusTripStop =
+                busTrip.stops.firstWhereOrNull((element) => element.stop.id == myBusStop.id);
+            bool kameda = false;
+            if (targetBusTripStop == null) {
+              targetBusTripStop = busTrip.stops.firstWhere((element) => element.stop.id == 14013);
+              kameda = true;
+            }
+            final fromBusTripStop = busIsTo ? targetBusTripStop : funBusTripStop;
+            final toBusTripStop = busIsTo ? funBusTripStop : targetBusTripStop;
+            final now = busRefresh;
+            final nowDuration = Duration(hours: now.hour, minutes: now.minute);
+            final arriveAt = fromBusTripStop.time - nowDuration;
+            bool hasKey = false;
+            if (arriveAtSoon && arriveAt > Duration.zero) {
+              arriveAtSoon = false;
+              hasKey = true;
+            }
+            //return const SizedBox.shrink();
+            //}
+            return InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BusTimetableScreen(busTrip),
+                  ),
+                );
+              },
+              child: BusCard(
+                busTrip.route,
+                fromBusTripStop.time,
+                toBusTripStop.time,
+                arriveAt,
+                isKameda: kameda,
+                key: hasKey ? busKey : null,
+              ),
+            );
+          }).toList()
+        : [Container()];
+    final scrollController = ScrollController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentContext = busKey.currentContext;
+      if (currentContext == null) return;
+      final box = currentContext.findRenderObject() as RenderBox;
+      final position = box.localToGlobal(Offset.zero, ancestor: context.findRenderObject());
+      scrollController.animateTo(
+        position.dy,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -133,44 +194,8 @@ class BusScreen extends ConsumerWidget {
           Expanded(
             child: busData != null
                 ? ListView(
-                    controller: ScrollController(),
-                    children: busData[fromToString]![busIsWeekday ? "weekday" : "holiday"]!
-                        .map((busTrip) {
-                      final funBusTripStop =
-                          busTrip.stops.firstWhereOrNull((element) => element.stop.id == 14023);
-                      if (funBusTripStop == null) {
-                        return Container();
-                      }
-                      BusTripStop? targetBusTripStop = busTrip.stops
-                          .firstWhereOrNull((element) => element.stop.id == myBusStop.id);
-                      bool kameda = false;
-                      if (targetBusTripStop == null) {
-                        targetBusTripStop =
-                            busTrip.stops.firstWhere((element) => element.stop.id == 14013);
-                        kameda = true;
-                      }
-                      final fromBusTripStop = busIsTo ? targetBusTripStop : funBusTripStop;
-                      final toBusTripStop = busIsTo ? funBusTripStop : targetBusTripStop;
-                      final now = busRefresh;
-                      final nowDuration = Duration(hours: now.hour, minutes: now.minute);
-                      final arriveAt = fromBusTripStop.time - nowDuration;
-
-                      //return const SizedBox.shrink();
-                      //}
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BusTimetableScreen(busTrip),
-                            ),
-                          );
-                        },
-                        child: BusCard(
-                            busTrip.route, fromBusTripStop.time, toBusTripStop.time, arriveAt,
-                            isKameda: kameda),
-                      );
-                    }).toList(),
+                    controller: scrollController,
+                    children: busListWidget,
                   )
                 : createProgressIndicator(),
           ),
