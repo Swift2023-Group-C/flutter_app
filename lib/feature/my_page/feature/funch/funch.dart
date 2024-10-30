@@ -127,7 +127,7 @@ class FunchScreen extends ConsumerWidget {
                   children: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.3,
-                      child: Image.network(menu.imageUrl),
+                      child: Image.network(menu.imageUrl[0]),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

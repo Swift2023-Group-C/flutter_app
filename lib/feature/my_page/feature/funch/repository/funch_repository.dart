@@ -56,8 +56,9 @@ class FunchRepository {
 
   List<FunchMenu> get1DayMenu(DateTime dateTime, WidgetRef ref) {
     final data = ref.watch(funchDaysMenuProvider);
+    print(data);
     if (data == null) return [];
-    if (data.containsKey(dateTime)) return [];
+    if (!data.containsKey(dateTime)) return [];
     return data[dateTime]!;
   }
 }
