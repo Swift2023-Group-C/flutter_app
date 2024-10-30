@@ -133,6 +133,7 @@ class BusScreen extends ConsumerWidget {
           Expanded(
             child: busData != null
                 ? ListView(
+                    controller: ScrollController(),
                     children: busData[fromToString]![busIsWeekday ? "weekday" : "holiday"]!
                         .map((busTrip) {
                       final funBusTripStop =
@@ -153,9 +154,9 @@ class BusScreen extends ConsumerWidget {
                       final now = busRefresh;
                       final nowDuration = Duration(hours: now.hour, minutes: now.minute);
                       final arriveAt = fromBusTripStop.time - nowDuration;
-                      if (arriveAt.isNegative) {
-                        return const SizedBox.shrink();
-                      }
+
+                      //return const SizedBox.shrink();
+                      //}
                       return InkWell(
                         onTap: () {
                           Navigator.push(
