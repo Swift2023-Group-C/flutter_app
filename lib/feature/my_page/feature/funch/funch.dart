@@ -6,26 +6,12 @@ import 'package:intl/intl.dart';
 
 class FunchScreen extends ConsumerWidget {
   const FunchScreen({super.key});
-//今月の曜日を返す
-  List<DateTime> getDateMonth() {
-    final now = DateTime.now();
-    final startDate = DateTime(now.year, now.month, 1);
-
-    List<DateTime> dates = [];
-    final nextMonthFirst = DateTime(now.year, now.month + 1, 1);
-    final monthDays = nextMonthFirst.subtract(const Duration(days: 1)).day;
-
-    for (int i = 0; i < monthDays; i++) {
-      final date = startDate.add(Duration(days: i));
-      if (date.weekday < 6) dates.add(date); //土日は除外
-    }
-    return dates;
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final funchDate = ref.watch(funchDateProvider);
-    List<DateTime> dates = getDateMonth();
+    List<DateTime> dates = ref.watch(funchMonthDateProvider);
+
     double buttonSize = 50;
     double buttonPadding = 8;
     List<String> weekString = ['月', '火', '水', '木', '金', '土', '日'];
@@ -47,11 +33,18 @@ class FunchScreen extends ConsumerWidget {
         child: Column(
           children: [
             // 月選択 プルダウン
-            TextButton(
-              onPressed: () {
-                // 月選択 未実装
+            DropdownButton<String>(
+              value: dates[0].month.toString(),
+              onChanged: (String? value) {
+                ref.read(funchMonthDateProvider.notifier).setDateMonth(int.parse(value!));
               },
-              child: const Text("10月"),
+              items:
+                  <int>[for (int i = 1; i <= 12; i++) i].map<DropdownMenuItem<String>>((int value) {
+                return DropdownMenuItem<String>(
+                  value: value.toString(),
+                  child: Text("$value月"),
+                );
+              }).toList(),
             ),
             // 日付選択 スクロール
             SingleChildScrollView(
