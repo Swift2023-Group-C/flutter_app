@@ -144,7 +144,7 @@ class BusScreen extends ConsumerWidget {
       final position = box.localToGlobal(Offset.zero);
       scrollController.animateTo(
         scrollController.offset + position.dy - 300,
-        duration: const Duration(milliseconds: 1000),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
       ref.read(busScrolledProvider.notifier).state = true;
@@ -158,6 +158,7 @@ class BusScreen extends ConsumerWidget {
           TextButton.icon(
             onPressed: () {
               ref.read(busIsWeekdayNotifier.notifier).change();
+              ref.read(busScrolledProvider.notifier).state = false;
             },
             icon: const Icon(
               Icons.swap_horiz_outlined,
