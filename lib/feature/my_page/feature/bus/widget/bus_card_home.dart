@@ -45,6 +45,7 @@ class BusCardHome extends ConsumerWidget {
         }
         return InkWell(
           onTap: () {
+            ref.read(busScrolledProvider.notifier).state = false;
             Navigator.push(
               context,
               PageRouteBuilder(

@@ -8,7 +8,8 @@ import 'package:dotto/feature/my_page/feature/bus/widget/bus_card.dart';
 import 'package:dotto/feature/my_page/feature/bus/widget/bus_stop_select.dart';
 import 'package:dotto/importer.dart';
 
-//make by zaki
+final busKey = GlobalKey();
+
 class BusScreen extends ConsumerWidget {
   const BusScreen({super.key});
 
@@ -62,6 +63,7 @@ class BusScreen extends ConsumerWidget {
     final busIsTo = ref.watch(busIsToProvider);
     final busRefresh = ref.watch(busRefreshProvider);
     final busIsWeekday = ref.watch(busIsWeekdayNotifier);
+    final busScrolled = ref.watch(busScrolledProvider);
 
     Widget myBusStopButton = busStopButton(context, () {
       Navigator.of(context).push(MaterialPageRoute(
@@ -78,12 +80,13 @@ class BusScreen extends ConsumerWidget {
       color: AppColor.linkTextBlue,
       onPressed: () {
         ref.read(busIsToProvider.notifier).change();
+        ref.read(busScrolledProvider.notifier).state = false;
       },
       icon: const Icon(
         Icons.swap_horiz_outlined,
       ),
     );
-    final busKey = GlobalKey();
+
     bool arriveAtSoon = true;
     final busListWidget = busData != null
         ? busData[fromToString]![busIsWeekday ? "weekday" : "holiday"]!.map((busTrip) {
@@ -134,15 +137,17 @@ class BusScreen extends ConsumerWidget {
     final scrollController = ScrollController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (busScrolled) return;
       final currentContext = busKey.currentContext;
       if (currentContext == null) return;
       final box = currentContext.findRenderObject() as RenderBox;
-      final position = box.localToGlobal(Offset.zero, ancestor: context.findRenderObject());
+      final position = box.localToGlobal(Offset.zero);
       scrollController.animateTo(
-        position.dy,
-        duration: const Duration(milliseconds: 300),
+        scrollController.offset + position.dy - 300,
+        duration: const Duration(milliseconds: 1000),
         curve: Curves.easeInOut,
       );
+      ref.read(busScrolledProvider.notifier).state = true;
     });
 
     return Scaffold(
@@ -193,9 +198,11 @@ class BusScreen extends ConsumerWidget {
           ),
           Expanded(
             child: busData != null
-                ? ListView(
+                ? SingleChildScrollView(
                     controller: scrollController,
-                    children: busListWidget,
+                    child: Column(
+                      children: busListWidget,
+                    ),
                   )
                 : createProgressIndicator(),
           ),
