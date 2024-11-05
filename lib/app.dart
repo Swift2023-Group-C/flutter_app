@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dotto/app/controller/tab_controller.dart';
 import 'package:dotto/app/domain/tab_item.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
+import 'package:dotto/feature/my_page/feature/bus/repository/bus_repository.dart';
 import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
 import 'package:dotto/feature/my_page/feature/news/repository/news_repository.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
@@ -129,6 +130,7 @@ class _BasePageState extends ConsumerState<BasePage> {
     await ref.read(busDataProvider.notifier).init();
     ref.read(myBusStopProvider.notifier).init();
     ref.read(busRefreshProvider.notifier).start();
+    BusRepository().changeDirectionOnCurrentLocation(ref);
   }
 
   Future<void> getNews() async {

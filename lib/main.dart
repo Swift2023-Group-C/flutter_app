@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dotto/repository/location.dart';
 import 'package:dotto/repository/notification.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,6 +32,7 @@ Future<void> main() async {
   Timer(const Duration(seconds: 1), () {});
   await NotificationRepository().init();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await requestLocationPermission();
 
   runApp(const ProviderScope(child: MyApp()));
 }
