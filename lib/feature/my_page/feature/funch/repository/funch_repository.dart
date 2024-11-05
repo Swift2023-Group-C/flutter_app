@@ -22,7 +22,7 @@ class FunchRepository {
         try {
           final date = (dayData["date"] as Timestamp).toDate();
           final newDate = DateTime(date.year, date.month, date.day);
-          final menu = dayData["menu"] as List<int>;
+          final menu = (dayData["menu"] as List<dynamic>).map((item) => item as int).toList();
           map[newDate] = menu;
         } catch (e) {
           continue;
@@ -47,6 +47,7 @@ class FunchRepository {
       return data.map((key, value) {
         final list =
             value.map((v) => allMenu.firstWhere((element) => element.itemCode == v)).toList();
+        print(list);
         return MapEntry(key, list);
       });
     } else {
