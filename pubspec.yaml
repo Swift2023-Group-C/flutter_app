@@ -72,6 +72,7 @@ dependencies:
   settings_ui: ^2.0.2
   package_info_plus: ^7.0.0
   freezed_annotation: ^2.4.1
+  geolocator: ^12.0.0
 
 dev_dependencies:
   flutter_test:
