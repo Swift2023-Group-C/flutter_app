@@ -111,3 +111,5 @@ class BusIsWeekdayNotifier extends Notifier<bool> {
     state = !state;
   }
 }
+
+final busScrolledProvider = StateProvider<bool>((ref) => false);
