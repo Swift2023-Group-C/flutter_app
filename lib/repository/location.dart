@@ -5,12 +5,9 @@ Future<bool> requestLocationPermission() async {
   bool serviceEnabled;
   LocationPermission permission;
 
-  // 位置情報サービスが有効かどうかをテストします。
   serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
-    // 位置情報サービスが有効でない場合、続行できません。
-    // 位置情報にアクセスし、ユーザーに対して
-    // 位置情報サービスを有効にするようアプリに要請する。
+    // 有効でない場合、ユーザーに対して有効にするようアプリに要請
     debugPrint('Location services are disabled.');
     return false;
   }
@@ -20,7 +17,6 @@ Future<bool> requestLocationPermission() async {
     // ユーザーに位置情報を許可してもらうよう促す
     permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
-      // 拒否された場合エラーを返す
       debugPrint('Location permissions are denied');
       return false;
     }
@@ -33,7 +29,6 @@ Future<bool> requestLocationPermission() async {
   return true;
 }
 
-/// デバイスの現在位置を決定する。
 /// 位置情報サービスが有効でない場合、または許可されていない場合、null
 Future<Position?> determinePosition() async {
   if (await requestLocationPermission()) {
