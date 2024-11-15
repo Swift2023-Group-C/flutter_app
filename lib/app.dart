@@ -141,9 +141,8 @@ class _BasePageState extends ConsumerState<BasePage> {
     initUniLinks();
     initBus();
     NotificationRepository().setupInteractedMessage(ref);
-    await SyllabusDBConfig.setDB();
     setPersonalLessonIdList();
-    await downloadFiles();
+    // await downloadFiles();
     await getNews();
   }
 
