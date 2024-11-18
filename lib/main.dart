@@ -35,7 +35,6 @@ Future<void> main() async {
   await NotificationRepository().init();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await requestLocationPermission();
-  // TODO オフラインの処理を追加
   await downloadFiles();
   await SyllabusDBConfig.setDB();
 
@@ -53,17 +52,21 @@ Future<void> _configureLocalTimeZone() async {
 }
 
 Future<void> downloadFiles() async {
-  await Future(
-    () {
-      // Firebaseからファイルをダウンロード
-      List<String> filePaths = [
-        'map/oneweek_schedule.json',
-        'home/cancel_lecture.json',
-        'home/sup_lecture.json',
-      ];
-      for (var path in filePaths) {
-        downloadFileFromFirebase(path);
-      }
-    },
-  );
+  try {
+    await Future(
+      () {
+        // Firebaseからファイルをダウンロード
+        List<String> filePaths = [
+          'map/oneweek_schedule.json',
+          'home/cancel_lecture.json',
+          'home/sup_lecture.json',
+        ];
+        for (var path in filePaths) {
+          downloadFileFromFirebase(path);
+        }
+      },
+    );
+  } catch (e) {
+    debugPrint(e.toString());
+  }
 }

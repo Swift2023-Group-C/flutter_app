@@ -1,4 +1,4 @@
-import 'package:minio_new/minio.dart';
+import 'package:minio/minio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class S3 {
@@ -19,8 +19,7 @@ class S3 {
   Future<List<String>> getListObjectsKey({required String url}) async {
     instance.getMinio();
     List<String> returnStr = [];
-    await for (var value
-        in _minio!.listObjectsV2('kakomon', prefix: url, recursive: true)) {
+    await for (var value in _minio!.listObjectsV2('kakomon', prefix: url, recursive: true)) {
       for (var obj in value.objects) {
         returnStr.add(obj.key!);
       }
