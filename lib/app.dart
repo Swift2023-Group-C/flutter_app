@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
             )),
             padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),
             elevation: const WidgetStatePropertyAll(2),
+            surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
           ),
         ),
         appBarTheme: const AppBarTheme(
