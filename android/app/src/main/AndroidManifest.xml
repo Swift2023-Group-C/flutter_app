@@ -46,6 +46,9 @@
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme"
             />
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+
+            <!-- App Link -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -53,9 +56,8 @@
 
                 <!-- Do not include other schemes. -->
                 <data android:scheme="http" />
-                <data android:scheme="https" />
+                <data android:scheme="https" android:host="dotto.web.app" android:pathPrefix="/config" />
 
-                <data android:host="dotto.web.app" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
