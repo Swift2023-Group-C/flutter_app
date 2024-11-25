@@ -15,7 +15,6 @@ import 'package:uni_links/uni_links.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/components/setting_user_info.dart';
-import 'package:dotto/repository/db_config.dart';
 import 'package:dotto/repository/download_file_from_firebase.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/repository/map_repository.dart';
@@ -35,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.light(
           primary: customFunColor,
           onSurface: Colors.grey.shade900,
-          background: Colors.grey.shade100,
+          surface: Colors.grey.shade100,
         ),
         buttonTheme: ButtonThemeData(
           shape: RoundedRectangleBorder(
@@ -45,11 +44,12 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
-            shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+            shape: WidgetStatePropertyAll(RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             )),
-            padding: const MaterialStatePropertyAll(EdgeInsets.all(0)),
-            elevation: const MaterialStatePropertyAll(2),
+            padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),
+            elevation: const WidgetStatePropertyAll(2),
+            surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
           ),
         ),
         appBarTheme: const AppBarTheme(
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         ),
         textButtonTheme: const TextButtonThemeData(
           style: ButtonStyle(
-            padding: MaterialStatePropertyAll(EdgeInsets.all(0)),
+            padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
           ),
         ),
         dividerTheme: DividerThemeData(
@@ -141,9 +141,8 @@ class _BasePageState extends ConsumerState<BasePage> {
     initUniLinks();
     initBus();
     NotificationRepository().setupInteractedMessage(ref);
-    await SyllabusDBConfig.setDB();
     setPersonalLessonIdList();
-    await downloadFiles();
+    // await downloadFiles();
     await getNews();
   }
 

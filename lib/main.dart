@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:dotto/repository/db_config.dart';
+import 'package:dotto/repository/download_file_from_firebase.dart';
 import 'package:dotto/repository/location.dart';
 import 'package:dotto/repository/notification.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -33,6 +35,8 @@ Future<void> main() async {
   await NotificationRepository().init();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await requestLocationPermission();
+  await downloadFiles();
+  await SyllabusDBConfig.setDB();
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -45,4 +49,24 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> _configureLocalTimeZone() async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('Asia/Tokyo'));
+}
+
+Future<void> downloadFiles() async {
+  try {
+    await Future(
+      () {
+        // Firebaseからファイルをダウンロード
+        List<String> filePaths = [
+          'map/oneweek_schedule.json',
+          'home/cancel_lecture.json',
+          'home/sup_lecture.json',
+        ];
+        for (var path in filePaths) {
+          downloadFileFromFirebase(path);
+        }
+      },
+    );
+  } catch (e) {
+    debugPrint(e.toString());
+  }
 }
