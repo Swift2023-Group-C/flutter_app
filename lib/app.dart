@@ -10,7 +10,7 @@ import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_con
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:dotto/repository/notification.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:app_links/app_links.dart';
 
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/color_fun.dart';
@@ -92,30 +92,23 @@ class _BasePageState extends ConsumerState<BasePage> {
   late List<String?> parameter;
 
   Future<void> initUniLinks() async {
-    linkStream.listen((String? link) async {
-      //さっき設定したスキームをキャッチしてここが走る。
-      parameter = getQueryParameter(link);
-      if (parameter[0] != null && parameter[1] != null) {
-        if (parameter[0] == 'config') {
-          final String userKey = parameter[1]!;
-          final RegExp userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
-          if (userKeyPattern.hasMatch(userKey)) {
+    final appLinks = AppLinks();
+    appLinks.uriLinkStream.listen((event) {
+      if (event.path == "/config/" && event.hasQuery) {
+        final query = event.queryParameters;
+        if (query.containsKey('userkey')) {
+          final userKey = query['userkey'];
+          final userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
+          if (userKeyPattern.hasMatch(userKey!)) {
             _onItemTapped(4);
-            await UserPreferences.setString(UserPreferenceKeys.userKey, userKey);
+            UserPreferences.setString(UserPreferenceKeys.userKey, userKey);
             ref.read(settingsUserKeyProvider.notifier).state = userKey;
           }
         }
       }
-    }, onError: (err) {
-      debugPrint(err);
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
     });
-  }
-
-  List<String?> getQueryParameter(String? link) {
-    if (link == null) return [null, null];
-    final uri = Uri.parse(link);
-    List<String?> returnParam = [uri.host, uri.queryParameters['userkey']];
-    return returnParam;
   }
 
   Future<void> setPersonalLessonIdList() async {
