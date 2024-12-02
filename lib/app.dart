@@ -214,7 +214,7 @@ class _BasePageState extends ConsumerState<BasePage> {
     final tabItem = ref.watch(tabItemProvider);
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) {
           return;
         }
