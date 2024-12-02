@@ -65,7 +65,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.black,
-          surfaceTintColor: Colors.white,
+          backgroundColor: Colors.white,
           fixedSize: Size(width, height),
         ),
         onPressed: onPressed,

@@ -71,7 +71,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
               behavior: HitTestBehavior.opaque,
               onTap: () => FocusScope.of(context).unfocus(),
               child: AlertDialog(
-                surfaceTintColor: Theme.of(context).colorScheme.background,
+                surfaceTintColor: Theme.of(context).colorScheme.surface,
                 insetPadding: const EdgeInsets.all(8.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -113,18 +113,14 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                         padding: const EdgeInsets.only(top: 1.0, bottom: 1.0),
                         child: Text(
                           showErrorMessage ? '満足度が入力されていません' : '',
-                          style: TextStyle(
-                              color: Colors.red,
-                              fontSize: dialogHeight * 0.045),
+                          style: TextStyle(color: Colors.red, fontSize: dialogHeight * 0.045),
                         ),
                       ),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'フィードバック (推奨)',
-                          style: TextStyle(
-                              fontSize: dialogWidth * 0.03,
-                              color: customFunColor),
+                          style: TextStyle(fontSize: dialogWidth * 0.03, color: customFunColor),
                         ),
                       ),
                       SizedBox(
@@ -135,8 +131,7 @@ class _KamokuFeedbackScreenState extends State<KamokuFeedbackScreen> {
                           maxLength: 30,
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
-                            floatingLabelAlignment:
-                                FloatingLabelAlignment.start,
+                            floatingLabelAlignment: FloatingLabelAlignment.start,
                             border: const OutlineInputBorder(),
                             hintText: '単位、出席、テストの情報など...',
                             hintStyle: TextStyle(fontSize: dialogHeight * 0.05),
