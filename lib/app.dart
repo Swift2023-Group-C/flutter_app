@@ -142,7 +142,6 @@ class _BasePageState extends ConsumerState<BasePage> {
   Future<void> init() async {
     initUniLinks();
     initBus();
-    await downloadFiles();
     NotificationRepository().setupInteractedMessage(ref);
     setPersonalLessonIdList();
     // await downloadFiles();
@@ -168,23 +167,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     return SlideTransition(
       position: offsetAnimation,
       child: child,
-    );
-  }
-
-  Future<void> downloadFiles() async {
-    await Future(
-      () {
-        // Firebaseからファイルをダウンロード
-        List<String> filePaths = [
-          'map/oneweek_schedule.json',
-          'home/cancel_lecture.json',
-          'home/sup_lecture.json',
-          'funch/menu.json',
-        ];
-        for (var path in filePaths) {
-          downloadFileFromFirebase(path);
-        }
-      },
     );
   }
 

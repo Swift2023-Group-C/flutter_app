@@ -60,6 +60,7 @@ Future<void> downloadFiles() async {
           'map/oneweek_schedule.json',
           'home/cancel_lecture.json',
           'home/sup_lecture.json',
+          'funch/menu.json',
         ];
         for (var path in filePaths) {
           downloadFileFromFirebase(path);
