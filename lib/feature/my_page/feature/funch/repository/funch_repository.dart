@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:dotto/feature/my_page/feature/funch/controller/funch_controller.dart';
 import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu.dart';
 import 'package:dotto/importer.dart';
@@ -45,9 +46,13 @@ class FunchRepository {
     if (allMenu != null) {
       final data = await getDaysMenuFromFirestore();
       return data.map((key, value) {
-        final list =
-            value.map((v) => allMenu.firstWhere((element) => element.itemCode == v)).toList();
-        print(list);
+        List<FunchMenu> list = [];
+        for (var v in value) {
+          final menu = allMenu.firstWhereOrNull((element) => element.itemCode == v);
+          if (menu != null) {
+            list.add(menu);
+          }
+        }
         return MapEntry(key, list);
       });
     } else {
