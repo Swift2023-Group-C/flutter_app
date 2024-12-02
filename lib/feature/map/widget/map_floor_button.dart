@@ -1,88 +1,59 @@
-import 'package:dotto/importer.dart';
-import 'package:dotto/components/color_fun.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/domain/map_detail.dart';
 
 class MapFloorButton extends ConsumerWidget {
   const MapFloorButton({super.key});
 
-  static const List<String> floorBarString = [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    'R6',
-    'R7'
-  ];
+  static const List<String> floorBarString = ['5F', '4F', '3F', '2F', '1F', 'R6', 'R7'];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mapPage = ref.watch(mapPageProvider);
+    final mapPage = ref.watch(mapPageProvider); // 階層状態
     final mapPageNotifier = ref.watch(mapPageProvider.notifier);
     final mapViewTransformationControllerProviderNotifier =
         ref.watch(mapViewTransformationControllerProvider.notifier);
-    final mapFocusMapDetailNotifier =
-        ref.watch(mapFocusMapDetailProvider.notifier);
-    TextStyle floorBarTextStyle =
-        const TextStyle(fontSize: 18.0, color: Colors.black87);
-    TextStyle floorBarSelectedTextStyle =
-        const TextStyle(fontSize: 18.0, color: customFunColor);
-    // 350以下なら計算
-    double floorButtonWidth = (MediaQuery.of(context).size.width - 30 < 350)
-        ? MediaQuery.of(context).size.width - 30
-        : 350;
-    double floorButtonHeight = 50;
+    final mapFocusMapDetailNotifier = ref.watch(mapFocusMapDetailProvider.notifier);
 
-    return Padding(
-        padding: const EdgeInsets.only(top: 15),
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Container(
-            color: Colors.grey.withOpacity(0.9),
-            width: floorButtonWidth,
-            height: floorButtonHeight,
-            // Providerから階数の変更を検知
-            child: Row(
-              children: [
-                for (int i = 0; i < 7; i++) ...{
-                  SizedBox(
-                    width: floorButtonWidth / 7,
-                    height: floorButtonHeight,
-                    child: Center(
-                      child: TextButton(
-                          style: TextButton.styleFrom(
-                            fixedSize:
-                                Size(floorButtonWidth / 7, floorButtonHeight),
-                            backgroundColor:
-                                (mapPage == i) ? Colors.black12 : null,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                          ),
-                          // 階数の変更をProviderに渡す
-                          onPressed: () {
-                            mapViewTransformationControllerProviderNotifier
-                                    .state =
-                                TransformationController(Matrix4(1, 0, 0, 0, 0,
-                                    1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
-                            mapPageNotifier.state = i;
-                            mapFocusMapDetailNotifier.state = MapDetail.none;
-                            FocusScope.of(context).unfocus();
-                          },
-                          child: Center(
-                              child: Text(
-                            floorBarString[i],
-                            style: (mapPage == i)
-                                ? floorBarSelectedTextStyle
-                                : floorBarTextStyle,
-                          ))),
-                    ),
+    double floorButtonWidth = 50; // 横幅
+    double floorButtonHeight = 50; // 高さ
+
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10, bottom: 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(floorBarString.length, (i) {
+            return SizedBox(
+              width: floorButtonWidth,
+              height: floorButtonHeight,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor:
+                      (mapPage == i) ? Colors.grey.withOpacity(0.5) : Colors.grey.withOpacity(0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                }
-              ],
-            ),
-          ),
-        ));
+                ),
+                onPressed: () {
+                  mapViewTransformationControllerProviderNotifier.state =
+                      TransformationController(Matrix4.identity());
+                  mapPageNotifier.state = i;
+                  mapFocusMapDetailNotifier.state = MapDetail.none;
+                  FocusScope.of(context).unfocus();
+                },
+                child: Text(
+                  floorBarString[i],
+                  style:
+                      TextStyle(fontSize: 18.0, color: (mapPage == i) ? Colors.blue : Colors.white),
+                ),
+              ),
+            );
+          }),
+        ),
+      ),
+    );
   }
 }

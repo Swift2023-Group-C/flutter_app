@@ -7,15 +7,7 @@ import 'package:dotto/feature/map/widget/fun_grid_map.dart';
 class MapGridScreen extends StatelessWidget {
   const MapGridScreen({super.key});
 
-  static const List<String> gridMapsList = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "R6",
-    "R7"
-  ];
+  static const List<String> gridMapsList = ["5F", "4F", "3F", "2F", "1", "R6", "R7"];
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +20,7 @@ class MapGridScreen extends StatelessWidget {
             ...FunGridMaps.mapTileListMap[gridMapsList[mapPage]]!.map(
               (e) {
                 return StaggeredGridTile.count(
-                    crossAxisCellCount: e.width,
-                    mainAxisCellCount: e.height,
-                    child: e);
+                    crossAxisCellCount: e.width, mainAxisCellCount: e.height, child: e);
               },
             )
           ],
