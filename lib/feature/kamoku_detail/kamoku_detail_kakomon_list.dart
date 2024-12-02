@@ -46,6 +46,18 @@ class _KamokuDetailKakomonListScreenState
               )
             : const Text('未来大Googleアカウントでログインが必要です'),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: {
+          if(KamokuDetailRepository().isLoggedinGoogle()){
+
+          }else{
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('未来大Googleアカウントでログインが必要です')),
+            );
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
