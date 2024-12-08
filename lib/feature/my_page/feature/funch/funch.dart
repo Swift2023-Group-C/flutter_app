@@ -29,7 +29,7 @@ class FunchScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final funchDate = ref.watch(funchDateProvider);
     final dates = getDateMonth(funchDate);
-
+/*
     double buttonSize = 50;
     double buttonPadding = 8;
     List<String> weekString = ['月', '火', '水', '木', '金', '土', '日'];
@@ -42,15 +42,17 @@ class FunchScreen extends ConsumerWidget {
       Colors.blue,
       Colors.red
     ];
-
+*/
     return Scaffold(
       appBar: AppBar(
-        title: const Text("学食メニュー"),
+        title: const Text("学食"),
+        centerTitle: true,
+        actions: [Icon(Icons.event)],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // 月選択 プルダウン
+            /* // 月選択 プルダウン
             DropdownButton<int>(
               value: funchDate.month,
               onChanged: (int? value) {
@@ -118,7 +120,7 @@ class FunchScreen extends ConsumerWidget {
                   );
                 }).toList(),
               ),
-            ),
+            ),*/
             Text(funchDate.toString()),
             // List<日替わりメニュー> 写真 メニュー名 値段（大中小）
             Column(

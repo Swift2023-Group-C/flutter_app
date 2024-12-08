@@ -9,7 +9,7 @@ class FunchDateNotifier extends Notifier<DateTime> {
   // 初期値を設定する
   @override
   DateTime build() {
-    return DateTime.now();
+    return DateTime(2024, 11, 28);
   }
 
   void set(DateTime dt) {
