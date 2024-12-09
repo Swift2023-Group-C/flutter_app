@@ -111,6 +111,24 @@ class MapDetailBottomSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mapDetailMap = ref.watch(mapDetailMapProvider);
     final searchDatetime = ref.watch(searchDatetimeProvider);
+    String roomTitle = roomName;
+    MapDetail? mapDetail;
+    bool loading = false;
+    if (AppStatus().isLoggedinGoogle) {
+      mapDetailMap.when(
+        data: (data) {
+          loading = false;
+          mapDetail = data.searchOnce(floor, roomName);
+          if (mapDetail != null) {
+            roomTitle = mapDetail!.header;
+          }
+        },
+        error: (error, stackTrace) {},
+        loading: () {
+          loading = true;
+        },
+      );
+    }
     MapTile? gridMap;
     try {
       gridMap = FunGridMaps.mapTileListMap[floor]!.firstWhere((element) => element.txt == roomName);
@@ -118,134 +136,126 @@ class MapDetailBottomSheet extends ConsumerWidget {
       gridMap = null;
     }
     return Container(
-        height: 250,
-        width: MediaQuery.of(context).size.width,
-        decoration: const BoxDecoration(
-          color: Color(0xFFF2F9FF),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              spreadRadius: 2.0,
-              blurRadius: 8.0,
-            )
-          ],
+      height: 250,
+      width: MediaQuery.of(context).size.width,
+      decoration: const BoxDecoration(
+        color: Color(0xFFF2F9FF),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: AppStatus().isLoggedinGoogle
-                    ? mapDetailMap.when(
-                        data: (data) {
-                          MapDetail? mapDetail = data.searchOnce(floor, roomName);
-                          // 本体ここから
-                          if (mapDetail != null) {
-                            return <Widget>[
-                              SelectableText(
-                                mapDetail.header,
-                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(width: double.infinity, height: 10),
-                              if (gridMap != null)
-                                Column(
-                                  children: [
-                                    if (gridMap.food != null && gridMap.drink != null)
-                                      Row(
-                                        children: [
-                                          roomAvailable(
-                                              RoomAvailableType.food, gridMap.food! ? 2 : 0),
-                                          const SizedBox(width: 10),
-                                          roomAvailable(
-                                              RoomAvailableType.drink, gridMap.drink! ? 2 : 0),
-                                        ],
-                                      ),
-                                    if (gridMap.outlet != null)
-                                      Row(
-                                        children: [
-                                          roomAvailable(RoomAvailableType.outlet, gridMap.outlet!),
-                                        ],
-                                      ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
-                                ),
-                              if (mapDetail.scheduleList != null)
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ...mapDetail.getScheduleListByDate(searchDatetime).map(
-                                          (e) => scheduleTile(context, e.begin, e.end, e.title),
-                                        ),
-                                  ],
-                                )
-                              else if (mapDetail.detail != null)
-                                SelectableText(mapDetail.detail!),
-                              if (mapDetail.mail != null)
-                                SelectableText('${mapDetail.mail}@fun.ac.jp'),
-                            ];
-                          } else {
-                            return [
-                              SelectableText(
-                                roomName,
-                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ];
-                          }
-                        },
-                        error: (error, stackTrace) => [const Text('情報を取得できませんでした')],
-                        loading: () => [
-                          SelectableText(
-                            roomName,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 150,
-                            child: Center(
-                              child: createProgressIndicator(),
-                            ),
-                          )
-                        ],
-                      )
-                    : [
-                        SelectableText(
-                          roomName,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text("詳細は未来大Googleアカウントでログインすることで表示できます。"),
-                        OutlinedButton(
-                          onPressed: () {
-                            final tabItemNotifier = ref.read(tabItemProvider.notifier);
-                            tabItemNotifier.selected(TabItem.setting);
-                          },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.grey.shade700,
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                          child: const Text("設定"),
-                        ),
-                      ],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            spreadRadius: 2.0,
+            blurRadius: 8.0,
+          )
+        ],
+      ),
+      padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: SelectableText(
+                  roomTitle,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, right: 10),
-              child: Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                      onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close))),
-            ),
-          ],
-        ));
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close),
+                style: IconButton.styleFrom(
+                  padding: const EdgeInsets.all(0),
+                ),
+              ),
+            ],
+          ),
+          AppStatus().isLoggedinGoogle
+              ? !loading
+                  ? Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            if (gridMap != null)
+                              Column(
+                                children: [
+                                  if (gridMap.food != null && gridMap.drink != null)
+                                    Row(
+                                      children: [
+                                        roomAvailable(
+                                            RoomAvailableType.food, gridMap.food! ? 2 : 0),
+                                        const SizedBox(width: 10),
+                                        roomAvailable(
+                                            RoomAvailableType.drink, gridMap.drink! ? 2 : 0),
+                                      ],
+                                    ),
+                                  if (gridMap.outlet != null)
+                                    Row(
+                                      children: [
+                                        roomAvailable(RoomAvailableType.outlet, gridMap.outlet!),
+                                      ],
+                                    ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                ],
+                              ),
+                            if (mapDetail != null)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (mapDetail!.scheduleList != null)
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        ...mapDetail!.getScheduleListByDate(searchDatetime).map(
+                                              (e) => scheduleTile(context, e.begin, e.end, e.title),
+                                            ),
+                                      ],
+                                    )
+                                  else if (mapDetail!.detail != null)
+                                    SelectableText(mapDetail!.detail!),
+                                  if (mapDetail!.mail != null)
+                                    SelectableText('${mapDetail!.mail}@fun.ac.jp'),
+                                ],
+                              )
+                          ],
+                        ),
+                      ),
+                    )
+                  : SizedBox(
+                      width: double.infinity,
+                      height: 150,
+                      child: Center(
+                        child: createProgressIndicator(),
+                      ),
+                    )
+              : Column(
+                  children: [
+                    const Text("詳細は未来大Googleアカウントでログインすることで表示できます。"),
+                    OutlinedButton(
+                      onPressed: () {
+                        final tabItemNotifier = ref.read(tabItemProvider.notifier);
+                        tabItemNotifier.selected(TabItem.setting);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.grey.shade700,
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: const Text("設定"),
+                    ),
+                  ],
+                ),
+        ],
+      ),
+    );
   }
 }
