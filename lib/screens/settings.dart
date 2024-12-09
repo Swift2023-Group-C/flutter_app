@@ -1,12 +1,12 @@
 import 'dart:io';
 
+import 'package:dotto/repository/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/screens/app_tutorial.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -43,50 +43,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return null;
   }
 
-  Future<UserCredential?> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    if (googleUser == null) {
-      return null;
-    }
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-    try {
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      if (e.code != 'internal-error') {
-        return null;
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
   Future<void> loginButton(BuildContext context) async {
     // ログインしていないなら
     if (currentUser == null) {
-      final userCredential = await signInWithGoogle();
-      if (userCredential != null) {
-        final user = userCredential.user;
-        if (user != null) {
-          debugPrint(user.uid);
-          if (user.email != null) {
-            setState(() {
-              currentUser = user;
-            });
-          } else {
-            await user.delete();
-          }
-        }
+      final user = await FirebaseAuthRepository().signIn();
+      if (user != null) {
+        setState(() {
+          currentUser = user;
+        });
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +59,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         }
       }
     } else {
-      await FirebaseAuth.instance.signOut();
+      await FirebaseAuthRepository().signOut();
       setState(() {
         currentUser = null;
       });
