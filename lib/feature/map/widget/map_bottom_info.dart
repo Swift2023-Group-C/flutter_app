@@ -1,11 +1,11 @@
-import 'package:intl/intl.dart';
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
-
-import 'package:dotto/importer.dart';
+import 'package:dotto/controller/user_controller.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/domain/map_tile_type.dart';
 import 'package:dotto/feature/map/repository/map_repository.dart';
 import 'package:dotto/feature/map/widget/map_tile.dart';
+import 'package:dotto/importer.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:intl/intl.dart';
 
 class MapBottomInfo extends ConsumerWidget {
   const MapBottomInfo({super.key});
@@ -30,6 +30,10 @@ class MapBottomInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider.notifier);
+    if (!user.isLoggedin) {
+      return const SizedBox();
+    }
     double floorButtonHeight = 45;
     DateTime now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day);
@@ -93,7 +97,7 @@ class MapBottomInfo extends ConsumerWidget {
                                   }
                                   searchDatetimeNotifier.set(setDate);
                                   mapUsingMapNotifier.state =
-                                      await MapRepository().setUsingColor(setDate);
+                                      await MapRepository().setUsingColor(setDate, ref);
                                 },
                                 child: Center(
                                   child: Text(item.key),
@@ -120,7 +124,7 @@ class MapBottomInfo extends ConsumerWidget {
                                 onConfirm: (date) async {
                                   searchDatetimeNotifier.set(date);
                                   mapUsingMapNotifier.state =
-                                      await MapRepository().setUsingColor(date);
+                                      await MapRepository().setUsingColor(date, ref);
                                 },
                                 currentTime: searchDatetime,
                                 locale: LocaleType.jp,

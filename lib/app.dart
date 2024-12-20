@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:dotto/app/controller/tab_controller.dart';
-import 'package:dotto/app/domain/tab_item.dart';
+import 'package:dotto/controller/tab_controller.dart';
+import 'package:dotto/domain/tab_item.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/bus/repository/bus_repository.dart';
 import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
@@ -184,7 +184,7 @@ class _BasePageState extends ConsumerState<BasePage> {
       final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
       final searchDatetimeNotifier = ref.read(searchDatetimeProvider.notifier);
       searchDatetimeNotifier.reset();
-      mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now());
+      mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now(), ref);
     }
 
     final tabItemNotifier = ref.read(tabItemProvider.notifier);

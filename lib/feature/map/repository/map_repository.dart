@@ -1,9 +1,7 @@
 import 'dart:convert';
-
-import 'package:dotto/repository/app_status.dart';
-
-import 'package:dotto/importer.dart';
+import 'package:dotto/controller/user_controller.dart';
 import 'package:dotto/feature/map/domain/map_detail.dart';
+import 'package:dotto/importer.dart';
 import 'package:dotto/repository/get_firebase_realtime_db.dart';
 import 'package:dotto/repository/read_json_file.dart';
 
@@ -88,8 +86,9 @@ class MapRepository {
   }
 
 //使用されているかどうかで色を変える設定をする
-  Future<Map<String, bool>> setUsingColor(DateTime dateTime) async {
-    if (!AppStatus().isLoggedinGoogle) {
+  Future<Map<String, bool>> setUsingColor(DateTime dateTime, WidgetRef ref) async {
+    final user = ref.watch(userProvider.notifier);
+    if (!user.isLoggedin) {
       return {};
     }
     final Map<String, bool> classroomNoFloorMap = {
