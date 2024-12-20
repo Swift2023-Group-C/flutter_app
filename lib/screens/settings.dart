@@ -49,6 +49,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           'last_updated': Timestamp.now(),
         });
       }
+      UserPreferences.setBool(UserPreferenceKeys.didSaveFCMToken, true);
     }
   }
 
@@ -56,6 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final user = await FirebaseAuthRepository().signIn();
     if (user != null) {
       login(user);
+      saveFCMToken(user);
     } else {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
