@@ -14,9 +14,9 @@ class MyPageTimetable extends ConsumerWidget {
 
   Widget timeTableLessonButton(
       BuildContext context, TimeTableCourse? timeTableCourse, bool loading, WidgetRef ref) {
-    final user = ref.watch(userProvider.notifier);
+    final user = ref.watch(userProvider);
     Color foregroundColor = Colors.black;
-    if (timeTableCourse != null && user.isLoggedin) {
+    if (timeTableCourse != null && user != null) {
       if (timeTableCourse.cancel) {
         foregroundColor = Colors.grey;
       }
@@ -125,7 +125,7 @@ class MyPageTimetable extends ConsumerWidget {
                   ),
                 ),
                 // 休講情報など
-                if (timeTableCourse != null && user.isLoggedin)
+                if (timeTableCourse != null && user != null)
                   if (timeTableCourse.cancel)
                     const Row(
                       children: [

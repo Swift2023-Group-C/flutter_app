@@ -111,7 +111,7 @@ class MapDetailBottomSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mapDetailMap = ref.watch(mapDetailMapProvider);
     final searchDatetime = ref.watch(searchDatetimeProvider);
-    final user = ref.watch(userProvider.notifier);
+    final user = ref.watch(userProvider);
     MapTile? gridMap;
     try {
       gridMap = FunGridMaps.mapTileListMap[floor]!.firstWhere((element) => element.txt == roomName);
@@ -141,7 +141,7 @@ class MapDetailBottomSheet extends ConsumerWidget {
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: user.isLoggedin
+                children: user != null
                     ? mapDetailMap.when(
                         data: (data) {
                           MapDetail? mapDetail = data.searchOnce(floor, roomName);

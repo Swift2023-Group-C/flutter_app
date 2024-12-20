@@ -115,7 +115,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userNotifier = ref.watch(userProvider.notifier);
+    final userNotifier = ref.read(userProvider.notifier);
     final user = ref.watch(userProvider);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -133,18 +133,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
               SettingsTile.navigation(
                 title: Text(
-                  (!userNotifier.isLoggedin) ? 'ログイン' : 'ログイン中',
+                  (user == null) ? 'ログイン' : 'ログイン中',
                 ),
                 value: (Platform.isIOS)
-                    ? (!userNotifier.isLoggedin)
+                    ? (user == null)
                         ? null
                         : const Text('ログアウト')
-                    : Text((!userNotifier.isLoggedin) ? '未来大Googleアカウント' : '${user?.email}でログイン中'),
+                    : Text((user == null) ? '未来大Googleアカウント' : '${user.email}でログイン中'),
                 description: (Platform.isIOS)
-                    ? Text((!userNotifier.isLoggedin) ? '未来大Googleアカウント' : '${user?.email}でログイン中')
+                    ? Text((user == null) ? '未来大Googleアカウント' : '${user.email}でログイン中')
                     : null,
-                leading: Icon((!userNotifier.isLoggedin) ? Icons.login : Icons.logout),
-                onPressed: (!userNotifier.isLoggedin)
+                leading: Icon((user == null) ? Icons.login : Icons.logout),
+                onPressed: (user == null)
                     ? (c) => onLogin(c, userNotifier.login)
                     : (_) => onLogout(userNotifier.logout),
               ),

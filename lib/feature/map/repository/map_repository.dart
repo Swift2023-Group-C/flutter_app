@@ -87,8 +87,8 @@ class MapRepository {
 
 //使用されているかどうかで色を変える設定をする
   Future<Map<String, bool>> setUsingColor(DateTime dateTime, WidgetRef ref) async {
-    final user = ref.watch(userProvider.notifier);
-    if (!user.isLoggedin) {
+    final user = ref.watch(userProvider);
+    if (user == null) {
       return {};
     }
     final Map<String, bool> classroomNoFloorMap = {

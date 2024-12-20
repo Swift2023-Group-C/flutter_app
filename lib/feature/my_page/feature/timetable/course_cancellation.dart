@@ -33,8 +33,8 @@ class CourseCancellationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider.notifier);
-    if (!user.isLoggedin) {
+    final user = ref.watch(userProvider);
+    if (user == null) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('休講情報'),

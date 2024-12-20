@@ -30,8 +30,8 @@ class MapBottomInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider.notifier);
-    if (!user.isLoggedin) {
+    final user = ref.watch(userProvider);
+    if (user == null) {
       return const SizedBox();
     }
     double floorButtonHeight = 45;
