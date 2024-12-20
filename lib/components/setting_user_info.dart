@@ -10,7 +10,8 @@ enum UserPreferenceKeys {
   personalTimetableListKey(keyName: 'personalTimeTableListKey2024', type: String),
   isAppTutorialComplete(keyName: 'isAppTutorialCompleted', type: bool),
   isKadaiTutorialComplete(keyName: 'isKadaiTutorialCompleted', type: bool),
-  myBusStop(keyName: 'myBusStop', type: int);
+  myBusStop(keyName: 'myBusStop', type: int),
+  didSaveFCMToken(keyName: 'didSaveFCMToken', type: bool);
 
   const UserPreferenceKeys({
     required this.keyName,

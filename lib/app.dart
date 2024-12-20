@@ -1,7 +1,9 @@
 import 'dart:async';
 
-import 'package:dotto/app/controller/tab_controller.dart';
-import 'package:dotto/app/domain/tab_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dotto/controller/tab_controller.dart';
+import 'package:dotto/controller/user_controller.dart';
+import 'package:dotto/domain/tab_item.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/bus/repository/bus_repository.dart';
 import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
@@ -9,6 +11,7 @@ import 'package:dotto/feature/my_page/feature/news/repository/news_repository.da
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:dotto/repository/notification.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:app_links/app_links.dart';
 
@@ -130,6 +133,32 @@ class _BasePageState extends ConsumerState<BasePage> {
     ref.read(newsListProvider.notifier).update(await NewsRepository().getNewsListFromFirestore());
   }
 
+  Future<void> saveFCMToken() async {
+    final didSave = await UserPreferences.getBool(UserPreferenceKeys.didSaveFCMToken) ?? false;
+    debugPrint("didSave: $didSave");
+    if (didSave) {
+      return;
+    }
+    final user = ref.read(userProvider);
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null && user != null) {
+      final db = FirebaseFirestore.instance;
+      final tokenRef = db.collection("fcm_token");
+      final tokenQuery =
+          tokenRef.where('uid', isEqualTo: user.uid).where('token', isEqualTo: fcmToken);
+      final tokenQuerySnapshot = await tokenQuery.get();
+      final tokenDocs = tokenQuerySnapshot.docs;
+      if (tokenDocs.isEmpty) {
+        await tokenRef.add({
+          'uid': user.uid,
+          'token': fcmToken,
+          'last_updated': Timestamp.now(),
+        });
+      }
+      UserPreferences.setBool(UserPreferenceKeys.didSaveFCMToken, true);
+    }
+  }
+
   Future<void> init() async {
     initUniLinks();
     initBus();
@@ -137,6 +166,8 @@ class _BasePageState extends ConsumerState<BasePage> {
     setPersonalLessonIdList();
     // await downloadFiles();
     await getNews();
+
+    saveFCMToken();
   }
 
   @override
@@ -184,7 +215,7 @@ class _BasePageState extends ConsumerState<BasePage> {
       final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
       final searchDatetimeNotifier = ref.read(searchDatetimeProvider.notifier);
       searchDatetimeNotifier.reset();
-      mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now());
+      mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now(), ref);
     }
 
     final tabItemNotifier = ref.read(tabItemProvider.notifier);
