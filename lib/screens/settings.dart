@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/controller/user_controller.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/repository/firebase_auth.dart';
 import 'package:dotto/screens/app_tutorial.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -27,6 +30,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> saveFCMToken(User user) async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null) {
+      final db = FirebaseFirestore.instance;
+      final tokenRef = db.collection("fcm_token");
+      final tokenQuery =
+          tokenRef.where('uid', isEqualTo: user.uid).where('token', isEqualTo: fcmToken);
+      final tokenQuerySnapshot = await tokenQuery.get();
+      final tokenDocs = tokenQuerySnapshot.docs;
+      if (tokenDocs.isEmpty) {
+        await tokenRef.add({
+          'uid': user.uid,
+          'token': fcmToken,
+          'last_updated': Timestamp.now(),
+        });
+      }
     }
   }
 
