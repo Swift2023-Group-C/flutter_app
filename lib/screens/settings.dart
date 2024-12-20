@@ -1,15 +1,14 @@
 import 'dart:io';
 
-import 'package:dotto/repository/firebase_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:dotto/components/setting_user_info.dart';
+import 'package:dotto/controller/user_controller.dart';
+import 'package:dotto/importer.dart';
+import 'package:dotto/repository/firebase_auth.dart';
 import 'package:dotto/screens/app_tutorial.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 StateProvider<String> settingsGradeProvider = StateProvider((ref) => 'なし');
 StateProvider<String> settingsCourseProvider = StateProvider((ref) => 'なし');
@@ -23,10 +22,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  String dropdownValueGrade = 'なし';
-  User? currentUser = FirebaseAuth.instance.currentUser;
-  PackageInfo? packageInfo;
-
   void launchUrlInExternal(Uri url) async {
     if (await canLaunchUrl(url)) {
       launchUrl(url, mode: LaunchMode.externalApplication);
@@ -35,35 +30,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<String?> getVersion() async {
-    packageInfo = await PackageInfo.fromPlatform();
-    if (packageInfo != null) {
-      return packageInfo!.version;
+  Future<void> onLogin(BuildContext context, Function login) async {
+    final user = await FirebaseAuthRepository().signIn();
+    if (user != null) {
+      login(user);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('ログインできませんでした。')),
+        );
+      }
     }
-    return null;
   }
 
-  Future<void> loginButton(BuildContext context) async {
-    // ログインしていないなら
-    if (currentUser == null) {
-      final user = await FirebaseAuthRepository().signIn();
-      if (user != null) {
-        setState(() {
-          currentUser = user;
-        });
-      } else {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('ログインできませんでした。')),
-          );
-        }
-      }
-    } else {
-      await FirebaseAuthRepository().signOut();
-      setState(() {
-        currentUser = null;
-      });
-    }
+  Future<void> onLogout(Function logout) async {
+    await FirebaseAuthRepository().signOut();
+    logout();
   }
 
   Widget animation(BuildContext context, Animation<double> animation,
@@ -133,6 +115,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userNotifier = ref.watch(userProvider.notifier);
+    final user = ref.watch(userProvider);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => FocusScope.of(context).unfocus(),
@@ -146,27 +130,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: const Text('全般'),
             tiles: <SettingsTile>[
               // Googleでログイン
-              if (Platform.isIOS)
-                SettingsTile.navigation(
-                  title: Text(
-                    (currentUser == null) ? 'ログイン' : 'ログイン中',
-                  ),
-                  value: (currentUser == null) ? null : const Text('ログアウト'),
-                  description: Text(
-                      (currentUser == null) ? '未来大Googleアカウント' : '${currentUser!.email}でログイン中'),
-                  leading: Icon((currentUser == null) ? Icons.login : Icons.logout),
-                  onPressed: loginButton,
-                )
-              else
-                SettingsTile.navigation(
-                  title: Text(
-                    (currentUser == null) ? 'ログイン' : 'ログアウト',
-                  ),
-                  value: Text(
-                      (currentUser == null) ? '未来大Googleアカウント' : '${currentUser!.email}でログイン中'),
-                  leading: Icon((currentUser == null) ? Icons.login : Icons.logout),
-                  onPressed: loginButton,
+
+              SettingsTile.navigation(
+                title: Text(
+                  (!userNotifier.isLoggedin) ? 'ログイン' : 'ログイン中',
                 ),
+                value: (Platform.isIOS)
+                    ? (!userNotifier.isLoggedin)
+                        ? null
+                        : const Text('ログアウト')
+                    : Text((!userNotifier.isLoggedin) ? '未来大Googleアカウント' : '${user?.email}でログイン中'),
+                description: (Platform.isIOS)
+                    ? Text((!userNotifier.isLoggedin) ? '未来大Googleアカウント' : '${user?.email}でログイン中')
+                    : null,
+                leading: Icon((!userNotifier.isLoggedin) ? Icons.login : Icons.logout),
+                onPressed: (!userNotifier.isLoggedin)
+                    ? (c) => onLogin(c, userNotifier.login)
+                    : (_) => onLogout(userNotifier.logout),
+              ),
               // 学年
               SettingsTile.navigation(
                 onPressed: (context) async {
