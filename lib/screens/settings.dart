@@ -1,12 +1,12 @@
 import 'dart:io';
 
+import 'package:dotto/repository/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/screens/app_tutorial.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -43,72 +43,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return null;
   }
 
-  Future<UserCredential?> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    if (googleUser == null) {
-      return null;
-    }
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    try {
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'account-exists-with-different-credential') {
-        return null;
-      } else if (e.code == 'invalid-credential') {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-    return null;
-  }
-
   Future<void> loginButton(BuildContext context) async {
     // ログインしていないなら
     if (currentUser == null) {
-      final userCredential = await signInWithGoogle();
-      if (userCredential != null) {
-        final user = userCredential.user;
-        if (user != null) {
-          debugPrint(user.uid);
-          if (user.email != null) {
-            if (user.email!.endsWith('@fun.ac.jp') ||
-                user.email! == 'demodotto@gmail.com') {
-              setState(() {
-                currentUser = user;
-              });
-            } else {
-              await user.delete();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('このユーザーではログインできません。')),
-                );
-              }
-            }
-          } else {
-            await user.delete();
-          }
-        } else {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('ログインに失敗しました。')),
-            );
-          }
+      final user = await FirebaseAuthRepository().signIn();
+      if (user != null) {
+        setState(() {
+          currentUser = user;
+        });
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('ログインできませんでした。')),
+          );
         }
       }
     } else {
-      await FirebaseAuth.instance.signOut();
+      await FirebaseAuthRepository().signOut();
       setState(() {
         currentUser = null;
       });
@@ -119,8 +70,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       Animation<double> secondaryAnimation, Widget child) {
     const Offset begin = Offset(1.0, 0.0);
     const Offset end = Offset.zero;
-    final Animatable<Offset> tween = Tween(begin: begin, end: end)
-        .chain(CurveTween(curve: Curves.easeInOut));
+    final Animatable<Offset> tween =
+        Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOut));
     final Animation<Offset> offsetAnimation = animation.drive(tween);
     return SlideTransition(
       position: offsetAnimation,
@@ -128,12 +79,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget listDialog(
-      String title, UserPreferenceKeys userPreferenceKeys, List list) {
+  Widget listDialog(String title, UserPreferenceKeys userPreferenceKeys, List list) {
     return AlertDialog(
       title: Text(title),
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
       content: SingleChildScrollView(
         child: SizedBox(
           width: double.maxFinite,
@@ -151,8 +100,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       return ListTile(
                         title: Text(list[index].toString()),
                         onTap: () async {
-                          await UserPreferences.setString(
-                              userPreferenceKeys, list[index]);
+                          await UserPreferences.setString(userPreferenceKeys, list[index]);
                           if (context.mounted) {
                             Navigator.pop(context, list[index]);
                           }
@@ -191,8 +139,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       child: SettingsList(
         lightTheme: SettingsThemeData(
           settingsListBackground: Colors.white,
-          settingsSectionBackground:
-              (Platform.isIOS) ? const Color(0xFFF7F7F7) : null,
+          settingsSectionBackground: (Platform.isIOS) ? const Color(0xFFF7F7F7) : null,
         ),
         sections: [
           SettingsSection(
@@ -205,11 +152,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     (currentUser == null) ? 'ログイン' : 'ログイン中',
                   ),
                   value: (currentUser == null) ? null : const Text('ログアウト'),
-                  description: Text((currentUser == null)
-                      ? '未来大Googleアカウント'
-                      : '${currentUser!.email}でログイン中'),
-                  leading:
-                      Icon((currentUser == null) ? Icons.login : Icons.logout),
+                  description: Text(
+                      (currentUser == null) ? '未来大Googleアカウント' : '${currentUser!.email}でログイン中'),
+                  leading: Icon((currentUser == null) ? Icons.login : Icons.logout),
                   onPressed: loginButton,
                 )
               else
@@ -217,11 +162,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: Text(
                     (currentUser == null) ? 'ログイン' : 'ログアウト',
                   ),
-                  value: Text((currentUser == null)
-                      ? '未来大Googleアカウント'
-                      : '${currentUser!.email}でログイン中'),
-                  leading:
-                      Icon((currentUser == null) ? Icons.login : Icons.logout),
+                  value: Text(
+                      (currentUser == null) ? '未来大Googleアカウント' : '${currentUser!.email}でログイン中'),
+                  leading: Icon((currentUser == null) ? Icons.login : Icons.logout),
                   onPressed: loginButton,
                 ),
               // 学年
@@ -230,8 +173,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   String? returnText = await showDialog(
                       context: context,
                       builder: (_) {
-                        return listDialog('学年', UserPreferenceKeys.grade,
-                            ['なし', '1年', '2年', '3年', '4年']);
+                        return listDialog(
+                            '学年', UserPreferenceKeys.grade, ['なし', '1年', '2年', '3年', '4年']);
                       });
                   if (returnText != null) {
                     ref.read(settingsGradeProvider.notifier).state = returnText;
@@ -251,8 +194,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ['なし', '情報システム', '情報デザイン', '知能', '複雑', '高度ICT']);
                       });
                   if (returnText != null) {
-                    ref.read(settingsCourseProvider.notifier).state =
-                        returnText;
+                    ref.read(settingsCourseProvider.notifier).state = returnText;
                   }
                 },
                 leading: const Icon(Icons.school),
@@ -266,11 +208,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 leading: const Icon(Icons.assignment),
                 onPressed: (context) {
                   Navigator.of(context).push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        SettingsStringScreen(
-                            '課題のユーザーキー',
-                            ref.read(settingsUserKeyProvider),
-                            settingsUserKeyProvider),
+                    pageBuilder: (context, animation, secondaryAnimation) => SettingsStringScreen(
+                        '課題のユーザーキー', ref.read(settingsUserKeyProvider), settingsUserKeyProvider),
                     transitionsBuilder: animation,
                   ));
                 },
@@ -295,8 +234,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 leading: const Icon(Icons.assignment),
                 onPressed: (context) {
                   Navigator.of(context).push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        const AppTutorial(),
+                    pageBuilder: (context, animation, secondaryAnimation) => const AppTutorial(),
                     transitionsBuilder: animation,
                   ));
                 },
@@ -378,13 +316,11 @@ class SettingsStringScreen extends StatelessWidget {
                   onChanged: (value) async {
                     if (value.length == 16) {
                       if (userKeyPattern.hasMatch(value)) {
-                        await UserPreferences.setString(
-                            UserPreferenceKeys.userKey, value);
+                        await UserPreferences.setString(UserPreferenceKeys.userKey, value);
                         ref.read(provider.notifier).state = value;
                       }
                     } else if (value.isEmpty) {
-                      await UserPreferences.setString(
-                          UserPreferenceKeys.userKey, value);
+                      await UserPreferences.setString(UserPreferenceKeys.userKey, value);
                       ref.read(provider.notifier).state = '';
                     }
                   },
