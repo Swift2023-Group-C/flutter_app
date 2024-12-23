@@ -1,15 +1,17 @@
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotto/components/setting_user_info.dart';
+import 'package:dotto/controller/user_controller.dart';
+import 'package:dotto/importer.dart';
+import 'package:dotto/repository/firebase_auth.dart';
 import 'package:dotto/screens/app_tutorial.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 StateProvider<String> settingsGradeProvider = StateProvider((ref) => 'なし');
 StateProvider<String> settingsCourseProvider = StateProvider((ref) => 'なし');
@@ -23,10 +25,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  String dropdownValueGrade = 'なし';
-  User? currentUser = FirebaseAuth.instance.currentUser;
-  PackageInfo? packageInfo;
-
   void launchUrlInExternal(Uri url) async {
     if (await canLaunchUrl(url)) {
       launchUrl(url, mode: LaunchMode.externalApplication);
@@ -35,92 +33,51 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<String?> getVersion() async {
-    packageInfo = await PackageInfo.fromPlatform();
-    if (packageInfo != null) {
-      return packageInfo!.version;
+  Future<void> saveFCMToken(User user) async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null) {
+      final db = FirebaseFirestore.instance;
+      final tokenRef = db.collection("fcm_token");
+      final tokenQuery =
+          tokenRef.where('uid', isEqualTo: user.uid).where('token', isEqualTo: fcmToken);
+      final tokenQuerySnapshot = await tokenQuery.get();
+      final tokenDocs = tokenQuerySnapshot.docs;
+      if (tokenDocs.isEmpty) {
+        await tokenRef.add({
+          'uid': user.uid,
+          'token': fcmToken,
+          'last_updated': Timestamp.now(),
+        });
+      }
+      UserPreferences.setBool(UserPreferenceKeys.didSaveFCMToken, true);
     }
-    return null;
   }
 
-  Future<UserCredential?> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    if (googleUser == null) {
-      return null;
-    }
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    try {
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'account-exists-with-different-credential') {
-        return null;
-      } else if (e.code == 'invalid-credential') {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-    return null;
-  }
-
-  Future<void> loginButton(BuildContext context) async {
-    // ログインしていないなら
-    if (currentUser == null) {
-      final userCredential = await signInWithGoogle();
-      if (userCredential != null) {
-        final user = userCredential.user;
-        if (user != null) {
-          debugPrint(user.uid);
-          if (user.email != null) {
-            if (user.email!.endsWith('@fun.ac.jp') ||
-                user.email! == 'demodotto@gmail.com') {
-              setState(() {
-                currentUser = user;
-              });
-            } else {
-              await user.delete();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('このユーザーではログインできません。')),
-                );
-              }
-            }
-          } else {
-            await user.delete();
-          }
-        } else {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('ログインに失敗しました。')),
-            );
-          }
-        }
-      }
+  Future<void> onLogin(BuildContext context, Function login) async {
+    final user = await FirebaseAuthRepository().signIn();
+    if (user != null) {
+      login(user);
+      saveFCMToken(user);
     } else {
-      await FirebaseAuth.instance.signOut();
-      setState(() {
-        currentUser = null;
-      });
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('ログインできませんでした。')),
+        );
+      }
     }
+  }
+
+  Future<void> onLogout(Function logout) async {
+    await FirebaseAuthRepository().signOut();
+    logout();
   }
 
   Widget animation(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
     const Offset begin = Offset(1.0, 0.0);
     const Offset end = Offset.zero;
-    final Animatable<Offset> tween = Tween(begin: begin, end: end)
-        .chain(CurveTween(curve: Curves.easeInOut));
+    final Animatable<Offset> tween =
+        Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOut));
     final Animation<Offset> offsetAnimation = animation.drive(tween);
     return SlideTransition(
       position: offsetAnimation,
@@ -128,12 +85,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget listDialog(
-      String title, UserPreferenceKeys userPreferenceKeys, List list) {
+  Widget listDialog(String title, UserPreferenceKeys userPreferenceKeys, List list) {
     return AlertDialog(
       title: Text(title),
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
       content: SingleChildScrollView(
         child: SizedBox(
           width: double.maxFinite,
@@ -151,8 +106,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       return ListTile(
                         title: Text(list[index].toString()),
                         onTap: () async {
-                          await UserPreferences.setString(
-                              userPreferenceKeys, list[index]);
+                          await UserPreferences.setString(userPreferenceKeys, list[index]);
                           if (context.mounted) {
                             Navigator.pop(context, list[index]);
                           }
@@ -185,53 +139,47 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userNotifier = ref.read(userProvider.notifier);
+    final user = ref.watch(userProvider);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: SettingsList(
         lightTheme: SettingsThemeData(
           settingsListBackground: Colors.white,
-          settingsSectionBackground:
-              (Platform.isIOS) ? const Color(0xFFF7F7F7) : null,
+          settingsSectionBackground: (Platform.isIOS) ? const Color(0xFFF7F7F7) : null,
         ),
         sections: [
           SettingsSection(
             title: const Text('全般'),
             tiles: <SettingsTile>[
               // Googleでログイン
-              if (Platform.isIOS)
-                SettingsTile.navigation(
-                  title: Text(
-                    (currentUser == null) ? 'ログイン' : 'ログイン中',
-                  ),
-                  value: (currentUser == null) ? null : const Text('ログアウト'),
-                  description: Text((currentUser == null)
-                      ? '未来大Googleアカウント'
-                      : '${currentUser!.email}でログイン中'),
-                  leading:
-                      Icon((currentUser == null) ? Icons.login : Icons.logout),
-                  onPressed: loginButton,
-                )
-              else
-                SettingsTile.navigation(
-                  title: Text(
-                    (currentUser == null) ? 'ログイン' : 'ログアウト',
-                  ),
-                  value: Text((currentUser == null)
-                      ? '未来大Googleアカウント'
-                      : '${currentUser!.email}でログイン中'),
-                  leading:
-                      Icon((currentUser == null) ? Icons.login : Icons.logout),
-                  onPressed: loginButton,
+
+              SettingsTile.navigation(
+                title: Text(
+                  (user == null) ? 'ログイン' : 'ログイン中',
                 ),
+                value: (Platform.isIOS)
+                    ? (user == null)
+                        ? null
+                        : const Text('ログアウト')
+                    : Text((user == null) ? '未来大Googleアカウント' : '${user.email}でログイン中'),
+                description: (Platform.isIOS)
+                    ? Text((user == null) ? '未来大Googleアカウント' : '${user.email}でログイン中')
+                    : null,
+                leading: Icon((user == null) ? Icons.login : Icons.logout),
+                onPressed: (user == null)
+                    ? (c) => onLogin(c, userNotifier.login)
+                    : (_) => onLogout(userNotifier.logout),
+              ),
               // 学年
               SettingsTile.navigation(
                 onPressed: (context) async {
                   String? returnText = await showDialog(
                       context: context,
                       builder: (_) {
-                        return listDialog('学年', UserPreferenceKeys.grade,
-                            ['なし', '1年', '2年', '3年', '4年']);
+                        return listDialog(
+                            '学年', UserPreferenceKeys.grade, ['なし', '1年', '2年', '3年', '4年']);
                       });
                   if (returnText != null) {
                     ref.read(settingsGradeProvider.notifier).state = returnText;
@@ -251,8 +199,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ['なし', '情報システム', '情報デザイン', '知能', '複雑', '高度ICT']);
                       });
                   if (returnText != null) {
-                    ref.read(settingsCourseProvider.notifier).state =
-                        returnText;
+                    ref.read(settingsCourseProvider.notifier).state = returnText;
                   }
                 },
                 leading: const Icon(Icons.school),
@@ -266,11 +213,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 leading: const Icon(Icons.assignment),
                 onPressed: (context) {
                   Navigator.of(context).push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        SettingsStringScreen(
-                            '課題のユーザーキー',
-                            ref.read(settingsUserKeyProvider),
-                            settingsUserKeyProvider),
+                    pageBuilder: (context, animation, secondaryAnimation) => SettingsStringScreen(
+                        '課題のユーザーキー', ref.read(settingsUserKeyProvider), settingsUserKeyProvider),
                     transitionsBuilder: animation,
                   ));
                 },
@@ -295,8 +239,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 leading: const Icon(Icons.assignment),
                 onPressed: (context) {
                   Navigator.of(context).push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        const AppTutorial(),
+                    pageBuilder: (context, animation, secondaryAnimation) => const AppTutorial(),
                     transitionsBuilder: animation,
                   ));
                 },
@@ -378,13 +321,11 @@ class SettingsStringScreen extends StatelessWidget {
                   onChanged: (value) async {
                     if (value.length == 16) {
                       if (userKeyPattern.hasMatch(value)) {
-                        await UserPreferences.setString(
-                            UserPreferenceKeys.userKey, value);
+                        await UserPreferences.setString(UserPreferenceKeys.userKey, value);
                         ref.read(provider.notifier).state = value;
                       }
                     } else if (value.isEmpty) {
-                      await UserPreferences.setString(
-                          UserPreferenceKeys.userKey, value);
+                      await UserPreferences.setString(UserPreferenceKeys.userKey, value);
                       ref.read(provider.notifier).state = '';
                     }
                   },

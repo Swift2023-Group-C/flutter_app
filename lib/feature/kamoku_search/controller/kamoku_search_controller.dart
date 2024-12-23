@@ -281,7 +281,7 @@ class KamokuSearchControllerProvider extends StateNotifier<KamokuSearchControlle
         }
       }
       if (masterFieldInt == 0) {
-        masterFieldInt = 31;
+        masterFieldInt = 63;
       }
       sqlWhereList.add("(sort.大学院 & ${masterFieldInt.toString()})");
     }

@@ -35,8 +35,8 @@ class TimetableRepository {
   Future<Map<String, dynamic>?> fetchDB(int lessonId) async {
     Database database = await openDatabase(SyllabusDBConfig.dbPath);
 
-    List<Map<String, dynamic>> records = await database.rawQuery(
-        'SELECT LessonId, 過去問, 授業名 FROM sort where LessonId = ?', [lessonId]);
+    List<Map<String, dynamic>> records = await database
+        .rawQuery('SELECT LessonId, 過去問, 授業名 FROM sort where LessonId = ?', [lessonId]);
     if (records.isEmpty) {
       return null;
     }
@@ -44,8 +44,7 @@ class TimetableRepository {
   }
 
   Future<List<int>> loadPersonalTimeTableList() async {
-    final jsonString = await UserPreferences.getString(
-        UserPreferenceKeys.personalTimetableListKey);
+    final jsonString = await UserPreferences.getString(UserPreferenceKeys.personalTimetableListKey);
     if (jsonString != null) {
       return List<int>.from(json.decode(jsonString));
     }
@@ -70,43 +69,42 @@ class TimetableRepository {
 // 施設予約のjsonファイルの中から取得している科目のみに絞り込み
   Future<List<dynamic>> filterTimeTable() async {
     String fileName = 'map/oneweek_schedule.json';
-    String jsonString = await readJsonFile(fileName);
-    List<dynamic> jsonData = json.decode(jsonString);
+    try {
+      String jsonString = await readJsonFile(fileName);
+      List<dynamic> jsonData = json.decode(jsonString);
 
-    List<int> personalTimeTableList = await loadPersonalTimeTableList();
+      List<int> personalTimeTableList = await loadPersonalTimeTableList();
 
-    List<dynamic> filteredData = [];
-    for (int lessonId in personalTimeTableList) {
-      for (var item in jsonData) {
-        if (item['lessonId'] == lessonId.toString()) {
-          filteredData.add(item);
+      List<dynamic> filteredData = [];
+      for (int lessonId in personalTimeTableList) {
+        for (var item in jsonData) {
+          if (item['lessonId'] == lessonId.toString()) {
+            filteredData.add(item);
+          }
         }
       }
+      return filteredData;
+    } catch (e) {
+      return [];
     }
-    return filteredData;
   }
 
-  Future<Map<DateTime, Map<int, List<TimeTableCourse>>>>
-      get2WeekLessonSchedule() async {
+  Future<Map<DateTime, Map<int, List<TimeTableCourse>>>> get2WeekLessonSchedule() async {
     final List<DateTime> dates = getDateRange();
     Map<DateTime, Map<int, List<TimeTableCourse>>> twoWeekLessonSchedule = {};
-    for (var date in dates) {
-      twoWeekLessonSchedule[date] = await dailyLessonSchedule(date);
+    try {
+      for (var date in dates) {
+        twoWeekLessonSchedule[date] = await dailyLessonSchedule(date);
+      }
+      return twoWeekLessonSchedule;
+    } catch (e) {
+      return twoWeekLessonSchedule;
     }
-    return twoWeekLessonSchedule;
   }
 
 // 時間を入れたらその日の授業を返す
-  Future<Map<int, List<TimeTableCourse>>> dailyLessonSchedule(
-      DateTime selectTime) async {
-    Map<int, Map<int, TimeTableCourse>> periodData = {
-      1: {},
-      2: {},
-      3: {},
-      4: {},
-      5: {},
-      6: {}
-    };
+  Future<Map<int, List<TimeTableCourse>>> dailyLessonSchedule(DateTime selectTime) async {
+    Map<int, Map<int, TimeTableCourse>> periodData = {1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}};
     Map<int, List<TimeTableCourse>> returnData = {};
 
     List<dynamic> lessonData = await filterTimeTable();
@@ -129,8 +127,7 @@ class TimetableRepository {
             continue;
           }
         }
-        periodData[period]![lessonId] =
-            TimeTableCourse(lessonId, item['title'], resourceId);
+        periodData[period]![lessonId] = TimeTableCourse(lessonId, item['title'], resourceId);
       }
     }
 
@@ -138,8 +135,7 @@ class TimetableRepository {
     List<dynamic> cancelLectureData = jsonDecode(jsonData);
     jsonData = await readJsonFile('home/sup_lecture.json');
     List<dynamic> supLectureData = jsonDecode(jsonData);
-    Map<String, int> loadPersonalTimeTableMap =
-        await loadPersonalTimeTableMapString();
+    Map<String, int> loadPersonalTimeTableMap = await loadPersonalTimeTableMapString();
 
     for (var cancelLecture in cancelLectureData) {
       DateTime dt = DateTime.parse(cancelLecture['date']);
@@ -181,13 +177,11 @@ class TimetableRepository {
     final personalLessonIdList = ref.watch(personalLessonIdListProvider);
     final weekPeriodAllRecords = ref.watch(weekPeriodAllRecordsProvider).value;
     if (weekPeriodAllRecords != null) {
-      final filterWeekPeriod = weekPeriodAllRecords
-          .where((element) => element['lessonId'] == lessonId)
-          .toList();
+      final filterWeekPeriod =
+          weekPeriodAllRecords.where((element) => element['lessonId'] == lessonId).toList();
       List<Map<String, dynamic>> targetWeekPeriod =
           filterWeekPeriod.where((element) => element['開講時期'] != 0).toList();
-      for (var element
-          in filterWeekPeriod.where((element) => element['開講時期'] == 0)) {
+      for (var element in filterWeekPeriod.where((element) => element['開講時期'] == 0)) {
         Map<String, dynamic> e1 = {...element};
         Map<String, dynamic> e2 = {...element};
         e1['開講時期'] = 10;
@@ -200,26 +194,22 @@ class TimetableRepository {
         final int term = record['開講時期'];
         final int week = record['week'];
         final int period = record['period'];
-        List<Map<String, dynamic>> selectedLessonList =
-            weekPeriodAllRecords.where((record) {
+        List<Map<String, dynamic>> selectedLessonList = weekPeriodAllRecords.where((record) {
           return record['week'] == week &&
               record['period'] == period &&
               (record['開講時期'] == term || record['開講時期'] == 0) &&
               personalLessonIdList.contains(record['lessonId']);
         }).toList();
         if (selectedLessonList.length > 1) {
-          final removeLessonList =
-              selectedLessonList.sublist(2, selectedLessonList.length);
+          final removeLessonList = selectedLessonList.sublist(2, selectedLessonList.length);
           if (removeLessonList.isNotEmpty) {
-            removeLessonIdList.addAll(
-                removeLessonList.map((e) => e['lessonId'] as int).toSet());
+            removeLessonIdList.addAll(removeLessonList.map((e) => e['lessonId'] as int).toSet());
           }
           flag = true;
         }
       }
       if (removeLessonIdList.isNotEmpty) {
-        personalLessonIdList
-            .removeWhere((element) => removeLessonIdList.contains(element));
+        personalLessonIdList.removeWhere((element) => removeLessonIdList.contains(element));
         await savePersonalTimeTableList(personalLessonIdList, ref);
       }
       return flag;

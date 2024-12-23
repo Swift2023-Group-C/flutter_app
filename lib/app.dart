@@ -1,20 +1,23 @@
 import 'dart:async';
 
-import 'package:dotto/app/controller/tab_controller.dart';
-import 'package:dotto/app/domain/tab_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dotto/controller/tab_controller.dart';
+import 'package:dotto/controller/user_controller.dart';
+import 'package:dotto/domain/tab_item.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
+import 'package:dotto/feature/my_page/feature/bus/repository/bus_repository.dart';
 import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
 import 'package:dotto/feature/my_page/feature/news/repository/news_repository.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:dotto/repository/notification.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:app_links/app_links.dart';
 
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/components/setting_user_info.dart';
-import 'package:dotto/repository/db_config.dart';
 import 'package:dotto/repository/download_file_from_firebase.dart';
 import 'package:dotto/feature/map/controller/map_controller.dart';
 import 'package:dotto/feature/map/repository/map_repository.dart';
@@ -34,7 +37,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.light(
           primary: customFunColor,
           onSurface: Colors.grey.shade900,
-          background: Colors.grey.shade100,
+          surface: Colors.grey.shade100,
         ),
         buttonTheme: ButtonThemeData(
           shape: RoundedRectangleBorder(
@@ -44,11 +47,12 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
-            shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+            shape: WidgetStatePropertyAll(RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             )),
-            padding: const MaterialStatePropertyAll(EdgeInsets.all(0)),
-            elevation: const MaterialStatePropertyAll(2),
+            padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),
+            elevation: const WidgetStatePropertyAll(2),
+            surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
           ),
         ),
         appBarTheme: const AppBarTheme(
@@ -57,7 +61,7 @@ class MyApp extends StatelessWidget {
         ),
         textButtonTheme: const TextButtonThemeData(
           style: ButtonStyle(
-            padding: MaterialStatePropertyAll(EdgeInsets.all(0)),
+            padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
           ),
         ),
         dividerTheme: DividerThemeData(
@@ -91,30 +95,23 @@ class _BasePageState extends ConsumerState<BasePage> {
   late List<String?> parameter;
 
   Future<void> initUniLinks() async {
-    linkStream.listen((String? link) async {
-      //さっき設定したスキームをキャッチしてここが走る。
-      parameter = getQueryParameter(link);
-      if (parameter[0] != null && parameter[1] != null) {
-        if (parameter[0] == 'config') {
-          final String userKey = parameter[1]!;
-          final RegExp userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
-          if (userKeyPattern.hasMatch(userKey)) {
+    final appLinks = AppLinks();
+    appLinks.uriLinkStream.listen((event) {
+      if (event.path == "/config/" && event.hasQuery) {
+        final query = event.queryParameters;
+        if (query.containsKey('userkey')) {
+          final userKey = query['userkey'];
+          final userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
+          if (userKeyPattern.hasMatch(userKey!)) {
             _onItemTapped(4);
-            await UserPreferences.setString(UserPreferenceKeys.userKey, userKey);
+            UserPreferences.setString(UserPreferenceKeys.userKey, userKey);
             ref.read(settingsUserKeyProvider.notifier).state = userKey;
           }
         }
       }
-    }, onError: (err) {
-      debugPrint(err);
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
     });
-  }
-
-  List<String?> getQueryParameter(String? link) {
-    if (link == null) return [null, null];
-    final uri = Uri.parse(link);
-    List<String?> returnParam = [uri.host, uri.queryParameters['userkey']];
-    return returnParam;
   }
 
   Future<void> setPersonalLessonIdList() async {
@@ -129,20 +126,48 @@ class _BasePageState extends ConsumerState<BasePage> {
     await ref.read(busDataProvider.notifier).init();
     ref.read(myBusStopProvider.notifier).init();
     ref.read(busRefreshProvider.notifier).start();
+    BusRepository().changeDirectionOnCurrentLocation(ref);
   }
 
   Future<void> getNews() async {
     ref.read(newsListProvider.notifier).update(await NewsRepository().getNewsListFromFirestore());
   }
 
+  Future<void> saveFCMToken() async {
+    final didSave = await UserPreferences.getBool(UserPreferenceKeys.didSaveFCMToken) ?? false;
+    debugPrint("didSave: $didSave");
+    if (didSave) {
+      return;
+    }
+    final user = ref.read(userProvider);
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null && user != null) {
+      final db = FirebaseFirestore.instance;
+      final tokenRef = db.collection("fcm_token");
+      final tokenQuery =
+          tokenRef.where('uid', isEqualTo: user.uid).where('token', isEqualTo: fcmToken);
+      final tokenQuerySnapshot = await tokenQuery.get();
+      final tokenDocs = tokenQuerySnapshot.docs;
+      if (tokenDocs.isEmpty) {
+        await tokenRef.add({
+          'uid': user.uid,
+          'token': fcmToken,
+          'last_updated': Timestamp.now(),
+        });
+      }
+      UserPreferences.setBool(UserPreferenceKeys.didSaveFCMToken, true);
+    }
+  }
+
   Future<void> init() async {
     initUniLinks();
     initBus();
     NotificationRepository().setupInteractedMessage(ref);
-    await SyllabusDBConfig.setDB();
     setPersonalLessonIdList();
-    await downloadFiles();
+    // await downloadFiles();
     await getNews();
+
+    saveFCMToken();
   }
 
   @override
@@ -190,7 +215,7 @@ class _BasePageState extends ConsumerState<BasePage> {
       final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
       final searchDatetimeNotifier = ref.read(searchDatetimeProvider.notifier);
       searchDatetimeNotifier.reset();
-      mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now());
+      mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now(), ref);
     }
 
     final tabItemNotifier = ref.read(tabItemProvider.notifier);
@@ -220,7 +245,7 @@ class _BasePageState extends ConsumerState<BasePage> {
     final tabItem = ref.watch(tabItemProvider);
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) {
           return;
         }

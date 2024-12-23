@@ -16,7 +16,7 @@ enum KamokuSearchChoices {
     choice: ['社会', '人間', '科学', '健康', 'コミュ'],
   ),
   masterField(
-    choice: ['情報ア', '高度ICT', 'デザ', '複雑', '知能'],
+    choice: ['全領域', '情報ア', '高度ICT', 'デザ', '複雑', '知能'],
   );
 
   const KamokuSearchChoices({required this.choice, this.displayString});

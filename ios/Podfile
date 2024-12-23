@@ -31,7 +31,7 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '10.25.0'
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '11.4.0'
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
@@ -41,7 +41,12 @@ post_install do |installer|
       target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
       end
-   end
+      if target.name == "geolocator_apple"
+        target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', 'BYPASS_PERMISSION_LOCATION_ALWAYS=1']
+        end
+      end
+    end
   end
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)

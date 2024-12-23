@@ -1,48 +1,40 @@
 import 'dart:convert';
 
+import 'package:dotto/controller/user_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
-import 'package:dotto/repository/app_status.dart';
 import 'package:dotto/repository/read_json_file.dart';
 
 class CourseCancellationScreen extends ConsumerWidget {
   const CourseCancellationScreen({super.key});
 
-  Future<List<dynamic>> filterJsonDataByLessonNames() async {
-    // 個人のタイムテーブルマップをロード
-    Map<String, int> personalTimeTableMap =
-        await TimetableRepository().loadPersonalTimeTableMapString();
-
-    String jsonFileName = 'home/cancel_lecture.json';
-    // JSONファイルを読み込む
-    String jsonData = await readJsonFile(jsonFileName);
-    List<dynamic> decodedData = jsonDecode(jsonData);
-
-    // デコードされたJSONデータをフィルタリング
-    List<dynamic> filteredData = decodedData.where((item) {
-      return personalTimeTableMap.keys.contains(item['lessonName']);
-    }).toList();
-
-    return filteredData;
-  }
-
   Future<List<dynamic>> loadData(WidgetRef ref) async {
     final courseCancellationFilterEnabled = ref.watch(courseCancellationFilterEnabledProvider);
-    String jsonData = await readJsonFile('home/cancel_lecture.json');
-    List<dynamic> decodedData = jsonDecode(jsonData);
+    try {
+      final jsonData = await readJsonFile('home/cancel_lecture.json');
+      List<dynamic> decodedData = jsonDecode(jsonData);
 
-    if (courseCancellationFilterEnabled) {
-      return await filterJsonDataByLessonNames();
-    } else {
-      return decodedData;
+      if (courseCancellationFilterEnabled) {
+        final personalTimeTableMap = await TimetableRepository().loadPersonalTimeTableMapString();
+        // デコードされたJSONデータをフィルタリング
+        List<dynamic> filteredData = decodedData.where((item) {
+          return personalTimeTableMap.keys.contains(item['lessonName']);
+        }).toList();
+        return filteredData;
+      } else {
+        return decodedData;
+      }
+    } catch (e) {
+      return [];
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!AppStatus().isLoggedinGoogle) {
+    final user = ref.watch(userProvider);
+    if (user == null) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('休講情報'),
@@ -54,10 +46,10 @@ class CourseCancellationScreen extends ConsumerWidget {
     }
     final courseCancellationFilterEnabled = ref.watch(courseCancellationFilterEnabledProvider);
     final courseCancellationFilterEnabledNotifier =
-        ref.watch(courseCancellationFilterEnabledProvider.notifier);
+        ref.read(courseCancellationFilterEnabledProvider.notifier);
     final courseCancellationSelectedType = ref.watch(courseCancellationSelectedTypeProvider);
     final courseCancellationSelectedTypeNotifier =
-        ref.watch(courseCancellationSelectedTypeProvider.notifier);
+        ref.read(courseCancellationSelectedTypeProvider.notifier);
     return Scaffold(
       appBar: AppBar(
         title: const Text('休講情報'),

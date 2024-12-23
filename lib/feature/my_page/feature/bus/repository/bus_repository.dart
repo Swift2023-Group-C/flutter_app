@@ -1,6 +1,9 @@
+import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/bus/domain/bus_stop.dart';
 import 'package:dotto/feature/my_page/feature/bus/domain/bus_trip.dart';
+import 'package:dotto/importer.dart';
 import 'package:dotto/repository/get_firebase_realtime_db.dart';
+import 'package:dotto/repository/location.dart';
 
 class BusRepository {
   static final BusRepository _instance = BusRepository._internal();
@@ -62,6 +65,19 @@ class BusRepository {
       return allBusTrips;
     } else {
       throw Exception();
+    }
+  }
+
+  Future<void> changeDirectionOnCurrentLocation(WidgetRef ref) async {
+    final position = await determinePosition();
+    if (position != null) {
+      final latitude = position.latitude;
+      if (latitude > 41.838770 && latitude < 41.845295) {
+        final longitude = position.longitude;
+        if (longitude > 140.765061 && longitude < 140.770368) {
+          ref.read(busIsToProvider.notifier).change();
+        }
+      }
     }
   }
 }

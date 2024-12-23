@@ -8,7 +8,8 @@ import 'package:dotto/feature/my_page/feature/bus/widget/bus_card.dart';
 import 'package:dotto/feature/my_page/feature/bus/widget/bus_stop_select.dart';
 import 'package:dotto/importer.dart';
 
-//make by zaki
+final busKey = GlobalKey();
+
 class BusScreen extends ConsumerWidget {
   const BusScreen({super.key});
 
@@ -62,6 +63,7 @@ class BusScreen extends ConsumerWidget {
     final busIsTo = ref.watch(busIsToProvider);
     final busRefresh = ref.watch(busRefreshProvider);
     final busIsWeekday = ref.watch(busIsWeekdayNotifier);
+    final busScrolled = ref.watch(busScrolledProvider);
 
     Widget myBusStopButton = busStopButton(context, () {
       Navigator.of(context).push(MaterialPageRoute(
@@ -78,11 +80,75 @@ class BusScreen extends ConsumerWidget {
       color: AppColor.linkTextBlue,
       onPressed: () {
         ref.read(busIsToProvider.notifier).change();
+        ref.read(busScrolledProvider.notifier).state = false;
       },
       icon: const Icon(
         Icons.swap_horiz_outlined,
       ),
     );
+
+    bool arriveAtSoon = true;
+    final busListWidget = busData != null
+        ? busData[fromToString]![busIsWeekday ? "weekday" : "holiday"]!.map((busTrip) {
+            final funBusTripStop =
+                busTrip.stops.firstWhereOrNull((element) => element.stop.id == 14023);
+            if (funBusTripStop == null) {
+              return Container();
+            }
+            BusTripStop? targetBusTripStop =
+                busTrip.stops.firstWhereOrNull((element) => element.stop.id == myBusStop.id);
+            bool kameda = false;
+            if (targetBusTripStop == null) {
+              targetBusTripStop = busTrip.stops.firstWhere((element) => element.stop.id == 14013);
+              kameda = true;
+            }
+            final fromBusTripStop = busIsTo ? targetBusTripStop : funBusTripStop;
+            final toBusTripStop = busIsTo ? funBusTripStop : targetBusTripStop;
+            final now = busRefresh;
+            final nowDuration = Duration(hours: now.hour, minutes: now.minute);
+            final arriveAt = fromBusTripStop.time - nowDuration;
+            bool hasKey = false;
+            if (arriveAtSoon && arriveAt > Duration.zero) {
+              arriveAtSoon = false;
+              hasKey = true;
+            }
+            //return const SizedBox.shrink();
+            //}
+            return InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BusTimetableScreen(busTrip),
+                  ),
+                );
+              },
+              child: BusCard(
+                busTrip.route,
+                fromBusTripStop.time,
+                toBusTripStop.time,
+                arriveAt,
+                isKameda: kameda,
+                key: hasKey ? busKey : null,
+              ),
+            );
+          }).toList()
+        : [Container()];
+    final scrollController = ScrollController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (busScrolled) return;
+      final currentContext = busKey.currentContext;
+      if (currentContext == null) return;
+      final box = currentContext.findRenderObject() as RenderBox;
+      final position = box.localToGlobal(Offset.zero);
+      scrollController.animateTo(
+        scrollController.offset + position.dy - 300,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+      ref.read(busScrolledProvider.notifier).state = true;
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -92,6 +158,7 @@ class BusScreen extends ConsumerWidget {
           TextButton.icon(
             onPressed: () {
               ref.read(busIsWeekdayNotifier.notifier).change();
+              ref.read(busScrolledProvider.notifier).state = false;
             },
             icon: const Icon(
               Icons.swap_horiz_outlined,
@@ -132,44 +199,11 @@ class BusScreen extends ConsumerWidget {
           ),
           Expanded(
             child: busData != null
-                ? ListView(
-                    children: busData[fromToString]![busIsWeekday ? "weekday" : "holiday"]!
-                        .map((busTrip) {
-                      final funBusTripStop =
-                          busTrip.stops.firstWhereOrNull((element) => element.stop.id == 14023);
-                      if (funBusTripStop == null) {
-                        return Container();
-                      }
-                      BusTripStop? targetBusTripStop = busTrip.stops
-                          .firstWhereOrNull((element) => element.stop.id == myBusStop.id);
-                      bool kameda = false;
-                      if (targetBusTripStop == null) {
-                        targetBusTripStop =
-                            busTrip.stops.firstWhere((element) => element.stop.id == 14013);
-                        kameda = true;
-                      }
-                      final fromBusTripStop = busIsTo ? targetBusTripStop : funBusTripStop;
-                      final toBusTripStop = busIsTo ? funBusTripStop : targetBusTripStop;
-                      final now = busRefresh;
-                      final nowDuration = Duration(hours: now.hour, minutes: now.minute);
-                      final arriveAt = fromBusTripStop.time - nowDuration;
-                      if (arriveAt.isNegative) {
-                        return const SizedBox.shrink();
-                      }
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BusTimetableScreen(busTrip),
-                            ),
-                          );
-                        },
-                        child: BusCard(
-                            busTrip.route, fromBusTripStop.time, toBusTripStop.time, arriveAt,
-                            isKameda: kameda),
-                      );
-                    }).toList(),
+                ? SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      children: busListWidget,
+                    ),
                   )
                 : createProgressIndicator(),
           ),
