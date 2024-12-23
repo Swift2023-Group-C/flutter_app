@@ -221,7 +221,7 @@ class MapTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> floorBarString = ['1', '2', '3', '4', '5', 'R6', 'R7'];
+    List<String> floorBarString = ['5', '4', '3', '2', '1', 'R6', 'R7'];
     List<Widget> widgetList = [];
     widgetList.add(SizedBox.expand(child: Consumer(
       builder: (context, ref, child) {

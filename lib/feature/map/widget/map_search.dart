@@ -115,7 +115,7 @@ class MapBarrierOnSearch extends ConsumerWidget {
 class MapSearchListView extends ConsumerWidget {
   const MapSearchListView({super.key});
 
-  static const List<String> floorBarString = ['1', '2', '3', '4', '5', 'R6', 'R7'];
+  static const List<String> floorBarString = ['5', '4', '3', '2', '1', 'R6', 'R7'];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
