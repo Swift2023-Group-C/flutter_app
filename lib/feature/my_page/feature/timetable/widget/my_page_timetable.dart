@@ -1,22 +1,22 @@
-import 'package:dotto/repository/app_status.dart';
-import 'package:intl/intl.dart';
-
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
+import 'package:dotto/controller/user_controller.dart';
 import 'package:dotto/feature/kamoku_detail/kamoku_detail_page_view.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/domain/timetable_course.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
+import 'package:intl/intl.dart';
 
 class MyPageTimetable extends ConsumerWidget {
   const MyPageTimetable({super.key});
 
   Widget timeTableLessonButton(
-      BuildContext context, TimeTableCourse? timeTableCourse, bool loading) {
+      BuildContext context, TimeTableCourse? timeTableCourse, bool loading, WidgetRef ref) {
+    final user = ref.watch(userProvider);
     Color foregroundColor = Colors.black;
-    if (timeTableCourse != null && AppStatus().isLoggedinGoogle) {
+    if (timeTableCourse != null && user != null) {
       if (timeTableCourse.cancel) {
         foregroundColor = Colors.grey;
       }
@@ -125,7 +125,7 @@ class MyPageTimetable extends ConsumerWidget {
                   ),
                 ),
                 // 休講情報など
-                if (timeTableCourse != null && AppStatus().isLoggedinGoogle)
+                if (timeTableCourse != null && user != null)
                   if (timeTableCourse.cancel)
                     const Row(
                       children: [
@@ -160,8 +160,14 @@ class MyPageTimetable extends ConsumerWidget {
     );
   }
 
-  Widget timeTablePeriod(BuildContext context, int period, TimeOfDay beginTime,
-      TimeOfDay finishTime, List<TimeTableCourse> timeTableCourseList, bool loading) {
+  Widget timeTablePeriod(
+      BuildContext context,
+      int period,
+      TimeOfDay beginTime,
+      TimeOfDay finishTime,
+      List<TimeTableCourse> timeTableCourseList,
+      bool loading,
+      WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       margin: const EdgeInsets.symmetric(vertical: 5),
@@ -194,10 +200,10 @@ class MyPageTimetable extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (timeTableCourseList.isEmpty)
-                  timeTableLessonButton(context, null, loading)
+                  timeTableLessonButton(context, null, loading, ref)
                 else
-                  ...timeTableCourseList.map(
-                      (timeTableCourse) => timeTableLessonButton(context, timeTableCourse, false)),
+                  ...timeTableCourseList.map((timeTableCourse) =>
+                      timeTableLessonButton(context, timeTableCourse, false, ref)),
               ],
             ),
           ),
@@ -326,7 +332,8 @@ class MyPageTimetable extends ConsumerWidget {
                           ? twoWeekTimeTableData[focusTimeTableDay]![i] ?? []
                           : []
                       : [],
-                  twoWeekTimeTableData == null)
+                  twoWeekTimeTableData == null,
+                  ref)
             },
           ],
         );
