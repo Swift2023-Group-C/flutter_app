@@ -7,7 +7,7 @@ import 'package:dotto/feature/map/widget/fun_grid_map.dart';
 class MapGridScreen extends StatelessWidget {
   const MapGridScreen({super.key});
 
-  static const List<String> gridMapsList = ["5F", "4F", "3F", "2F", "1", "R6", "R7"];
+  static const List<String> gridMapsList = ["5", "4", "3", "2", "1", "R6", "R7"];
 
   @override
   Widget build(BuildContext context) {
