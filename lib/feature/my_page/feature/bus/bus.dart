@@ -25,6 +25,7 @@ class BusScreen extends ConsumerWidget {
           disabledBackgroundColor: Colors.white,
           disabledForegroundColor: Colors.black87,
           surfaceTintColor: Colors.white,
+          backgroundColor: Colors.white,
           fixedSize: Size(width, height),
           padding: const EdgeInsets.all(3),
           shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(15)),
