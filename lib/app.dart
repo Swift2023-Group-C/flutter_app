@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/controller/tab_controller.dart';
@@ -15,7 +16,7 @@ import 'package:dotto/feature/my_page/feature/news/controller/news_controller.da
 import 'package:dotto/feature/my_page/feature/news/repository/news_repository.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
-import 'package:dotto/feature/settings/settings.dart';
+import 'package:dotto/feature/settings/repository/settings_repository.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/repository/download_file_from_firebase.dart';
 import 'package:dotto/repository/notification.dart';
@@ -100,11 +101,8 @@ class _BasePageState extends ConsumerState<BasePage> {
         final query = event.queryParameters;
         if (query.containsKey('userkey')) {
           final userKey = query['userkey'];
-          final userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
-          if (userKeyPattern.hasMatch(userKey!)) {
-            _onItemTapped(4);
-            UserPreferences.setString(UserPreferenceKeys.userKey, userKey);
-            ref.read(settingsUserKeyProvider.notifier).state = userKey;
+          if (userKey != null) {
+            SettingsRepository().setUserKey(userKey, ref);
           }
         }
       }
@@ -177,19 +175,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     });
   }
 
-  Widget animation(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
-    const Offset begin = Offset(0.0, 1.0);
-    const Offset end = Offset.zero;
-    final Animatable<Offset> tween =
-        Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOut));
-    final Animation<Offset> offsetAnimation = animation.drive(tween);
-    return SlideTransition(
-      position: offsetAnimation,
-      child: child,
-    );
-  }
-
   Future<void> downloadFiles() async {
     await Future(
       () {
@@ -231,7 +216,7 @@ class _BasePageState extends ConsumerState<BasePage> {
         Navigator.of(context).push(PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => const AppTutorial(),
           fullscreenDialog: true,
-          transitionsBuilder: animation,
+          transitionsBuilder: fromRightAnimation,
         ));
         UserPreferences.setBool(UserPreferenceKeys.isAppTutorialComplete, true);
       }

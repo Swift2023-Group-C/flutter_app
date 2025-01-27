@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:dotto/components/kadai.dart';
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
-import 'package:dotto/feature/settings/settings.dart';
+import 'package:dotto/feature/settings/controller/settings_controller.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/repository/firebase_get_kadai.dart';
 import 'package:dotto/screens/kadai_hidden_list.dart';

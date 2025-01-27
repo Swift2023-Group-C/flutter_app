@@ -1,30 +1,24 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/controller/user_controller.dart';
+import 'package:dotto/feature/settings/controller/settings_controller.dart';
+import 'package:dotto/feature/settings/widget/license.dart';
+import 'package:dotto/feature/settings/widget/settings_set_userkey.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/repository/firebase_auth.dart';
 import 'package:dotto/screens/app_tutorial.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-StateProvider<String> settingsGradeProvider = StateProvider((ref) => 'なし');
-StateProvider<String> settingsCourseProvider = StateProvider((ref) => 'なし');
-StateProvider<String> settingsUserKeyProvider = StateProvider((ref) => '');
-
-class SettingsScreen extends ConsumerStatefulWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
-  @override
-  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void launchUrlInExternal(Uri url) async {
     if (await canLaunchUrl(url)) {
       launchUrl(url, mode: LaunchMode.externalApplication);
@@ -72,20 +66,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     logout();
   }
 
-  Widget animation(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
-    const Offset begin = Offset(1.0, 0.0);
-    const Offset end = Offset.zero;
-    final Animatable<Offset> tween =
-        Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOut));
-    final Animation<Offset> offsetAnimation = animation.drive(tween);
-    return SlideTransition(
-      position: offsetAnimation,
-      child: child,
-    );
-  }
-
-  Widget listDialog(String title, UserPreferenceKeys userPreferenceKeys, List list) {
+  Widget listDialog(
+      BuildContext context, String title, UserPreferenceKeys userPreferenceKeys, List list) {
     return AlertDialog(
       title: Text(title),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -121,24 +103,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  void initSettings() async {
-    ref.read(settingsGradeProvider.notifier).state =
-        await UserPreferences.getString(UserPreferenceKeys.grade) ?? 'なし';
-    ref.read(settingsCourseProvider.notifier).state =
-        await UserPreferences.getString(UserPreferenceKeys.course) ?? 'なし';
-    ref.read(settingsUserKeyProvider.notifier).state =
-        await UserPreferences.getString(UserPreferenceKeys.userKey) ?? '';
-  }
-
   @override
-  void initState() {
-    super.initState();
-    WidgetsFlutterBinding.ensureInitialized();
-    initSettings();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final userNotifier = ref.read(userProvider.notifier);
     final user = ref.watch(userProvider);
     return GestureDetector(
@@ -178,16 +144,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   String? returnText = await showDialog(
                       context: context,
                       builder: (_) {
-                        return listDialog(
-                            '学年', UserPreferenceKeys.grade, ['なし', '1年', '2年', '3年', '4年']);
+                        return listDialog(context, '学年', UserPreferenceKeys.grade,
+                            ['なし', '1年', '2年', '3年', '4年']);
                       });
                   if (returnText != null) {
-                    ref.read(settingsGradeProvider.notifier).state = returnText;
+                    ref.invalidate(settingsGradeProvider);
                   }
                 },
                 leading: const Icon(Icons.school),
                 title: const Text('学年'),
-                value: Text(ref.watch(settingsGradeProvider)),
+                value: Text(ref.watch(settingsGradeProvider).valueOrNull ?? 'なし'),
               ),
               // コース
               SettingsTile.navigation(
@@ -195,27 +161,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   String? returnText = await showDialog(
                       context: context,
                       builder: (_) {
-                        return listDialog('コース', UserPreferenceKeys.course,
+                        return listDialog(context, 'コース', UserPreferenceKeys.course,
                             ['なし', '情報システム', '情報デザイン', '知能', '複雑', '高度ICT']);
                       });
                   if (returnText != null) {
-                    ref.read(settingsCourseProvider.notifier).state = returnText;
+                    ref.invalidate(settingsCourseProvider);
                   }
                 },
                 leading: const Icon(Icons.school),
                 title: const Text('コース'),
-                value: Text(ref.watch(settingsCourseProvider)),
+                value: Text(ref.watch(settingsCourseProvider).valueOrNull ?? 'なし'),
               ),
               // ユーザーキー
               SettingsTile.navigation(
                 title: const Text('課題のユーザーキー'),
-                value: Text(ref.watch(settingsUserKeyProvider)),
+                value: Text(ref.watch(settingsUserKeyProvider).valueOrNull ?? ''),
                 leading: const Icon(Icons.assignment),
                 onPressed: (context) {
                   Navigator.of(context).push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) => SettingsStringScreen(
-                        '課題のユーザーキー', ref.read(settingsUserKeyProvider), settingsUserKeyProvider),
-                    transitionsBuilder: animation,
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        SettingsSetUserkeyScreen(),
+                    transitionsBuilder: fromRightAnimation,
                   ));
                 },
               ),
@@ -240,7 +206,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 onPressed: (context) {
                   Navigator.of(context).push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) => const AppTutorial(),
-                    transitionsBuilder: animation,
+                    transitionsBuilder: fromRightAnimation,
                   ));
                 },
               ),
@@ -254,7 +220,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   launchUrlInExternal(url);
                 },
               ),
-              // 利用規約
+              SettingsTile.navigation(
+                title: const Text('ライセンス'),
+                leading: const Icon(Icons.info),
+                onPressed: (context) {
+                  Navigator.of(context).push(PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const SettingsLicenseScreen(),
+                    transitionsBuilder: fromRightAnimation,
+                  ));
+                },
+              ),
+              // バージョン
               SettingsTile.navigation(
                 title: const Text('バージョン'),
                 leading: const Icon(Icons.info),
@@ -274,65 +251,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class SettingsStringScreen extends StatelessWidget {
-  SettingsStringScreen(this.title, this.initString, this.provider, {super.key});
-
-  final String title;
-  final String initString;
-  final StateProvider<String> provider;
-  final TextEditingController controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    final RegExp userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
-    controller.text = initString;
-    return Consumer(
-      builder: (context, ref, child) {
-        return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => FocusScope.of(context).unfocus(),
-            child: Scaffold(
-              appBar: AppBar(
-                title: Text(title),
-              ),
-              body: Container(
-                margin: const EdgeInsets.only(top: 40, right: 15, left: 15),
-                child: TextField(
-                  controller: controller,
-                  // 入力数
-                  maxLength: 16,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: '課題のユーザーキー',
-                    hintText: '半角英数字16桁',
-                  ),
-                  inputFormatters: [
-                    // 最大16文字まで入力可能
-                    LengthLimitingTextInputFormatter(16),
-                    // 半角英数字のみ許可
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'[a-zA-Z0-9]'),
-                    ),
-                  ],
-                  onChanged: (value) async {
-                    if (value.length == 16) {
-                      if (userKeyPattern.hasMatch(value)) {
-                        await UserPreferences.setString(UserPreferenceKeys.userKey, value);
-                        ref.read(provider.notifier).state = value;
-                      }
-                    } else if (value.isEmpty) {
-                      await UserPreferences.setString(UserPreferenceKeys.userKey, value);
-                      ref.read(provider.notifier).state = '';
-                    }
-                  },
-                ),
-              ),
-            ));
-      },
     );
   }
 }
