@@ -1,17 +1,14 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/controller/user_controller.dart';
 import 'package:dotto/feature/settings/controller/settings_controller.dart';
+import 'package:dotto/feature/settings/repository/settings_repository.dart';
 import 'package:dotto/feature/settings/widget/license.dart';
 import 'package:dotto/feature/settings/widget/settings_set_userkey.dart';
 import 'package:dotto/importer.dart';
-import 'package:dotto/repository/firebase_auth.dart';
 import 'package:dotto/screens/app_tutorial.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,45 +22,6 @@ class SettingsScreen extends ConsumerWidget {
     } else {
       throw 'Could not launch $url';
     }
-  }
-
-  Future<void> saveFCMToken(User user) async {
-    final fcmToken = await FirebaseMessaging.instance.getToken();
-    if (fcmToken != null) {
-      final db = FirebaseFirestore.instance;
-      final tokenRef = db.collection("fcm_token");
-      final tokenQuery =
-          tokenRef.where('uid', isEqualTo: user.uid).where('token', isEqualTo: fcmToken);
-      final tokenQuerySnapshot = await tokenQuery.get();
-      final tokenDocs = tokenQuerySnapshot.docs;
-      if (tokenDocs.isEmpty) {
-        await tokenRef.add({
-          'uid': user.uid,
-          'token': fcmToken,
-          'last_updated': Timestamp.now(),
-        });
-      }
-      UserPreferences.setBool(UserPreferenceKeys.didSaveFCMToken, true);
-    }
-  }
-
-  Future<void> onLogin(BuildContext context, Function login) async {
-    final user = await FirebaseAuthRepository().signIn();
-    if (user != null) {
-      login(user);
-      saveFCMToken(user);
-    } else {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('ログインできませんでした。')),
-        );
-      }
-    }
-  }
-
-  Future<void> onLogout(Function logout) async {
-    await FirebaseAuthRepository().signOut();
-    logout();
   }
 
   Widget listDialog(
@@ -135,8 +93,8 @@ class SettingsScreen extends ConsumerWidget {
                     : null,
                 leading: Icon((user == null) ? Icons.login : Icons.logout),
                 onPressed: (user == null)
-                    ? (c) => onLogin(c, userNotifier.login)
-                    : (_) => onLogout(userNotifier.logout),
+                    ? (c) => SettingsRepository().onLogin(c, userNotifier.login)
+                    : (_) => SettingsRepository().onLogout(userNotifier.logout),
               ),
               // 学年
               SettingsTile.navigation(
