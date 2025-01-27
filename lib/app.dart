@@ -1,28 +1,27 @@
 import 'dart:async';
 
+import 'package:app_links/app_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dotto/components/color_fun.dart';
+import 'package:dotto/components/setting_user_info.dart';
 import 'package:dotto/controller/tab_controller.dart';
 import 'package:dotto/controller/user_controller.dart';
 import 'package:dotto/domain/tab_item.dart';
+import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/repository/map_repository.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/bus/repository/bus_repository.dart';
 import 'package:dotto/feature/my_page/feature/news/controller/news_controller.dart';
 import 'package:dotto/feature/my_page/feature/news/repository/news_repository.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
+import 'package:dotto/feature/settings/settings.dart';
+import 'package:dotto/importer.dart';
+import 'package:dotto/repository/download_file_from_firebase.dart';
 import 'package:dotto/repository/notification.dart';
+import 'package:dotto/screens/app_tutorial.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:app_links/app_links.dart';
-
-import 'package:dotto/importer.dart';
-import 'package:dotto/components/color_fun.dart';
-import 'package:dotto/components/setting_user_info.dart';
-import 'package:dotto/repository/download_file_from_firebase.dart';
-import 'package:dotto/feature/map/controller/map_controller.dart';
-import 'package:dotto/feature/map/repository/map_repository.dart';
-import 'package:dotto/screens/app_tutorial.dart';
-import 'package:dotto/screens/settings.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
