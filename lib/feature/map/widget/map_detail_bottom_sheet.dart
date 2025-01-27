@@ -20,7 +20,7 @@ class MapDetailBottomSheet extends ConsumerWidget {
   Widget scheduleTile(BuildContext context, DateTime begin, DateTime end, String title) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       padding: const EdgeInsets.all(10),
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -153,27 +153,36 @@ class MapDetailBottomSheet extends ConsumerWidget {
           )
         ],
       ),
-      padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+      padding: EdgeInsets.symmetric(horizontal: 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: SelectableText(
-                  roomTitle,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: SelectableText(
+                    roomTitle,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close),
-                style: IconButton.styleFrom(
-                  padding: const EdgeInsets.all(0),
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minHeight: 40,
+                      minWidth: 40,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           user != null
               ? !loading
@@ -182,30 +191,25 @@ class MapDetailBottomSheet extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            if (gridMap != null)
-                              Column(
+                            if (gridMap != null) ...[
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Wrap(
+                                spacing: 10,
                                 children: [
-                                  if (gridMap.food != null && gridMap.drink != null)
-                                    Row(
-                                      children: [
-                                        roomAvailable(
-                                            RoomAvailableType.food, gridMap.food! ? 2 : 0),
-                                        const SizedBox(width: 10),
-                                        roomAvailable(
-                                            RoomAvailableType.drink, gridMap.drink! ? 2 : 0),
-                                      ],
-                                    ),
+                                  if (gridMap.food != null && gridMap.drink != null) ...[
+                                    roomAvailable(RoomAvailableType.food, gridMap.food! ? 2 : 0),
+                                    roomAvailable(RoomAvailableType.drink, gridMap.drink! ? 2 : 0),
+                                  ],
                                   if (gridMap.outlet != null)
-                                    Row(
-                                      children: [
-                                        roomAvailable(RoomAvailableType.outlet, gridMap.outlet!),
-                                      ],
-                                    ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                    roomAvailable(RoomAvailableType.outlet, gridMap.outlet!),
                                 ],
                               ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
                             if (mapDetail != null)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +228,10 @@ class MapDetailBottomSheet extends ConsumerWidget {
                                   if (mapDetail!.mail != null)
                                     SelectableText('${mapDetail!.mail}@fun.ac.jp'),
                                 ],
-                              )
+                              ),
+                            SizedBox(
+                              height: 15,
+                            ),
                           ],
                         ),
                       ),
