@@ -59,13 +59,15 @@ class NewsDetailScreen extends StatelessWidget {
                   },
                 ),
               const SizedBox(height: 15),
-              Wrap(
-                // direction: Axis.vertical,
-                runSpacing: 10,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: news.body
-                    .map((e) => Text(
-                          e,
-                          style: const TextStyle(letterSpacing: 0.5),
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            e,
+                            style: const TextStyle(letterSpacing: 0.5),
+                          ),
                         ))
                     .toList(),
               ),
