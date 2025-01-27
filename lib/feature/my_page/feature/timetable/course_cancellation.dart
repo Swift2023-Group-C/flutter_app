@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:dotto/controller/user_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
-import 'package:dotto/repository/app_status.dart';
 import 'package:dotto/repository/read_json_file.dart';
 
 class CourseCancellationScreen extends ConsumerWidget {
@@ -33,7 +33,8 @@ class CourseCancellationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!AppStatus().isLoggedinGoogle) {
+    final user = ref.watch(userProvider);
+    if (user == null) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('休講情報'),

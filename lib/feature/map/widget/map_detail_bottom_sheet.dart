@@ -1,13 +1,13 @@
-import 'package:dotto/app/controller/tab_controller.dart';
-import 'package:dotto/app/domain/tab_item.dart';
+import 'package:dotto/components/widgets/progress_indicator.dart';
+import 'package:dotto/controller/tab_controller.dart';
+import 'package:dotto/controller/user_controller.dart';
+import 'package:dotto/domain/tab_item.dart';
+import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/domain/map_detail.dart';
 import 'package:dotto/feature/map/domain/map_room_available_type.dart';
 import 'package:dotto/feature/map/widget/fun_grid_map.dart';
 import 'package:dotto/feature/map/widget/map_tile.dart';
 import 'package:dotto/importer.dart';
-import 'package:dotto/components/widgets/progress_indicator.dart';
-import 'package:dotto/feature/map/controller/map_controller.dart';
-import 'package:dotto/feature/map/domain/map_detail.dart';
-import 'package:dotto/repository/app_status.dart';
 import 'package:intl/intl.dart';
 
 class MapDetailBottomSheet extends ConsumerWidget {
@@ -111,10 +111,11 @@ class MapDetailBottomSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mapDetailMap = ref.watch(mapDetailMapProvider);
     final searchDatetime = ref.watch(searchDatetimeProvider);
+    final user = ref.watch(userProvider);
     String roomTitle = roomName;
     MapDetail? mapDetail;
     bool loading = false;
-    if (AppStatus().isLoggedinGoogle) {
+    if (user != null) {
       mapDetailMap.when(
         data: (data) {
           loading = false;
@@ -174,7 +175,7 @@ class MapDetailBottomSheet extends ConsumerWidget {
               ),
             ],
           ),
-          AppStatus().isLoggedinGoogle
+          user != null
               ? !loading
                   ? Expanded(
                       child: SingleChildScrollView(
