@@ -1,42 +1,73 @@
-class FunchMenu {
-  final int itemCode;
-  final String name;
-  final int price;
-  final int category;
-  final String? size;
-  final List<String> imageUrl;
-  final int energy;
+class Price {
+  final int? large;
+  final int medium;
+  final int? small;
 
-  FunchMenu(
-      this.itemCode, this.name, this.price, this.category, this.size, this.imageUrl, this.energy);
+  Price(this.large, this.medium, this.small);
 
-  factory FunchMenu.fromMenuJson(Map map) {
-    final itemCode = int.parse(map["item_code"]);
-    final name = map["display_name"];
-    final price = map["price_kumika"];
-    final category = int.parse(map["category_code"]);
-    final size = map["size"];
-    final imageUrl = (map["image_url"] as List).map((e) => e.toString()).toList();
-    final energy = map["nutritionalvalue"]["energy"];
-    return FunchMenu(itemCode, name, price, category, size, imageUrl, energy);
+  factory Price.fromJson(Map map) {
+    final large = map["large"];
+    final medium = map["medium"];
+    final small = map["small"];
+    return Price(large, medium, small);
   }
 }
 
-class FunchOriginalMenu {
-  final int id;
-  final String title;
-  final int category;
-  final bool large;
-  final bool small;
-  final String image;
+class OriginalPrice extends Price {
+  final String id;
+  final List<int> categories;
 
-  FunchOriginalMenu(this.id, this.title, this.category, this.large, this.small, this.image);
+  OriginalPrice(super.large, super.medium, super.small, this.id, this.categories);
+
+  factory OriginalPrice.fromJson(Map map) {
+    final large = map["large"];
+    final medium = map["medium"];
+    final small = map["small"];
+    final id = map["id"];
+    final categories = (map["categories"] as List).map((e) => e as int).toList();
+    return OriginalPrice(large, medium, small, id, categories);
+  }
 }
 
-class Prices {
-  final int large;
-  final int medium;
-  final int small;
+class FunchMenu {
+  final String name;
+  final Price price;
+  final int category;
+  final List<String> imageUrl;
+  final int? energy;
 
-  Prices(this.large, this.medium, this.small);
+  FunchMenu(this.name, this.price, this.category, this.imageUrl, this.energy);
+}
+
+class FunchCoopMenu extends FunchMenu {
+  final int itemCode;
+
+  FunchCoopMenu(
+      this.itemCode, super.name, super.price, super.category, super.imageUrl, int super.energy);
+
+  factory FunchCoopMenu.fromMenuJson(Map map) {
+    final itemCode = map["item_code"];
+    final name = map["title"];
+    final price = Price.fromJson(map["price"]);
+    final category = map["category"];
+    final imageUrl = [map["image"] as String];
+    final energy = map["energy"];
+    return FunchCoopMenu(itemCode, name, price, category, imageUrl, energy);
+  }
+}
+
+class FunchOriginalMenu extends FunchMenu {
+  final String id;
+
+  FunchOriginalMenu(this.id, super.name, super.price, super.category, super.imageUrl, super.energy);
+
+  factory FunchOriginalMenu.fromMenuJson(Map map) {
+    final id = map["id"];
+    final name = map["title"];
+    final price = Price.fromJson(map["price"]);
+    final category = map["category"];
+    final imageUrl = [map["image"] as String];
+    final energy = map["energy"];
+    return FunchOriginalMenu(id, name, price, category, imageUrl, energy);
+  }
 }
