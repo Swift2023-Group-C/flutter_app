@@ -1,6 +1,7 @@
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/feature/my_page/feature/funch/controller/funch_controller.dart';
 import 'package:dotto/feature/my_page/feature/funch/repository/funch_repository.dart';
+import 'package:dotto/feature/my_page/feature/funch/menuCard.dart';
 import 'package:dotto/importer.dart';
 import 'package:intl/intl.dart';
 
@@ -118,6 +119,8 @@ class FunchScreen extends ConsumerWidget {
                 children: menuTypeButton(),
               ),
             ),
+
+            MenuCard(1, "na", [100, 80, 40], [10, 10, 10], 1, "dai", [""])
           ],
         ),
 
@@ -169,7 +172,6 @@ class FunchScreen extends ConsumerWidget {
                 }).toList(),*/
         //),
       ),
-
       /* // 月選択 プルダウン
             DropdownButton<int>(
               value: funchDate.month,
