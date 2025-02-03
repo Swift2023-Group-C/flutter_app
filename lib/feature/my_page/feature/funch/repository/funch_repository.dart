@@ -33,20 +33,20 @@ class FunchRepository {
     return map;
   }
 
-  Future<List<FunchMenu>> getAllMenu() async {
+  Future<List<FunchCoopMenu>> getAllMenu() async {
     String fileName = 'funch/menu.json';
     String jsonString = await readJsonFile(fileName);
     List<dynamic> jsonData = json.decode(jsonString);
 
-    return jsonData.map((e) => FunchMenu.fromMenuJson(e)).toList();
+    return jsonData.map((e) => FunchCoopMenu.fromMenuJson(e)).toList();
   }
 
-  Future<Map<DateTime, List<FunchMenu>>> getDaysMenu(WidgetRef ref) async {
+  Future<Map<DateTime, List<FunchCoopMenu>>> getDaysMenu(WidgetRef ref) async {
     final allMenu = ref.watch(funchAllMenuProvider);
     if (allMenu != null) {
       final data = await getDaysMenuFromFirestore();
       return data.map((key, value) {
-        List<FunchMenu> list = [];
+        List<FunchCoopMenu> list = [];
         for (var v in value) {
           final menu = allMenu.firstWhereOrNull((element) => element.itemCode == v);
           if (menu != null) {
@@ -60,7 +60,7 @@ class FunchRepository {
     }
   }
 
-  List<FunchMenu> get1DayMenu(DateTime dateTime, WidgetRef ref) {
+  List<FunchCoopMenu> get1DayMenu(DateTime dateTime, WidgetRef ref) {
     final data = ref.watch(funchDaysMenuProvider);
     print(data);
     if (data == null) return [];
