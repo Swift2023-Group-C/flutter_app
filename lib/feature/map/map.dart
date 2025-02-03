@@ -4,7 +4,6 @@ import 'package:dotto/feature/map/widget/map_bottom_info.dart';
 import 'package:dotto/feature/map/widget/map_floor_button.dart';
 import 'package:dotto/feature/map/widget/map_search.dart';
 import 'package:dotto/feature/map/widget/map_grid.dart';
-import 'package:dotto/repository/app_status.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -28,7 +27,7 @@ class MapScreen extends StatelessWidget {
                     child: _mapView()),
                 // 階選択ボタン
                 const MapFloorButton(),
-                if (AppStatus().isLoggedinGoogle) const MapBottomInfo(),
+                const MapBottomInfo(),
                 const MapBarrierOnSearch(),
                 const MapSearchListView(),
               ],

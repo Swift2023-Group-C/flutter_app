@@ -1,7 +1,15 @@
 import 'dart:async';
 
-import 'package:dotto/app/controller/tab_controller.dart';
-import 'package:dotto/app/domain/tab_item.dart';
+import 'package:app_links/app_links.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dotto/components/animation.dart';
+import 'package:dotto/components/color_fun.dart';
+import 'package:dotto/components/setting_user_info.dart';
+import 'package:dotto/controller/tab_controller.dart';
+import 'package:dotto/controller/user_controller.dart';
+import 'package:dotto/domain/tab_item.dart';
+import 'package:dotto/feature/map/controller/map_controller.dart';
+import 'package:dotto/feature/map/repository/map_repository.dart';
 import 'package:dotto/feature/my_page/feature/bus/controller/bus_controller.dart';
 import 'package:dotto/feature/my_page/feature/funch/controller/funch_controller.dart';
 import 'package:dotto/feature/my_page/feature/funch/repository/funch_repository.dart';
@@ -10,18 +18,12 @@ import 'package:dotto/feature/my_page/feature/news/controller/news_controller.da
 import 'package:dotto/feature/my_page/feature/news/repository/news_repository.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
-import 'package:dotto/repository/notification.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:app_links/app_links.dart';
-
+import 'package:dotto/feature/settings/repository/settings_repository.dart';
 import 'package:dotto/importer.dart';
-import 'package:dotto/components/color_fun.dart';
-import 'package:dotto/components/setting_user_info.dart';
-import 'package:dotto/repository/download_file_from_firebase.dart';
-import 'package:dotto/feature/map/controller/map_controller.dart';
-import 'package:dotto/feature/map/repository/map_repository.dart';
+import 'package:dotto/repository/notification.dart';
 import 'package:dotto/screens/app_tutorial.dart';
-import 'package:dotto/screens/settings.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -100,11 +102,8 @@ class _BasePageState extends ConsumerState<BasePage> {
         final query = event.queryParameters;
         if (query.containsKey('userkey')) {
           final userKey = query['userkey'];
-          final userKeyPattern = RegExp(r'^[a-zA-Z0-9]{16}$');
-          if (userKeyPattern.hasMatch(userKey!)) {
-            _onItemTapped(4);
-            UserPreferences.setString(UserPreferenceKeys.userKey, userKey);
-            ref.read(settingsUserKeyProvider.notifier).state = userKey;
+          if (userKey != null) {
+            SettingsRepository().setUserKey(userKey, ref);
           }
         }
       }
@@ -139,6 +138,32 @@ class _BasePageState extends ConsumerState<BasePage> {
     print("daysMenu");
   }
 
+  Future<void> saveFCMToken() async {
+    final didSave = await UserPreferences.getBool(UserPreferenceKeys.didSaveFCMToken) ?? false;
+    debugPrint("didSave: $didSave");
+    if (didSave) {
+      return;
+    }
+    final user = ref.read(userProvider);
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null && user != null) {
+      final db = FirebaseFirestore.instance;
+      final tokenRef = db.collection("fcm_token");
+      final tokenQuery =
+          tokenRef.where('uid', isEqualTo: user.uid).where('token', isEqualTo: fcmToken);
+      final tokenQuerySnapshot = await tokenQuery.get();
+      final tokenDocs = tokenQuerySnapshot.docs;
+      if (tokenDocs.isEmpty) {
+        await tokenRef.add({
+          'uid': user.uid,
+          'token': fcmToken,
+          'last_updated': Timestamp.now(),
+        });
+      }
+      UserPreferences.setBool(UserPreferenceKeys.didSaveFCMToken, true);
+    }
+  }
+
   Future<void> init() async {
     initUniLinks();
     initBus();
@@ -147,6 +172,7 @@ class _BasePageState extends ConsumerState<BasePage> {
     // await downloadFiles();
     await getNews();
     initFunch();
+    saveFCMToken();
   }
 
   @override
@@ -157,19 +183,6 @@ class _BasePageState extends ConsumerState<BasePage> {
     });
   }
 
-  Widget animation(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
-    const Offset begin = Offset(0.0, 1.0);
-    const Offset end = Offset.zero;
-    final Animatable<Offset> tween =
-        Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOut));
-    final Animation<Offset> offsetAnimation = animation.drive(tween);
-    return SlideTransition(
-      position: offsetAnimation,
-      child: child,
-    );
-  }
-
   void _onItemTapped(int index) async {
     ref.read(newsFromPushNotificationProvider.notifier).reset();
     final selectedTab = TabItem.values[index];
@@ -178,7 +191,7 @@ class _BasePageState extends ConsumerState<BasePage> {
       final mapUsingMapNotifier = ref.watch(mapUsingMapProvider.notifier);
       final searchDatetimeNotifier = ref.read(searchDatetimeProvider.notifier);
       searchDatetimeNotifier.reset();
-      mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now());
+      mapUsingMapNotifier.state = await MapRepository().setUsingColor(DateTime.now(), ref);
     }
 
     final tabItemNotifier = ref.read(tabItemProvider.notifier);
@@ -195,7 +208,7 @@ class _BasePageState extends ConsumerState<BasePage> {
         Navigator.of(context).push(PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => const AppTutorial(),
           fullscreenDialog: true,
-          transitionsBuilder: animation,
+          transitionsBuilder: fromRightAnimation,
         ));
         UserPreferences.setBool(UserPreferenceKeys.isAppTutorialComplete, true);
       }
