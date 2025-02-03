@@ -21,13 +21,13 @@ class FunchDateNotifier extends Notifier<DateTime> {
   }
 }
 
-final funchAllMenuProvider =
+final funchAllCoopMenuProvider =
     NotifierProvider<FunchCoopMenuNotifier, List<FunchCoopMenu>?>(() => FunchCoopMenuNotifier());
 final funchDaysMenuProvider =
-    NotifierProvider<FunchDateMenuNotifier, Map<DateTime, List<FunchCoopMenu>>?>(
+    NotifierProvider<FunchDateMenuNotifier, Map<DateTime, FunchDaysMenu>?>(
         () => FunchDateMenuNotifier());
 final funchMonthMenuProvider =
-    NotifierProvider<FunchDateMenuNotifier, Map<DateTime, List<FunchCoopMenu>>?>(
+    NotifierProvider<FunchDateMenuNotifier, Map<DateTime, FunchDaysMenu>?>(
         () => FunchDateMenuNotifier());
 
 class FunchCoopMenuNotifier extends Notifier<List<FunchCoopMenu>?> {
@@ -51,13 +51,38 @@ class FunchCoopMenuNotifier extends Notifier<List<FunchCoopMenu>?> {
   }
 }
 
-class FunchDateMenuNotifier extends Notifier<Map<DateTime, List<FunchCoopMenu>>?> {
+final funchAllOriginalMenuProvider =
+    NotifierProvider<FunchOriginalMenuNotifier, List<FunchOriginalMenu>?>(
+        () => FunchOriginalMenuNotifier());
+
+class FunchOriginalMenuNotifier extends Notifier<List<FunchOriginalMenu>?> {
   @override
-  Map<DateTime, List<FunchCoopMenu>>? build() {
+  List<FunchOriginalMenu>? build() {
     return null;
   }
 
-  void set(Map<DateTime, List<FunchCoopMenu>> map) {
+  void set(List<FunchOriginalMenu> list) {
+    state = list;
+  }
+
+  List<FunchOriginalMenu> getMenuByCategory(int category) {
+    if (state == null) return [];
+    return state!.where((element) => element.category == category).toList();
+  }
+
+  FunchOriginalMenu? getMenuById(String id) {
+    if (state == null) return null;
+    return state!.firstWhere((element) => element.id == id);
+  }
+}
+
+class FunchDateMenuNotifier extends Notifier<Map<DateTime, FunchDaysMenu>?> {
+  @override
+  Map<DateTime, FunchDaysMenu>? build() {
+    return null;
+  }
+
+  void set(Map<DateTime, FunchDaysMenu> map) {
     state = map;
   }
 }

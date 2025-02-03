@@ -60,14 +60,12 @@ class FunchOriginalMenu extends FunchMenu {
   final String id;
 
   FunchOriginalMenu(this.id, super.name, super.price, super.category, super.imageUrl, super.energy);
+}
 
-  factory FunchOriginalMenu.fromMenuJson(Map map) {
-    final id = map["id"];
-    final name = map["title"];
-    final price = Price.fromJson(map["price"]);
-    final category = map["category"];
-    final imageUrl = [map["image"] as String];
-    final energy = map["energy"];
-    return FunchOriginalMenu(id, name, price, category, imageUrl, energy);
-  }
+class FunchDaysMenu {
+  final DateTime date;
+  final List<FunchCoopMenu> menu;
+  final List<FunchOriginalMenu> originalMenu;
+
+  FunchDaysMenu(this.date, this.menu, this.originalMenu);
 }

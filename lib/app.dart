@@ -132,7 +132,7 @@ class _BasePageState extends ConsumerState<BasePage> {
   }
 
   Future<void> initFunch() async {
-    ref.read(funchAllMenuProvider.notifier).set(await FunchRepository().getAllMenu());
+    ref.read(funchAllCoopMenuProvider.notifier).set(await FunchRepository().getAllCoopMenu());
     print("allMenu");
     ref.read(funchDaysMenuProvider.notifier).set(await FunchRepository().getDaysMenu(ref));
     print("daysMenu");
