@@ -24,7 +24,9 @@ class FunchRepository {
     Map<DateTime, Map> map = {};
     for (var element in data.docs) {
       final dayData = element.data();
-      if (dayData.containsKey("menu") && dayData.containsKey("date") && dayData["original_menu"]) {
+      if (dayData.containsKey("menu") &&
+          dayData.containsKey("date") &&
+          dayData.containsKey("original_menu")) {
         try {
           final date = (dayData["date"] as Timestamp).toDate();
           final newDate = DateTime(date.year, date.month, date.day);
@@ -81,7 +83,8 @@ class FunchRepository {
       final data = await getDaysMenuFromFirestore();
       Set<String> originalMenuRefs = {};
       for (var key in data.keys) {
-        originalMenuRefs.addAll(data[key]!["original_menu"].map((DocumentReference e) => e.id));
+        originalMenuRefs
+            .addAll((data[key]!["original_menu"] as List<DocumentReference>).map((e) => e.id));
       }
       final originalMenu = await getAllOriginalMenu(originalMenuRefs);
       ref.read(funchAllOriginalMenuProvider.notifier).set(originalMenu);
@@ -101,7 +104,8 @@ class FunchRepository {
             originalList.add(menu);
           }
         }
-
+        print(list);
+        print(originalList);
         return MapEntry(key, FunchDaysMenu(key, list, originalList));
       });
     } else {
