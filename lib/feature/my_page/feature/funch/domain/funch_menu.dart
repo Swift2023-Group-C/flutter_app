@@ -1,33 +1,4 @@
-class Price {
-  final int? large;
-  final int medium;
-  final int? small;
-
-  Price(this.large, this.medium, this.small);
-
-  factory Price.fromJson(Map map) {
-    final large = map["large"];
-    final medium = map["medium"];
-    final small = map["small"];
-    return Price(large, medium, small);
-  }
-}
-
-class OriginalPrice extends Price {
-  final String id;
-  final List<int> categories;
-
-  OriginalPrice(super.large, super.medium, super.small, this.id, this.categories);
-
-  factory OriginalPrice.fromJson(Map map) {
-    final large = map["large"];
-    final medium = map["medium"];
-    final small = map["small"];
-    final id = map["id"];
-    final categories = (map["categories"] as List).map((e) => e as int).toList();
-    return OriginalPrice(large, medium, small, id, categories);
-  }
-}
+import 'package:dotto/feature/my_page/feature/funch/domain/funch_price.dart';
 
 class FunchMenu {
   final String name;
@@ -68,4 +39,12 @@ class FunchDaysMenu {
   final List<FunchOriginalMenu> originalMenu;
 
   FunchDaysMenu(this.date, this.menu, this.originalMenu);
+
+  List<FunchCoopMenu> getMenuByCategory(int category) {
+    return menu.where((element) => element.category == category).toList();
+  }
+
+  List<FunchOriginalMenu> getOriginalMenuByCategory(int category) {
+    return originalMenu.where((element) => element.category == category).toList();
+  }
 }

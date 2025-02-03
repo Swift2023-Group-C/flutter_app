@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:dotto/feature/my_page/feature/funch/controller/funch_controller.dart';
 import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu.dart';
+import 'package:dotto/feature/my_page/feature/funch/domain/funch_price.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/repository/read_json_file.dart';
 
@@ -13,6 +14,14 @@ class FunchRepository {
     return _instance;
   }
   FunchRepository._internal();
+
+  Future<List<FunchCoopMenu>> getAllCoopMenu() async {
+    String fileName = 'funch/menu.json';
+    String jsonString = await readJsonFile(fileName);
+    List<dynamic> jsonData = json.decode(jsonString);
+
+    return jsonData.map((e) => FunchCoopMenu.fromMenuJson(e)).toList();
+  }
 
   Future<Map<DateTime, Map>> getDaysMenuFromFirestore() async {
     final daysMenuRef = FirebaseFirestore.instance.collection('funch_day');
@@ -46,14 +55,6 @@ class FunchRepository {
     return map;
   }
 
-  Future<List<FunchCoopMenu>> getAllCoopMenu() async {
-    String fileName = 'funch/menu.json';
-    String jsonString = await readJsonFile(fileName);
-    List<dynamic> jsonData = json.decode(jsonString);
-
-    return jsonData.map((e) => FunchCoopMenu.fromMenuJson(e)).toList();
-  }
-
   Future<List<OriginalPrice>> getAllOriginalPriceFromFirestore() async {
     final priceRef = FirebaseFirestore.instance.collection('funch_price');
     final data = await priceRef.get();
@@ -77,8 +78,7 @@ class FunchRepository {
     }).toList();
   }
 
-  Future<Map<DateTime, FunchDaysMenu>> getDaysMenu(WidgetRef ref) async {
-    final allMenu = ref.watch(funchAllCoopMenuProvider);
+  Future<Map<DateTime, FunchDaysMenu>> getDaysMenu(Ref ref, List<FunchCoopMenu>? allMenu) async {
     if (allMenu != null) {
       final data = await getDaysMenuFromFirestore();
       Set<String> originalMenuRefs = {};
@@ -113,10 +113,9 @@ class FunchRepository {
     }
   }
 
-  FunchDaysMenu? get1DayMenu(DateTime dateTime, WidgetRef ref) {
-    final data = ref.watch(funchDaysMenuProvider);
+  Future<FunchDaysMenu?> get1DayMenu(DateTime dateTime, WidgetRef ref) async {
+    final data = await ref.watch(funchDaysMenuProvider);
     print(data);
-    if (data == null) return null;
     if (!data.containsKey(dateTime)) return null;
     return data[dateTime]!;
   }

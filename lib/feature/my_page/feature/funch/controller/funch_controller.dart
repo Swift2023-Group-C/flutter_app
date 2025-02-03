@@ -1,4 +1,5 @@
 import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu.dart';
+import 'package:dotto/feature/my_page/feature/funch/repository/funch_repository.dart';
 import 'package:dotto/importer.dart';
 
 final funchDateProvider = NotifierProvider<FunchDateNotifier, DateTime>(() {
@@ -24,12 +25,18 @@ class FunchDateNotifier extends Notifier<DateTime> {
 
 final funchAllCoopMenuProvider =
     NotifierProvider<FunchCoopMenuNotifier, List<FunchCoopMenu>?>(() => FunchCoopMenuNotifier());
-final funchDaysMenuProvider =
-    NotifierProvider<FunchDateMenuNotifier, Map<DateTime, FunchDaysMenu>?>(
-        () => FunchDateMenuNotifier());
-final funchMonthMenuProvider =
-    NotifierProvider<FunchDateMenuNotifier, Map<DateTime, FunchDaysMenu>?>(
-        () => FunchDateMenuNotifier());
+final funchDaysMenuProvider = Provider(
+  (ref) async {
+    final funchAllCoopMenu = ref.watch(funchAllCoopMenuProvider);
+    return await FunchRepository().getDaysMenu(ref, funchAllCoopMenu);
+  },
+);
+final funchMonthMenuProvider = Provider(
+  (ref) {
+    final funchAllCoopMenu = ref.watch(funchAllCoopMenuProvider);
+    // TODO: ここで月のメニューを取得する
+  },
+);
 
 class FunchCoopMenuNotifier extends Notifier<List<FunchCoopMenu>?> {
   @override
@@ -64,26 +71,5 @@ class FunchOriginalMenuNotifier extends Notifier<List<FunchOriginalMenu>?> {
 
   void set(List<FunchOriginalMenu> list) {
     state = list;
-  }
-
-  List<FunchOriginalMenu> getMenuByCategory(int category) {
-    if (state == null) return [];
-    return state!.where((element) => element.category == category).toList();
-  }
-
-  FunchOriginalMenu? getMenuById(String id) {
-    if (state == null) return null;
-    return state!.firstWhere((element) => element.id == id);
-  }
-}
-
-class FunchDateMenuNotifier extends Notifier<Map<DateTime, FunchDaysMenu>?> {
-  @override
-  Map<DateTime, FunchDaysMenu>? build() {
-    return null;
-  }
-
-  void set(Map<DateTime, FunchDaysMenu> map) {
-    state = map;
   }
 }
