@@ -3,6 +3,7 @@ import 'package:dotto/feature/my_page/feature/funch/controller/funch_controller.
 import 'package:dotto/feature/my_page/feature/funch/repository/funch_repository.dart';
 import 'package:dotto/feature/my_page/feature/funch/menuCard.dart';
 import 'package:dotto/importer.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
 
 class FunchScreen extends ConsumerWidget {
@@ -84,29 +85,95 @@ class FunchScreen extends ConsumerWidget {
     return dates;
   }
 
+  //指定した月の曜日を返す
+  List<DateTime> getMenuDays() {
+    DateTime now = DateTime.now();
+    DateTime startDate = DateTime(now.year, now.month, now.day);
+
+    // if (selectedDate < now.month) {
+    //   startDate = DateTime(now.year + 1, selectedDate, 1); //過去の月は来年にする
+    // }
+    List<DateTime> dates = [];
+    // final nextMonthFirst = DateTime(startDate.year, startDate.month, startDate.day+7);
+    // final monthDays = nextMonthFirst.subtract(const Duration(days: 1)).day;
+
+    for (int i = 0; i < 7; i++) {
+      final date = startDate.add(Duration(days: i));
+      if (date.weekday < 6) dates.add(date); //土日は除外
+    }
+    return dates;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final funchDate = ref.watch(funchDateProvider);
-    final dates = getDateMonth(funchDate);
+    final dates = getMenuDays();
 
     double buttonSize = 50;
     double buttonPadding = 8;
     List<String> weekString = ['月', '火', '水', '木', '金', '土', '日'];
-    List<Color> weekColors = [
-      Colors.black,
-      Colors.black,
-      Colors.black,
-      Colors.black,
-      Colors.black,
-      Colors.blue,
-      Colors.red
-    ];
+    // List<Color> weekColors = [
+    //   Colors.black,
+    //   Colors.black,
+    //   Colors.black,
+    //   Colors.black,
+    //   Colors.black,
+    //   Colors.blue,
+    //   Colors.red
+    // ];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("学食"),
+        // title: const Text("学食"),
         centerTitle: true,
-        actions: [Icon(Icons.event)],
+
+        title: TextButton(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.expand_more, color: Colors.white, size: 20), // アイコンの配置
+              Text(
+                DateFormat('MM月dd日の学食').format(funchDate),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                ),
+              )
+            ],
+          ),
+          onPressed: () {
+            showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: dates.map((toElement) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            // ref.read(funchDateProvider.notifier).set(toElement);
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                DateFormat('MM月dd日 ${weekString[toElement.weekday - 1]}曜日')
+                                    .format(toElement),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                });
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
