@@ -38,9 +38,15 @@ class MenuCard extends ConsumerWidget {
           ),
         );
         priceText.add(
+          Container(
+            width: 5,
+            height: 5,
+          ),
+        );
+        priceText.add(
           Text(
             '¥${price[i]}',
-            style: const TextStyle(fontSize: 30),
+            style: const TextStyle(fontSize: 25),
           ),
         );
       }
