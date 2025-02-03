@@ -3,6 +3,7 @@ import 'package:dotto/importer.dart';
 int _term = 1;
 String _text = '';
 
+
 class UploadScreen extends ConsumerWidget {
   const UploadScreen({super.key});
 
@@ -51,19 +52,26 @@ class UploadScreen extends ConsumerWidget {
 
           //中間期末選択　ラジオボタン
           Row(
-            children: [
-              Radio(
-                  value: 1,
-                  groupValue: _term,
-                  onChanged: (value) {
-                    setState(() {
-                      _term = value!;
-                    });
-                  }),
-              SizedBox(width: 10.0),
-              Text('前期'),
-            ],
-          )
+              children: [
+                Radio(
+                    value: 1,
+                    groupValue: _term,
+                    onChanged: (value) {
+                      setState(() {
+                        _term = value!;
+                      });
+                    }),
+                SizedBox(width: 10.0),
+                Text('中間'),
+                Radio(
+                value: 2,
+                groupValue: _term,
+                onChanged: (value){},
+                )
+                SizedBox(width: 10.0),
+                Text('期末'),
+              ],          
+              )
 
           //答えの有無　ラジオボタン
         ],
