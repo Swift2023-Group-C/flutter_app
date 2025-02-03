@@ -32,9 +32,9 @@ final funchDaysMenuProvider = Provider(
   },
 );
 final funchMonthMenuProvider = Provider(
-  (ref) {
+  (ref) async {
     final funchAllCoopMenu = ref.watch(funchAllCoopMenuProvider);
-    // TODO: ここで月のメニューを取得する
+    return await FunchRepository().getMonthMenu(ref, funchAllCoopMenu);
   },
 );
 
@@ -59,6 +59,7 @@ class FunchCoopMenuNotifier extends Notifier<List<FunchCoopMenu>?> {
   }
 }
 
+// watchしない可能性あり
 final funchAllOriginalMenuProvider =
     NotifierProvider<FunchOriginalMenuNotifier, List<FunchOriginalMenu>?>(
         () => FunchOriginalMenuNotifier());

@@ -33,12 +33,11 @@ class FunchOriginalMenu extends FunchMenu {
   FunchOriginalMenu(this.id, super.name, super.price, super.category, super.imageUrl, super.energy);
 }
 
-class FunchDaysMenu {
-  final DateTime date;
+class FunchMenuSet {
   final List<FunchCoopMenu> menu;
   final List<FunchOriginalMenu> originalMenu;
 
-  FunchDaysMenu(this.date, this.menu, this.originalMenu);
+  FunchMenuSet(this.menu, this.originalMenu);
 
   List<FunchCoopMenu> getMenuByCategory(int category) {
     return menu.where((element) => element.category == category).toList();
@@ -47,4 +46,16 @@ class FunchDaysMenu {
   List<FunchOriginalMenu> getOriginalMenuByCategory(int category) {
     return originalMenu.where((element) => element.category == category).toList();
   }
+}
+
+class FunchDaysMenu extends FunchMenuSet {
+  final DateTime date;
+
+  FunchDaysMenu(this.date, super.menu, super.originalMenu);
+}
+
+class FunchMonthMenu extends FunchMenuSet {
+  final int month;
+
+  FunchMonthMenu(this.month, super.menu, super.originalMenu);
 }

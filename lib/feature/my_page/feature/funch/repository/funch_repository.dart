@@ -23,11 +23,11 @@ class FunchRepository {
     return jsonData.map((e) => FunchCoopMenu.fromMenuJson(e)).toList();
   }
 
-  Future<Map<DateTime, Map>> getDaysMenuFromFirestore() async {
+  Future<Map<DateTime, Map>> _getDaysMenuFromFirestore() async {
     final daysMenuRef = FirebaseFirestore.instance.collection('funch_day');
     final yesterday = DateTime.now().subtract(Duration(days: 1));
     final query = daysMenuRef
-        .where("date", isGreaterThanOrEqualTo: Timestamp.fromDate(yesterday))
+        .where("date", isGreaterThan: Timestamp.fromDate(yesterday))
         .where("date", isLessThan: Timestamp.fromDate(yesterday.add(Duration(days: 7))));
     final data = await query.get();
     Map<DateTime, Map> map = {};
@@ -55,7 +55,7 @@ class FunchRepository {
     return map;
   }
 
-  Future<List<OriginalPrice>> getAllOriginalPriceFromFirestore() async {
+  Future<List<OriginalPrice>> _getAllOriginalPriceFromFirestore() async {
     final priceRef = FirebaseFirestore.instance.collection('funch_price');
     final data = await priceRef.get();
     return data.docs.map((e) {
@@ -65,10 +65,10 @@ class FunchRepository {
     }).toList();
   }
 
-  Future<List<FunchOriginalMenu>> getAllOriginalMenu(Set<String> originalMenuRefs) async {
+  Future<List<FunchOriginalMenu>> _getAllOriginalMenu(Set<String> originalMenuRefs) async {
     final originalMenuRef = FirebaseFirestore.instance.collection('funch_original_menu');
     final data = await originalMenuRef.get();
-    final allOriginalPrice = await getAllOriginalPriceFromFirestore();
+    final allOriginalPrice = await _getAllOriginalPriceFromFirestore();
     return data.docs.map((e) {
       final map = e.data();
       final price = allOriginalPrice
@@ -80,13 +80,13 @@ class FunchRepository {
 
   Future<Map<DateTime, FunchDaysMenu>> getDaysMenu(Ref ref, List<FunchCoopMenu>? allMenu) async {
     if (allMenu != null) {
-      final data = await getDaysMenuFromFirestore();
+      final data = await _getDaysMenuFromFirestore();
       Set<String> originalMenuRefs = {};
       for (var key in data.keys) {
         originalMenuRefs
             .addAll((data[key]!["original_menu"] as List<DocumentReference>).map((e) => e.id));
       }
-      final originalMenu = await getAllOriginalMenu(originalMenuRefs);
+      final originalMenu = await _getAllOriginalMenu(originalMenuRefs);
       ref.read(funchAllOriginalMenuProvider.notifier).set(originalMenu);
 
       return data.map((key, value) {
@@ -107,6 +107,79 @@ class FunchRepository {
         print(list);
         print(originalList);
         return MapEntry(key, FunchDaysMenu(key, list, originalList));
+      });
+    } else {
+      return {};
+    }
+  }
+
+  Future<Map<int, Map>> _getMonthMenuFromFirestore() async {
+    final monthMenuRef = FirebaseFirestore.instance.collection('funch_month');
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final days6 = today.add(Duration(days: 6));
+    final query =
+        monthMenuRef.where("year", isEqualTo: today.year).where("month", isEqualTo: today.month);
+    final queries = [query];
+    if (today.month != days6.month) {
+      queries.add(
+          monthMenuRef.where("year", isEqualTo: days6.year).where("month", isEqualTo: days6.month));
+    }
+    final data = await Future.wait(queries.map((e) => e.get()));
+    Map<int, Map> map = {};
+    for (var element in data) {
+      final docs = element.docs;
+      if (docs.isEmpty) continue;
+      final dayData = element.docs.first.data();
+      if (dayData.containsKey("menu") &&
+          dayData.containsKey("month") &&
+          dayData.containsKey("original_menu")) {
+        try {
+          final month = dayData["month"] as int;
+          final menu = (dayData["menu"] as List<dynamic>).map((item) => item as int).toList();
+          final originalMenu = (dayData["original_menu"] as List<dynamic>)
+              .map((item) => item as DocumentReference)
+              .toList();
+          map[month] = {
+            "menu": menu,
+            "original_menu": originalMenu,
+          };
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    return map;
+  }
+
+  Future<Map<int, FunchMonthMenu>> getMonthMenu(Ref ref, List<FunchCoopMenu>? allMenu) async {
+    if (allMenu != null) {
+      final data = await _getMonthMenuFromFirestore();
+      Set<String> originalMenuRefs = {};
+      for (var key in data.keys) {
+        originalMenuRefs
+            .addAll((data[key]!["original_menu"] as List<DocumentReference>).map((e) => e.id));
+      }
+      final originalMenu = await _getAllOriginalMenu(originalMenuRefs);
+
+      return data.map((key, value) {
+        List<FunchCoopMenu> list = [];
+        for (int v in value["menu"]) {
+          final menu = allMenu.firstWhereOrNull((element) => element.itemCode == v);
+          if (menu != null) {
+            list.add(menu);
+          }
+        }
+        List<FunchOriginalMenu> originalList = [];
+        for (DocumentReference v in value["original_menu"]) {
+          final menu = originalMenu.firstWhereOrNull((element) => element.id == v.id);
+          if (menu != null) {
+            originalList.add(menu);
+          }
+        }
+        print(list);
+        print(originalList);
+        return MapEntry(key, FunchMonthMenu(key, list, originalList));
       });
     } else {
       return {};
