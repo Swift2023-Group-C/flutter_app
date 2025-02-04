@@ -31,6 +31,8 @@ class UploadScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final term = ref.watch(termProvider);
     final ans = ref.watch(ansProvider);
+    DateTime dt = DateTime.now();
+    int currentYear = dt.month >= 4 ? dt.year : dt.year - 1; // 4月以降なら今年度、3月以前なら昨年
 
     return Scaffold(
       appBar: AppBar(
@@ -52,10 +54,7 @@ class UploadScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      'ファイルを選択',
-                      style: TextStyle(fontSize: 20),
-                    ),
+                    Text('ファイルを選択', style: TextStyle(fontSize: 10)),
                   ],
                 ),
               ),
@@ -65,7 +64,8 @@ class UploadScreen extends ConsumerWidget {
           DropdownButton<int>(
             // value: funchDate.month,
             onChanged: (int? value) {},
-            items: <int>[for (int i = 1; i <= 12; i++) i].map<DropdownMenuItem<int>>((int value) {
+            items: <int>[for (int i = currentYear; i >= currentYear - 4; i--) i]
+                .map<DropdownMenuItem<int>>((int value) {
               return DropdownMenuItem<int>(
                 value: value,
                 child: Text("$value年度"),
@@ -104,9 +104,11 @@ class UploadScreen extends ConsumerWidget {
                   }),
               const Text('答えあり'),
               Radio(
-                value: 2,
+                value: 4,
                 groupValue: ans,
-                onChanged: (int? value) {},
+                onChanged: (int? value) {
+                  ref.read(ansProvider.notifier).setAns(value!);
+                },
               ),
               const Text('答えなし'),
             ],
