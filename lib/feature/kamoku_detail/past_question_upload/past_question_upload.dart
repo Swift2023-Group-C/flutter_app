@@ -1,14 +1,37 @@
 import 'package:dotto/importer.dart';
 
-int _term = 1;
-String _text = '';
+// ラジオボタンの状態を管理するクラス
+class RadioButtonState extends StateNotifier<int> {
+  RadioButtonState() : super(1);
 
+  void setTerm(int value) {
+    state = value;
+  }
+}
+
+// ラジオボタンの状態を管理するプロバイダー
+final termProvider = StateNotifierProvider<RadioButtonState, int>((ref) => RadioButtonState());
+
+// 答えの有無を管理するクラス
+class AnsState extends StateNotifier<int> {
+  AnsState() : super(3);
+
+  void setAns(int value) {
+    state = value;
+  }
+}
+
+// 答えの有無を管理するプロバイダー
+final ansProvider = StateNotifierProvider<AnsState, int>((ref) => AnsState());
 
 class UploadScreen extends ConsumerWidget {
   const UploadScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final term = ref.watch(termProvider);
+    final ans = ref.watch(ansProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("過去問アップロード"),
@@ -52,28 +75,42 @@ class UploadScreen extends ConsumerWidget {
 
           //中間期末選択　ラジオボタン
           Row(
-              children: [
-                Radio(
-                    value: 1,
-                    groupValue: _term,
-                    onChanged: (value) {
-                      setState(() {
-                        _term = value!;
-                      });
-                    }),
-                SizedBox(width: 10.0),
-                Text('中間'),
-                Radio(
+            children: [
+              Radio(
+                  value: 1,
+                  groupValue: term,
+                  onChanged: (int? value) {
+                    ref.read(termProvider.notifier).setTerm(value!);
+                  }),
+              const Text('中間'),
+              Radio(
                 value: 2,
-                groupValue: _term,
-                onChanged: (value){},
-                )
-                SizedBox(width: 10.0),
-                Text('期末'),
-              ],          
-              )
-
+                groupValue: term,
+                onChanged: (int? value) {
+                  ref.read(termProvider.notifier).setTerm(value!);
+                },
+              ),
+              const Text('期末'),
+            ],
+          ),
           //答えの有無　ラジオボタン
+          Row(
+            children: [
+              Radio(
+                  value: 3,
+                  groupValue: ans,
+                  onChanged: (int? value) {
+                    ref.read(ansProvider.notifier).setAns(value!);
+                  }),
+              const Text('答えあり'),
+              Radio(
+                value: 2,
+                groupValue: ans,
+                onChanged: (int? value) {},
+              ),
+              const Text('答えなし'),
+            ],
+          ),
         ],
       ),
     );

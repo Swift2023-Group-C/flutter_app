@@ -4,28 +4,25 @@ import 'package:dotto/components/s3.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/kamoku_detail/repository/kamoku_detail_repository.dart';
 import 'package:dotto/feature/kamoku_detail/widget/kamoku_detail_kakomon_list_objects.dart';
+import 'package:dotto/feature/kamoku_detail/past_question_upload/past_question_upload.dart';
 
 class KamokuDetailKakomonListScreen extends StatefulWidget {
   const KamokuDetailKakomonListScreen({super.key, required this.url});
   final int url;
 
   @override
-  State<KamokuDetailKakomonListScreen> createState() =>
-      _KamokuDetailKakomonListScreenState();
+  State<KamokuDetailKakomonListScreen> createState() => _KamokuDetailKakomonListScreenState();
 }
 
-class _KamokuDetailKakomonListScreenState
-    extends State<KamokuDetailKakomonListScreen> {
+class _KamokuDetailKakomonListScreenState extends State<KamokuDetailKakomonListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: (KamokuDetailRepository().isLoggedinGoogle())
             ? FutureBuilder(
-                future:
-                    S3.instance.getListObjectsKey(url: widget.url.toString()),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<String>> snapshot) {
+                future: S3.instance.getListObjectsKey(url: widget.url.toString()),
+                builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data!.isEmpty) {
                       return const Center(
@@ -47,10 +44,13 @@ class _KamokuDetailKakomonListScreenState
             : const Text('未来大Googleアカウントでログインが必要です'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: {
-          if(KamokuDetailRepository().isLoggedinGoogle()){
-
-          }else{
+        onPressed: () {
+          if (KamokuDetailRepository().isLoggedinGoogle()) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const UploadScreen()),
+            );
+          } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('未来大Googleアカウントでログインが必要です')),
             );
