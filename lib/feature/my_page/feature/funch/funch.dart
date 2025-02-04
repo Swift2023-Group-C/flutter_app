@@ -80,9 +80,8 @@ class FunchScreen extends ConsumerWidget {
     return funchDate.keys.toList();
   }
 
-  Future<List<dynamic>> _getMenu(WidgetRef ref) async {
-    return await Future(
-        () => [ref.watch(funchDaysMenuProvider), ref.watch(funchMonthMenuProvider)]);
+  Future<List<Map>> _getMenu(WidgetRef ref) async {
+    return [await ref.watch(funchDaysMenuProvider), await ref.watch(funchMonthMenuProvider)];
   }
 
   @override
@@ -162,9 +161,38 @@ class FunchScreen extends ConsumerWidget {
             ),
 
             MenuCard(
-                FunchCoopMenu(10002, "チキン竜田丼", FunchPrice(616, 528, 462), 4,
-                    "https://chuboz.jp/items/images/10002.png", 845),
-                [100, 80, 40]),
+              FunchCoopMenu(10002, "チキン竜田丼", FunchPrice(616, 528, 462), 4,
+                  "https://chuboz.jp/items/images/10002.png", 845),
+            ),
+
+            FutureBuilder(
+                future: _getMenu(ref),
+                builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final Map<DateTime, FunchDaysMenu> funchDaysMenu = snapshot.data![0];
+                    final Map<int, FunchMonthMenu> funchMonthMenu = snapshot.data![1];
+                    return Column(
+                      children: funchDaysMenu.keys.map((date) {
+                        final dayMenu = funchDaysMenu[date];
+                        if (dayMenu == null) return const SizedBox.shrink();
+                        return Column(
+                          children: [
+                            ...dayMenu.menu.map((menu) {
+                              return MenuCard(menu);
+                            }),
+                            ...dayMenu.originalMenu.map((menu) {
+                              return MenuCard(menu);
+                            })
+                          ],
+                        );
+                      }).toList(),
+                    );
+                  }
+                })
           ],
         ),
 
