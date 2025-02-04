@@ -10,8 +10,9 @@ class FunchScreen extends ConsumerWidget {
   const FunchScreen({super.key});
 
   Widget makeMenuTypeButton(FunchMenuType menuType, WidgetRef ref) {
-    double buttonSize = 50;
+    final buttonSize = 50.0;
     final funchMenuType = ref.watch(funchMenuTypeProvider);
+
     return Column(
       children: [
         ElevatedButton(
@@ -78,23 +79,31 @@ class FunchScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: dates.map((toElement) {
-                return ElevatedButton(
-                  onPressed: () {
+                return InkWell(
+                  onTap: () {
                     ref.read(funchDateProvider.notifier).set(toElement);
                     Navigator.pop(context);
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        DateFormat('MM月dd日 ${weekString[toElement.weekday - 1]}曜日')
-                            .format(toElement),
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                        ),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey),
                       ),
-                    ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          DateFormat('MM月dd日 ${weekString[toElement.weekday - 1]}曜日')
+                              .format(toElement),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }).toList(),
@@ -140,51 +149,52 @@ class FunchScreen extends ConsumerWidget {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // 均等配置
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly, // 均等配置
-                children: menuTypeButton(ref),
+      body: Column(
+        children: [
+          // 均等配置
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly, // 均等配置
+              children: menuTypeButton(ref),
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: FutureBuilder(
+                future: _getMenu(ref),
+                builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final Map<DateTime, FunchDaysMenu> funchDaysMenu = snapshot.data![0];
+                    final Map<int, FunchMonthMenu> funchMonthMenu = snapshot.data![1];
+
+                    final dayMenu = funchDaysMenu[funchDate];
+                    final monthMenu = funchMonthMenu[funchDate.month];
+                    if (dayMenu == null || monthMenu == null) return Text("この日の学食はありません。");
+                    final funchCategorizedMenu = [
+                      ...dayMenu.getMenuByCategories(nowMenuType.categories),
+                      ...dayMenu.getOriginalMenuByCategories(nowMenuType.categories),
+                      ...monthMenu.getMenuByCategories(nowMenuType.categories),
+                      ...monthMenu.getOriginalMenuByCategories(nowMenuType.categories),
+                    ];
+
+                    if (funchCategorizedMenu.isEmpty) return Text("このカテゴリーの学食はありません。");
+
+                    return Column(
+                      children: funchCategorizedMenu.map((menu) {
+                        return MenuCard(menu);
+                      }).toList(),
+                    );
+                  }
+                },
               ),
             ),
-
-            FutureBuilder(
-              future: _getMenu(ref),
-              builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  final Map<DateTime, FunchDaysMenu> funchDaysMenu = snapshot.data![0];
-                  final Map<int, FunchMonthMenu> funchMonthMenu = snapshot.data![1];
-
-                  final dayMenu = funchDaysMenu[funchDate];
-                  final monthMenu = funchMonthMenu[funchDate.month];
-                  if (dayMenu == null || monthMenu == null) return Text("この日の学食はありません。");
-                  final funchCategorizedMenu = [
-                    ...dayMenu.getMenuByCategories(nowMenuType.categories),
-                    ...dayMenu.getOriginalMenuByCategories(nowMenuType.categories),
-                    ...monthMenu.getMenuByCategories(nowMenuType.categories),
-                    ...monthMenu.getOriginalMenuByCategories(nowMenuType.categories),
-                  ];
-
-                  if (funchCategorizedMenu.isEmpty) return Text("このカテゴリーの学食はありません。");
-
-                  return Column(
-                    children: funchCategorizedMenu.map((menu) {
-                      return MenuCard(menu);
-                    }).toList(),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
