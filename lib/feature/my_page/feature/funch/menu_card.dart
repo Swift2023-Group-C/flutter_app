@@ -7,44 +7,53 @@ import 'package:intl/intl.dart';
 
 class MenuCard extends ConsumerWidget {
   final FunchMenu menu;
-  final List<int> price;
 
-  const MenuCard(this.menu, this.price, {super.key});
+  const MenuCard(this.menu, {super.key});
 
   List<Widget> priceText() {
     List<Widget> priceText = [];
     final sizeStr = ["大", "中", "小"];
+    final price = [menu.price.large, menu.price.medium, menu.price.small];
 
     for (int i = 0; i < price.length; i++) {
-      if (!(price[i].isNaN) && price[i] > 0) {
-        priceText.add(
-          ClipOval(
-            child: Container(
-              width: 20,
-              height: 20,
-              color: customFunColor,
-              child: Center(
-                child: Text(
-                  style: const TextStyle(color: Colors.white),
-                  sizeStr[i],
+      final p = price[i];
+      if (p == null) {
+        continue;
+      }
+      if ((p.isNaN) || p <= 0) {
+        continue;
+      }
+      if (priceText.isNotEmpty) {
+        priceText.add(const SizedBox(width: 10));
+      }
+      priceText.add(
+        Wrap(
+          direction: Axis.horizontal,
+          spacing: 0,
+          children: [
+            ClipOval(
+              child: Container(
+                width: 18,
+                height: 18,
+                color: customFunColor.shade400,
+                child: Center(
+                  child: Text(
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                    ),
+                    sizeStr[i],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-        priceText.add(
-          Container(
-            width: 5,
-            height: 5,
-          ),
-        );
-        priceText.add(
-          Text(
-            '¥${price[i]}',
-            style: const TextStyle(fontSize: 25),
-          ),
-        );
-      }
+            Text(
+              '¥$p',
+              style: const TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
+      );
     }
     return priceText;
   }
@@ -52,76 +61,65 @@ class MenuCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final energy = menu.energy;
+    final borderRadius = 10.0;
     return Card(
-        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         color: Colors.white,
         shadowColor: Colors.black,
-        child: Container(
-          padding: EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 10),
-          width: MediaQuery.of(context).size.width * 0.85,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.9,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (menu.imageUrl.isNotEmpty)
-                Image.network(
-                  menu.imageUrl,
-                  errorBuilder: (context, error, stackTrace) {
-                    // 読み込み失敗時に何もしない
-                    return SizedBox.shrink();
-                  },
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(borderRadius),
+                    topRight: Radius.circular(borderRadius),
+                  ),
+                  child: Image.network(
+                    menu.imageUrl,
+                    errorBuilder: (context, error, stackTrace) {
+                      // 読み込み失敗時に何もしない
+                      return SizedBox.shrink();
+                    },
+                  ),
                 ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
                       menu.name,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 40),
+                      style: const TextStyle(fontSize: 24),
                     ),
-                  ),
-                ],
+                    if (energy != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text("${energy}kcal"),
+                        ],
+                      ),
+                    Divider(
+                      height: 6,
+                      color: Colors.black,
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: priceText(),
+                    ),
+                  ],
+                ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      // Text(
-                      //   BusRepository().formatDuration(beginTime),
-                      //   style: const TextStyle(fontSize: 40),
-                      // ),
-                      // Transform.translate(
-                      //   offset: const Offset(0, -5),
-                      //   child: Text(isKameda && busIsTo ? '亀田支所発' : '発'),
-                      // ),
-                      const Spacer(),
-                      // Transform.translate(
-                      if (energy != null)
-                        Text(
-                          "${energy}kcal",
-                          style: const TextStyle(fontSize: 20),
-                          // '${BusRepository().formatDuration(endTime)}${isKameda && !busIsTo ? '亀田支所着' : '着'}'
-                        ),
-                      // )
-                    ],
-                  ),
-                  Divider(
-                    height: 6,
-                    color: Colors.black,
-                  ),
-                  // const SizedBox(
-                  //   height: 5,
-                  // ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ...priceText(),
-                    ],
-                  ),
-                ],
-              )
             ],
           ),
         ));
