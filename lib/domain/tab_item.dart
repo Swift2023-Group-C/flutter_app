@@ -3,7 +3,7 @@ import 'package:dotto/feature/map/map.dart';
 import 'package:dotto/feature/my_page/home.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/screens/kadai_list.dart';
-import 'package:dotto/screens/settings.dart';
+import 'package:dotto/feature/settings/settings.dart';
 
 enum TabItem {
   home(

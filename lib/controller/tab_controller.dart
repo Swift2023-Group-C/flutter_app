@@ -1,4 +1,4 @@
-import 'package:dotto/app/domain/tab_item.dart';
+import 'package:dotto/domain/tab_item.dart';
 import 'package:dotto/importer.dart';
 
 final tabItemProvider = NotifierProvider<TabNotifier, TabItem>(() {
