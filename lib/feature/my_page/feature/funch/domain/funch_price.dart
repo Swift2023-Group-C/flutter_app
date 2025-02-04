@@ -1,21 +1,21 @@
-class Price {
+class FunchPrice {
   final int? large;
   final int medium;
   final int? small;
 
-  Price(this.large, this.medium, this.small);
+  FunchPrice(this.large, this.medium, this.small);
 
-  factory Price.fromJson(Map map) {
+  factory FunchPrice.fromJson(Map map) {
     final large = map["large"];
     final medium = map["medium"];
     final small = map["small"];
-    return Price(large, medium, small);
+    return FunchPrice(large, medium, small);
   }
 }
 
-class OriginalPrice extends Price {
+class FunchOriginalPrice extends FunchPrice {
   final String id;
   final List<int> categories;
 
-  OriginalPrice(super.large, super.medium, super.small, this.id, this.categories);
+  FunchOriginalPrice(super.large, super.medium, super.small, this.id, this.categories);
 }

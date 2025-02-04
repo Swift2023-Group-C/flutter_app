@@ -1,20 +1,15 @@
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/feature/my_page/feature/funch/controller/funch_controller.dart';
+import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu.dart';
 import 'package:dotto/feature/my_page/feature/funch/repository/funch_repository.dart';
 import 'package:dotto/importer.dart';
 import 'package:intl/intl.dart';
 
 class MenuCard extends ConsumerWidget {
-  final int itemCode;
-  final String name;
+  final FunchMenu menu;
   final List<int> price;
-  final List<int?> calory;
-  final int category;
-  final String? size;
-  final List<String> imageUrl;
 
-  MenuCard(
-      this.itemCode, this.name, this.price, this.calory, this.category, this.size, this.imageUrl);
+  const MenuCard(this.menu, this.price, {super.key});
 
   List<Widget> priceText() {
     List<Widget> priceText = [];
@@ -56,6 +51,7 @@ class MenuCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final energy = menu.energy;
     return Card(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         color: Colors.white,
@@ -66,9 +62,9 @@ class MenuCard extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (imageUrl[0].isNotEmpty)
+              if (menu.imageUrl.isNotEmpty)
                 Image.network(
-                  imageUrl[0],
+                  menu.imageUrl,
                   errorBuilder: (context, error, stackTrace) {
                     // 読み込み失敗時に何もしない
                     return SizedBox.shrink();
@@ -79,7 +75,7 @@ class MenuCard extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      name,
+                      menu.name,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 40),
                     ),
@@ -102,11 +98,12 @@ class MenuCard extends ConsumerWidget {
                       // ),
                       const Spacer(),
                       // Transform.translate(
-                      Text(
-                        "${(calory[1] ?? 0) > 0 ? calory[1] : calory[0]}kcal",
-                        style: const TextStyle(fontSize: 20),
-                        // '${BusRepository().formatDuration(endTime)}${isKameda && !busIsTo ? '亀田支所着' : '着'}'
-                      ),
+                      if (energy != null)
+                        Text(
+                          "${energy}kcal",
+                          style: const TextStyle(fontSize: 20),
+                          // '${BusRepository().formatDuration(endTime)}${isKameda && !busIsTo ? '亀田支所着' : '着'}'
+                        ),
                       // )
                     ],
                   ),

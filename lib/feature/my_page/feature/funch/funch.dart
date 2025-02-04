@@ -1,7 +1,10 @@
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/feature/my_page/feature/funch/controller/funch_controller.dart';
+import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu.dart';
+import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu_type.dart';
+import 'package:dotto/feature/my_page/feature/funch/domain/funch_price.dart';
 import 'package:dotto/feature/my_page/feature/funch/repository/funch_repository.dart';
-import 'package:dotto/feature/my_page/feature/funch/menuCard.dart';
+import 'package:dotto/feature/my_page/feature/funch/menu_card.dart';
 import 'package:dotto/importer.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +12,7 @@ import 'package:intl/intl.dart';
 class FunchScreen extends ConsumerWidget {
   const FunchScreen({super.key});
 
-  Widget makeMenuTypeButton(String buttonTitle, Icon icon) {
+  Widget makeMenuTypeButton(FunchMenuType menuType) {
     double buttonSize = 50;
     double buttonPadding = 8;
     return Column(
@@ -35,12 +38,12 @@ class FunchScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              icon,
+              Icon(menuType.icon),
             ],
           ),
         ),
         Text(
-          buttonTitle,
+          menuType.name,
           style: TextStyle(
             fontSize: 9,
             color: Colors.black,
@@ -51,20 +54,7 @@ class FunchScreen extends ConsumerWidget {
   }
 
   List<Widget> menuTypeButton() {
-    final allMenuTypeText = ["セット・単品", "丼・カレー", "麺", "副菜", "デザート"];
-    final allMenuTypeIcon = [
-      Icon(Icons.restaurant),
-      Icon(Icons.rice_bowl),
-      Icon(Icons.ramen_dining),
-      Icon(Icons.eco),
-      Icon(Icons.cake)
-    ];
-    List<Widget> menuTypeButtonList = [];
-
-    for (int i = 0; i < allMenuTypeText.length; i++) {
-      menuTypeButtonList.add(makeMenuTypeButton(allMenuTypeText[i], allMenuTypeIcon[i]));
-    }
-    return menuTypeButtonList;
+    return FunchMenuType.values.map((e) => makeMenuTypeButton(e)).toList();
   }
 
   //指定した月の曜日を返す
@@ -85,42 +75,23 @@ class FunchScreen extends ConsumerWidget {
     return dates;
   }
 
-  //指定した月の曜日を返す
-  List<DateTime> getMenuDays() {
-    DateTime now = DateTime.now();
-    DateTime startDate = DateTime(now.year, now.month, now.day);
+  Future<List<DateTime>> getMenuDates(WidgetRef ref) async {
+    final funchDate = await ref.watch(funchDaysMenuProvider);
+    return funchDate.keys.toList();
+  }
 
-    // if (selectedDate < now.month) {
-    //   startDate = DateTime(now.year + 1, selectedDate, 1); //過去の月は来年にする
-    // }
-    List<DateTime> dates = [];
-    // final nextMonthFirst = DateTime(startDate.year, startDate.month, startDate.day+7);
-    // final monthDays = nextMonthFirst.subtract(const Duration(days: 1)).day;
-
-    for (int i = 0; i < 7; i++) {
-      final date = startDate.add(Duration(days: i));
-      if (date.weekday < 6) dates.add(date); //土日は除外
-    }
-    return dates;
+  Future<List<dynamic>> _getMenu(WidgetRef ref) async {
+    return await Future(
+        () => [ref.watch(funchDaysMenuProvider), ref.watch(funchMonthMenuProvider)]);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final funchDate = ref.watch(funchDateProvider);
-    final dates = getMenuDays();
 
     double buttonSize = 50;
     double buttonPadding = 8;
     List<String> weekString = ['月', '火', '水', '木', '金', '土', '日'];
-    // List<Color> weekColors = [
-    //   Colors.black,
-    //   Colors.black,
-    //   Colors.black,
-    //   Colors.black,
-    //   Colors.black,
-    //   Colors.blue,
-    //   Colors.red
-    // ];
 
     return Scaffold(
       appBar: AppBar(
@@ -141,37 +112,40 @@ class FunchScreen extends ConsumerWidget {
               )
             ],
           ),
-          onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: dates.map((toElement) {
-                        return ElevatedButton(
-                          onPressed: () {
-                            // ref.read(funchDateProvider.notifier).set(toElement);
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                DateFormat('MM月dd日 ${weekString[toElement.weekday - 1]}曜日')
-                                    .format(toElement),
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
+          onPressed: () async {
+            final dates = await getMenuDates(ref);
+            if (context.mounted) {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: dates.map((toElement) {
+                          return ElevatedButton(
+                            onPressed: () {
+                              // ref.read(funchDateProvider.notifier).set(toElement);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  DateFormat('MM月dd日 ${weekString[toElement.weekday - 1]}曜日')
+                                      .format(toElement),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                });
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  });
+            }
           },
         ),
       ),
@@ -187,7 +161,10 @@ class FunchScreen extends ConsumerWidget {
               ),
             ),
 
-            MenuCard(1, "na", [100, 80, 40], [10, 10, 10], 1, "dai", [""])
+            MenuCard(
+                FunchCoopMenu(10002, "チキン竜田丼", FunchPrice(616, 528, 462), 4,
+                    "https://chuboz.jp/items/images/10002.png", 845),
+                [100, 80, 40]),
           ],
         ),
 

@@ -55,12 +55,12 @@ class FunchRepository {
     return map;
   }
 
-  Future<List<OriginalPrice>> _getAllOriginalPriceFromFirestore() async {
+  Future<List<FunchOriginalPrice>> _getAllOriginalPriceFromFirestore() async {
     final priceRef = FirebaseFirestore.instance.collection('funch_price');
     final data = await priceRef.get();
     return data.docs.map((e) {
       final map = e.data();
-      return OriginalPrice(map["large"], map["medium"], map["small"], e.id,
+      return FunchOriginalPrice(map["large"], map["medium"], map["small"], e.id,
           (map["categories"] is List ? List<int>.from(map["categories"]) : <int>[]));
     }).toList();
   }
@@ -74,7 +74,7 @@ class FunchRepository {
       final price = allOriginalPrice
           .firstWhere((element) => element.id == (map["price"] as DocumentReference).id);
       return FunchOriginalMenu(
-          e.id, map["title"], price, map["category"], [map["image"]], map["energy"]);
+          e.id, map["title"], price, map["category"], map["image"], map["energy"]);
     }).toList();
   }
 

@@ -2,9 +2,9 @@ import 'package:dotto/feature/my_page/feature/funch/domain/funch_price.dart';
 
 class FunchMenu {
   final String name;
-  final Price price;
+  final FunchPrice price;
   final int category;
-  final List<String> imageUrl;
+  final String imageUrl;
   final int? energy;
 
   FunchMenu(this.name, this.price, this.category, this.imageUrl, this.energy);
@@ -19,9 +19,9 @@ class FunchCoopMenu extends FunchMenu {
   factory FunchCoopMenu.fromMenuJson(Map map) {
     final itemCode = map["item_code"];
     final name = map["title"];
-    final price = Price.fromJson(map["price"]);
+    final price = FunchPrice.fromJson(map["price"]);
     final category = map["category"];
-    final imageUrl = [map["image"] as String];
+    final imageUrl = map["image"];
     final energy = map["energy"];
     return FunchCoopMenu(itemCode, name, price, category, imageUrl, energy);
   }
