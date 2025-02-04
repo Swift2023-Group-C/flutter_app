@@ -43,48 +43,52 @@ class MyPageFunch extends ConsumerWidget {
     final borderRadius = 10.0;
     final nextDay = FunchRepository().nextDay();
     final dayString = _getDayString(nextDay);
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const FunchScreen(),
-        ),
-      ),
-      child: FutureBuilder(
-        future: _getDaysMenu(ref, nextDay),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: createProgressIndicator());
-          }
-          final menu = snapshot.data as List<FunchMenu>;
-          if (menu.isEmpty) {
-            return Center(
-              child: Card(
-                color: AppColor.textWhite,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.85,
-                  padding: EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "$dayStringの学食",
-                        style: TextStyle(fontSize: 18),
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const FunchScreen(),
+            ),
+          ),
+          child: FutureBuilder(
+            future: _getDaysMenu(ref, nextDay),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(child: createProgressIndicator());
+              }
+              final menu = snapshot.data as List<FunchMenu>;
+              final mypageIndex = ref.watch(funchMyPageIndexProvider);
+              if (menu.isEmpty) {
+                return Center(
+                  child: Card(
+                    color: AppColor.textWhite,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "$dayStringの学食",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          SizedBox(height: 10),
+                          snapshot.connectionState == ConnectionState.waiting
+                              ? createProgressIndicator()
+                              : Center(
+                                  child: Text("$dayStringの学食情報はありません"),
+                                ),
+                        ],
                       ),
-                      SizedBox(height: 10),
-                      Center(
-                        child: Text("$dayStringの学食情報はありません"),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            );
-          }
-          return CarouselSlider(
-            items: menu.map((e) {
+                );
+              }
               return Container(
-                margin: EdgeInsets.all(MediaQuery.of(context).size.width * 0.075),
+                margin: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.075, vertical: 2),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(borderRadius),
@@ -107,49 +111,79 @@ class MyPageFunch extends ConsumerWidget {
                         style: TextStyle(fontSize: 18),
                       ),
                     ),
-                    Expanded(
-                      child: Image(
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        image: _getBackgroundImage(e.imageUrl),
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset('assets/images/no_image.png');
+                    CarouselSlider(
+                      items: menu.map((e) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Image(
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                image: _getBackgroundImage(e.imageUrl),
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset('assets/images/no_image.png');
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    e.name,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Divider(
+                                    height: 2,
+                                    color: AppColor.dividerGrey,
+                                  ),
+                                  SizedBox(height: 5),
+                                  FunchPriceList(e, isHome: true),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                      options: CarouselOptions(
+                        aspectRatio: 4 / 3,
+                        autoPlay: true,
+                        autoPlayInterval: const Duration(seconds: 4),
+                        viewportFraction: 1,
+                        onPageChanged: (index, reason) {
+                          ref.read(funchMyPageIndexProvider.notifier).state = index;
                         },
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            e.name,
-                            style: const TextStyle(
-                              fontSize: 18,
-                            ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (int i = 0; i < menu.length; i++) ...{
+                          Container(
+                            width: 8.0,
+                            height: 8.0,
+                            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black)
+                                    .withOpacity(mypageIndex == i ? 0.9 : 0.4)),
                           ),
-                          Divider(
-                            height: 2,
-                            color: AppColor.dividerGrey,
-                          ),
-                          SizedBox(height: 5),
-                          FunchPriceList(e, isHome: true),
-                        ],
-                      ),
+                        },
+                      ],
                     ),
                   ],
                 ),
               );
-            }).toList(),
-            options: CarouselOptions(
-              aspectRatio: 4 / 3,
-              autoPlay: true,
-              autoPlayInterval: const Duration(seconds: 4),
-              viewportFraction: 1,
-            ),
-          );
-        },
-      ),
+            },
+          ),
+        ),
+      ],
     );
   }
 }

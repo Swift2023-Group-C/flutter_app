@@ -91,3 +91,5 @@ class FunchMenuTypeNotifier extends Notifier<FunchMenuType> {
     state = type;
   }
 }
+
+final funchMyPageIndexProvider = StateProvider((ref) => 0);
