@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dotto/importer.dart';
+import 'package:image_picker/image_picker.dart';
 
 // ラジオボタンの状態を管理するクラス
 class RadioButtonState extends StateNotifier<int> {
@@ -24,6 +27,34 @@ class AnsState extends StateNotifier<int> {
 // 答えの有無を管理するプロバイダー
 final ansProvider = StateNotifierProvider<AnsState, int>((ref) => AnsState());
 
+// 画像の状態を管理するクラス
+class ImageState extends StateNotifier<XFile?> {
+  ImageState() : super(null);
+
+  void setImage(XFile? image) {
+    state = image;
+  }
+}
+
+// 画像の状態を管理するプロバイダー
+final imageProvider = StateNotifierProvider<ImageState, XFile?>((ref) => ImageState());
+
+// 年度の状態を管理するクラス
+class YearState extends StateNotifier<int> {
+  YearState(int initialYear) : super(initialYear);
+
+  void setYear(int value) {
+    state = value;
+  }
+}
+
+// 年度の状態を管理するプロバイダー
+final yearProvider = StateNotifierProvider<YearState, int>((ref) {
+  DateTime dt = DateTime.now();
+  int currentYear = dt.month >= 4 ? dt.year : dt.year - 1; // 4月以降なら今年度、3月以前なら昨年度
+  return YearState(currentYear);
+});
+
 class UploadScreen extends ConsumerWidget {
   const UploadScreen({super.key});
 
@@ -31,8 +62,13 @@ class UploadScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final term = ref.watch(termProvider);
     final ans = ref.watch(ansProvider);
+    final image = ref.watch(imageProvider);
+    final year = ref.watch(yearProvider);
+
     DateTime dt = DateTime.now();
-    int currentYear = dt.month >= 4 ? dt.year : dt.year - 1; // 4月以降なら今年度、3月以前なら昨年
+    int currentYear = dt.month >= 4 ? dt.year : dt.year - 1; // 4月以降なら今年度、3月以前なら昨年度
+
+    final ImagePicker _picker = ImagePicker();
 
     return Scaffold(
       appBar: AppBar(
@@ -47,7 +83,12 @@ class UploadScreen extends ConsumerWidget {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
-              onPressed: () {},
+              onPressed: () async {
+                final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+                if (pickedImage != null) {
+                  ref.read(imageProvider.notifier).setImage(pickedImage);
+                }
+              },
               child: const SizedBox(
                 width: 120,
                 child: Row(
@@ -60,10 +101,15 @@ class UploadScreen extends ConsumerWidget {
               ),
             ),
           ),
-          //年度選択　4年前から今年度まで
+          if (image != null) Image.file(File(image.path)),
+          // 年度選択　4年前から今年度まで
           DropdownButton<int>(
-            // value: funchDate.month,
-            onChanged: (int? value) {},
+            value: year,
+            onChanged: (int? value) {
+              if (value != null) {
+                ref.read(yearProvider.notifier).setYear(value);
+              }
+            },
             items: <int>[for (int i = currentYear; i >= currentYear - 4; i--) i]
                 .map<DropdownMenuItem<int>>((int value) {
               return DropdownMenuItem<int>(
