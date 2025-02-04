@@ -1,6 +1,7 @@
 import 'package:dotto/components/color_fun.dart';
 import 'package:dotto/feature/my_page/feature/funch/controller/funch_controller.dart';
 import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu.dart';
+import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu_type.dart';
 import 'package:dotto/feature/my_page/feature/funch/repository/funch_repository.dart';
 import 'package:dotto/importer.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,15 @@ class MenuCard extends ConsumerWidget {
 
   List<Widget> priceText() {
     List<Widget> priceText = [];
+    if (![...FunchMenuType.donCurry.categories, ...FunchMenuType.noodle.categories]
+        .contains(menu.category)) {
+      return [
+        Text(
+          '¥${menu.price.medium}',
+          style: const TextStyle(fontSize: 20),
+        )
+      ];
+    }
     final sizeStr = ["大", "中", "小"];
     final price = [menu.price.large, menu.price.medium, menu.price.small];
 
@@ -62,6 +72,7 @@ class MenuCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final energy = menu.energy;
     final borderRadius = 10.0;
+    print(menu.imageUrl);
     return Card(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         color: Colors.white,
@@ -74,20 +85,20 @@ class MenuCard extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (menu.imageUrl.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(borderRadius),
-                    topRight: Radius.circular(borderRadius),
-                  ),
-                  child: Image.network(
-                    menu.imageUrl,
-                    errorBuilder: (context, error, stackTrace) {
-                      // 読み込み失敗時に何もしない
-                      return SizedBox.shrink();
-                    },
-                  ),
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(borderRadius),
+                  topRight: Radius.circular(borderRadius),
                 ),
+                child: menu.imageUrl.isNotEmpty
+                    ? Image.network(
+                        menu.imageUrl,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset("assets/images/no_image.png");
+                        },
+                      )
+                    : Image.asset("assets/images/no_image.png"),
+              ),
               Padding(
                 padding: EdgeInsets.all(10),
                 child: Column(

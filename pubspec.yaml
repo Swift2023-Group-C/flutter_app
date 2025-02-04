@@ -123,6 +123,7 @@ flutter:
     - images/
     - .env.dev
     - assets/
+    - assets/images/
     - assets/bus.png
     - assets/syllabus.db
     - assets/tutorial/home.png
