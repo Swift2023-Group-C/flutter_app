@@ -43,8 +43,16 @@ class FunchMenuSet {
     return menu.where((element) => element.category == category).toList();
   }
 
+  List<FunchCoopMenu> getMenuByCategories(List<int> categories) {
+    return menu.where((element) => categories.contains(element.category)).toList();
+  }
+
   List<FunchOriginalMenu> getOriginalMenuByCategory(int category) {
     return originalMenu.where((element) => element.category == category).toList();
+  }
+
+  List<FunchOriginalMenu> getOriginalMenuByCategories(List<int> categories) {
+    return originalMenu.where((element) => categories.contains(element.category)).toList();
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu.dart';
+import 'package:dotto/feature/my_page/feature/funch/domain/funch_menu_type.dart';
 import 'package:dotto/feature/my_page/feature/funch/repository/funch_repository.dart';
 import 'package:dotto/importer.dart';
 
@@ -11,6 +12,12 @@ class FunchDateNotifier extends Notifier<DateTime> {
   @override
   DateTime build() {
     final today = DateTime.now();
+    if (today.weekday >= 6) {
+      return DateTime(today.year, today.month, today.day + 8 - today.weekday);
+    }
+    if (today.hour > 13) {
+      return DateTime(today.year, today.month, today.day + 1);
+    }
     return DateTime(today.year, today.month, today.day);
   }
 
@@ -72,5 +79,22 @@ class FunchOriginalMenuNotifier extends Notifier<List<FunchOriginalMenu>?> {
 
   void set(List<FunchOriginalMenu> list) {
     state = list;
+  }
+}
+
+final funchMenuTypeProvider = NotifierProvider<FunchMenuTypeNotifier, FunchMenuType>(() {
+  return FunchMenuTypeNotifier();
+});
+
+class FunchMenuTypeNotifier extends Notifier<FunchMenuType> {
+  // 初期値を設定する
+  @override
+  FunchMenuType build() {
+    final category = FunchMenuType.set;
+    return category;
+  }
+
+  void set(FunchMenuType type) {
+    state = type;
   }
 }
