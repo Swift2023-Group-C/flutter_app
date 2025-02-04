@@ -11,14 +11,7 @@ class FunchDateNotifier extends Notifier<DateTime> {
   // 初期値を設定する
   @override
   DateTime build() {
-    final today = DateTime.now();
-    if (today.weekday >= 6) {
-      return DateTime(today.year, today.month, today.day + 8 - today.weekday);
-    }
-    if (today.hour > 13) {
-      return DateTime(today.year, today.month, today.day + 1);
-    }
-    return DateTime(today.year, today.month, today.day);
+    return FunchRepository().nextDay();
   }
 
   void set(DateTime dt) {

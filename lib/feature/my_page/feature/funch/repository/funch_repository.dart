@@ -15,6 +15,17 @@ class FunchRepository {
   }
   FunchRepository._internal();
 
+  DateTime nextDay() {
+    final today = DateTime.now();
+    if (today.weekday >= 6) {
+      return DateTime(today.year, today.month, today.day + 8 - today.weekday);
+    }
+    if (today.hour > 13) {
+      return DateTime(today.year, today.month, today.day + 1);
+    }
+    return DateTime(today.year, today.month, today.day);
+  }
+
   Future<List<FunchCoopMenu>> getAllCoopMenu() async {
     String fileName = 'funch/menu.json';
     String jsonString = await readJsonFile(fileName);
