@@ -115,8 +115,6 @@ class FunchRepository {
             originalList.add(menu);
           }
         }
-        print(list);
-        print(originalList);
         return MapEntry(key, FunchDaysMenu(key, list, originalList));
       });
     } else {
@@ -188,8 +186,6 @@ class FunchRepository {
             originalList.add(menu);
           }
         }
-        print(list);
-        print(originalList);
         return MapEntry(key, FunchMonthMenu(key, list, originalList));
       });
     } else {
@@ -199,7 +195,6 @@ class FunchRepository {
 
   Future<FunchDaysMenu?> get1DayMenu(DateTime dateTime, WidgetRef ref) async {
     final data = await ref.watch(funchDaysMenuProvider);
-    print(data);
     if (!data.containsKey(dateTime)) return null;
     return data[dateTime]!;
   }
