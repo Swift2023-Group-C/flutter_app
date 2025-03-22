@@ -62,7 +62,7 @@ PODS:
     - FirebaseCore (~> 11.6.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
-  - FirebaseAppCheckInterop (11.7.0)
+  - FirebaseAppCheckInterop (11.9.0)
   - FirebaseAuth (11.6.0):
     - FirebaseAppCheckInterop (~> 11.0)
     - FirebaseAuthInterop (~> 11.0)
@@ -72,7 +72,7 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GTMSessionFetcher/Core (< 5.0, >= 3.4)
     - RecaptchaInterop (~> 100.0)
-  - FirebaseAuthInterop (11.7.0)
+  - FirebaseAuthInterop (11.9.0)
   - FirebaseCore (11.6.0):
     - FirebaseCoreInternal (~> 11.6.0)
     - GoogleUtilities/Environment (~> 8.0)
@@ -327,9 +327,9 @@ SPEC CHECKSUMS:
   firebase_messaging: a18717effe8ce3febe7a2162ffbd92d1830085f7
   firebase_storage: 5ee8acf5d911b87d6c80844f744d7b398c3cf5c5
   FirebaseAppCheck: 44803909e253d677481e9e16eb719b0f58a7ddc2
-  FirebaseAppCheckInterop: 2376d3ec5cb4267facad4fe754ab4f301a5a519b
+  FirebaseAppCheckInterop: 9226f7217b43e99dfa0bc9f674ad8108cef89feb
   FirebaseAuth: 0304982cfe00df8d49bf533bc4becd3de36c7122
-  FirebaseAuthInterop: a6973d72aa242ea88ffb6be9c9b06c65455071da
+  FirebaseAuthInterop: 2a26ee1bea6d47df8048683cfa071e7da657798f
   FirebaseCore: 48b0dd707581cf9c1a1220da68223fb0a562afaa
   FirebaseCoreExtension: 2d77d6430c16cf43ca2b04608302ed02b3598361
   FirebaseCoreInternal: d98ab91e2d80a56d7b246856a8885443b302c0c2
