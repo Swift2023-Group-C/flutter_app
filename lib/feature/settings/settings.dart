@@ -78,7 +78,6 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('全般'),
             tiles: <SettingsTile>[
               // Googleでログイン
-
               SettingsTile.navigation(
                 title: Text(
                   (user == null) ? 'ログイン' : 'ログイン中',
@@ -93,7 +92,7 @@ class SettingsScreen extends ConsumerWidget {
                     : null,
                 leading: Icon((user == null) ? Icons.login : Icons.logout),
                 onPressed: (user == null)
-                    ? (c) => SettingsRepository().onLogin(c, userNotifier.login)
+                    ? (c) => SettingsRepository().onLogin(c, userNotifier.login, ref)
                     : (_) => SettingsRepository().onLogout(userNotifier.logout),
               ),
               // 学年

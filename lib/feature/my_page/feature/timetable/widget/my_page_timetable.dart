@@ -255,6 +255,7 @@ class MyPageTimetable extends ConsumerWidget {
     ScrollController controller = ScrollController(initialScrollOffset: initialScrollOffset);
     return Consumer(
       builder: (context, ref, child) {
+        ref.watch(saveTimetableProvider);
         final twoWeekTimeTableData = ref.watch(twoWeekTimeTableDataProvider);
         final focusTimeTableDay = ref.watch(focusTimeTableDayProvider);
         return Column(

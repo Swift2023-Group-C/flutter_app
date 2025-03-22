@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotto/components/setting_user_info.dart';
+import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:dotto/feature/settings/controller/settings_controller.dart';
 import 'package:dotto/importer.dart';
 import 'package:dotto/repository/firebase_auth.dart';
@@ -46,11 +47,14 @@ class SettingsRepository {
     }
   }
 
-  Future<void> onLogin(BuildContext context, Function login) async {
+  Future<void> onLogin(BuildContext context, Function login, WidgetRef ref) async {
     final user = await FirebaseAuthRepository().signIn();
     if (user != null) {
       login(user);
       saveFCMToken(user);
+      if (context.mounted) {
+        await TimetableRepository().loadPersonalTimeTableListOnLogin(context, ref);
+      }
     } else {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

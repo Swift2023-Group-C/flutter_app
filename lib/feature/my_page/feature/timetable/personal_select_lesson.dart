@@ -4,11 +4,9 @@ import 'package:dotto/components/widgets/progress_indicator.dart';
 import 'package:dotto/feature/my_page/feature/timetable/controller/timetable_controller.dart';
 import 'package:dotto/feature/my_page/feature/timetable/repository/timetable_repository.dart';
 import 'package:dotto/feature/my_page/feature/timetable/widget/timetable_is_over_selected_snack_bar.dart';
-import 'package:dotto/repository/narrowed_lessons.dart';
 
 class PersonalSelectLessonScreen extends StatelessWidget {
-  const PersonalSelectLessonScreen(this.term, this.week, this.period,
-      {super.key});
+  const PersonalSelectLessonScreen(this.term, this.week, this.period, {super.key});
 
   final int term, week, period;
 
@@ -36,23 +34,18 @@ class PersonalSelectLessonScreen extends StatelessWidget {
                 return ListView.builder(
                   itemCount: termList.length,
                   itemBuilder: (context, index) {
+                    final int lessonId = termList[index]['lessonId'];
                     return ListTile(
                       title: Text(termList[index]['授業名']),
-                      trailing: personalLessonIdList
-                              .contains(termList[index]['lessonId'])
+                      trailing: personalLessonIdList.contains(termList[index]['lessonId'])
                           ? ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
                                 foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                               ),
                               onPressed: () async {
-                                //print(termList[index]['lessonId']);
-                                personalLessonIdList.removeWhere((item) =>
-                                    item == termList[index]['lessonId']);
-                                await savePersonalTimeTableList(
-                                    personalLessonIdList, ref);
+                                TimetableRepository().removePersonalTimeTableList(lessonId, ref);
                                 if (context.mounted) {
                                   Navigator.of(context).pop();
                                 }
@@ -62,24 +55,16 @@ class PersonalSelectLessonScreen extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: customFunColor,
                                 foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                               ),
                               onPressed: () async {
-                                if (await TimetableRepository().isOverSeleted(
-                                    termList[index]['lessonId'], ref)) {
+                                if (await TimetableRepository()
+                                    .isOverSeleted(termList[index]['lessonId'], ref)) {
                                   if (context.mounted) {
                                     timetableIsOverSelectedSnackBar(context);
                                   }
                                 } else {
-                                  final lessonId = termList[index]['lessonId'];
-                                  if (lessonId != null) {
-                                    savePersonalTimeTableList(
-                                        [...personalLessonIdList, lessonId],
-                                        ref);
-                                  } else {
-                                    // LessonIdがnullの場合の処理（エラーメッセージの表示など）
-                                  }
+                                  TimetableRepository().addPersonalTimeTableList(lessonId, ref);
                                   if (context.mounted) {
                                     Navigator.of(context).pop();
                                   }
