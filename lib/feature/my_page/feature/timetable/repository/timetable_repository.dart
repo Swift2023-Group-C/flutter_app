@@ -47,6 +47,15 @@ class TimetableRepository {
     return records.first;
   }
 
+  Future<List<String>> getLessonNameList(List<int> lessonIdList) async {
+    Database database = await openDatabase(SyllabusDBConfig.dbPath);
+
+    List<Map<String, dynamic>> records = await database
+        .rawQuery('SELECT 授業名 FROM sort WHERE LessonId in (${lessonIdList.join(",")})');
+    List<String> lessonNameList = records.map((e) => e['授業名'] as String).toList();
+    return lessonNameList;
+  }
+
   Future<List<int>> loadLocalPersonalTimeTableList() async {
     final jsonString = await UserPreferences.getString(UserPreferenceKeys.personalTimetableListKey);
     if (jsonString != null) {
@@ -77,43 +86,61 @@ class TimetableRepository {
         } else if (firestoreList.isEmpty) {
           personalTimeTableList = localList;
           savePersonalTimeTableListToFirestore(personalTimeTableList, ref);
-        } else if (diff.abs() > 60000) {
-          if (context.mounted) {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('データの同期'),
-                  content: const Column(
-                    children: <Widget>[
-                      Text('アカウントに紐づいている時間割とローカルの時間割が異なっています。どちらを残しますか？'),
+        } else if (diff.abs() > 300000) {
+          final firestoreSet = firestoreList.toSet();
+          final localSet = localList.toSet();
+          // firestoreList と locallist のIDが同じかどうか確認
+          if (firestoreSet.containsAll(localSet) && localSet.containsAll(firestoreSet)) {
+            personalTimeTableList = firestoreList;
+          } else {
+            // LessonName取得
+            final firestoreLessonNameList =
+                await getLessonNameList(firestoreSet.difference(localSet).toList());
+            final localLessonNameList =
+                await getLessonNameList(localSet.difference(firestoreSet).toList());
+            if (context.mounted) {
+              showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('データの同期'),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        children: <Widget>[
+                          Text('アカウントに紐づいている時間割とローカルの時間割が異なっています。どちらを残しますか？'),
+                          Text('-- アカウント側に多い科目 --'),
+                          ...firestoreLessonNameList.map((e) => Text(e.toString())),
+                          const SizedBox(height: 10),
+                          Text('-- ローカル側に多い科目 --'),
+                          ...localLessonNameList.map((e) => Text(e.toString())),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          personalTimeTableList = firestoreList;
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('アカウント方を残す'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          personalTimeTableList = localList;
+                          savePersonalTimeTableListToFirestore(personalTimeTableList, ref);
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('ローカル方を残す'),
+                      ),
                     ],
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        personalTimeTableList = firestoreList;
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('アカウント'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        personalTimeTableList = localList;
-                        savePersonalTimeTableListToFirestore(personalTimeTableList, ref);
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('ローカル'),
-                    ),
-                  ],
-                );
-              },
-            );
+                  );
+                },
+              );
+            }
           }
-          personalTimeTableList = await loadLocalPersonalTimeTableList();
-          savePersonalTimeTableListToFirestore(personalTimeTableList, ref);
         } else {
-          personalTimeTableList = List<int>.from(data['2025']);
+          personalTimeTableList = firestoreList;
         }
       } else {
         personalTimeTableList = await loadLocalPersonalTimeTableList();
@@ -236,7 +263,7 @@ class TimetableRepository {
     return loadPersonalTimeTableMap;
   }
 
-// 施設予約のjsonファイルの中から取得している科目のみに絞り込み
+  // 施設予約のjsonファイルの中から取得している科目のみに絞り込み
   Future<List<dynamic>> filterTimeTable(WidgetRef ref) async {
     String fileName = 'map/oneweek_schedule.json';
     try {
