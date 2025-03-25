@@ -1,7 +1,6 @@
 import 'package:dotto/importer.dart';
 import 'package:dotto/components/animation.dart';
 import 'package:dotto/components/widgets/progress_indicator.dart';
-import 'package:dotto/repository/narrowed_lessons.dart';
 import 'package:dotto/feature/kamoku_detail/kamoku_detail_page_view.dart';
 import 'package:dotto/feature/kamoku_search/controller/kamoku_search_controller.dart';
 import 'package:dotto/feature/kamoku_search/repository/kamoku_search_repository.dart';
@@ -53,8 +52,7 @@ class KamokuSearchResults extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final personalLessonIdList = ref.watch(personalLessonIdListProvider);
     final kamokuSearchController = ref.read(kamokuSearchControllerProvider);
-    final twoWeekTimeTableDataNotifier =
-        ref.read(twoWeekTimeTableDataProvider.notifier);
+    final twoWeekTimeTableDataNotifier = ref.read(twoWeekTimeTableDataProvider.notifier);
     //loadPersonalTimeTableList();
     return FutureBuilder(
       future: getWeekPeriod(records.map((e) => e['LessonId'] as int).toList()),
@@ -76,7 +74,7 @@ class KamokuSearchResults extends ConsumerWidget {
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) {
                         return KamokuDetailPageScreen(
-                          lessonId: record['LessonId'],
+                          lessonId: lessonId,
                           lessonName: record['授業名'],
                           kakomonLessonId: record['過去問'],
                         );
@@ -89,27 +87,21 @@ class KamokuSearchResults extends ConsumerWidget {
                 trailing: const Icon(Icons.chevron_right),
                 leading: IconButton(
                   icon: Icon(Icons.playlist_add,
-                      color: personalLessonIdList.contains(record['LessonId'])
-                          ? Colors.green
-                          : Colors.black),
+                      color: personalLessonIdList.contains(lessonId) ? Colors.green : Colors.black),
                   onPressed: () async {
-                    if (!personalLessonIdList.contains(record['LessonId'])) {
-                      if (await TimetableRepository()
-                          .isOverSeleted(lessonId, ref)) {
+                    if (!personalLessonIdList.contains(lessonId)) {
+                      if (await TimetableRepository().isOverSeleted(lessonId, ref)) {
                         if (context.mounted) {
                           timetableIsOverSelectedSnackBar(context);
                         }
                       } else {
-                        personalLessonIdList.add(record['LessonId']);
-                        savePersonalTimeTableList(personalLessonIdList, ref);
+                        TimetableRepository().addPersonalTimeTableList(lessonId, ref);
                       }
                     } else {
-                      personalLessonIdList
-                          .removeWhere((item) => item == record['LessonId']);
-                      savePersonalTimeTableList(personalLessonIdList, ref);
+                      TimetableRepository().removePersonalTimeTableList(lessonId, ref);
                     }
                     twoWeekTimeTableDataNotifier.state =
-                        await TimetableRepository().get2WeekLessonSchedule();
+                        await TimetableRepository().get2WeekLessonSchedule(ref);
                   },
                 ),
               );

@@ -112,10 +112,9 @@ class _BasePageState extends ConsumerState<BasePage> {
   }
 
   Future<void> setPersonalLessonIdList() async {
+    await TimetableRepository().loadPersonalTimeTableList(ref);
     ref.read(twoWeekTimeTableDataProvider.notifier).state =
-        await TimetableRepository().get2WeekLessonSchedule();
-    ref.read(personalLessonIdListProvider.notifier).state =
-        await TimetableRepository().loadPersonalTimeTableList();
+        await TimetableRepository().get2WeekLessonSchedule(ref);
   }
 
   Future<void> initBus() async {

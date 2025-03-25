@@ -202,7 +202,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     )
                         .then((value) async {
                       twoWeekTimeTableDataNotifier.state =
-                          await TimetableRepository().get2WeekLessonSchedule();
+                          await TimetableRepository().get2WeekLessonSchedule(ref);
                     });
                   },
                   child: Text(
